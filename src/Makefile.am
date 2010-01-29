@@ -1,0 +1,31 @@
+## Process this file with automake to produce Makefile.in
+
+## Created by Anjuta
+
+
+AM_CPPFLAGS = \
+	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
+	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
+	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
+	$(GLIDE_CFLAGS)
+
+AM_CFLAGS =\
+	 -Wall\
+	 -g
+
+bin_PROGRAMS = glide
+
+glide_SOURCES = \
+	main.c
+
+glide_LDFLAGS = \
+	-Wl,--export-dynamic
+
+glide_LDADD = $(GLIDE_LIBS)
+
+EXTRA_DIST = $(ui_DATA)
+
+# Remove ui directory on uninstall
+uninstall-local:
+	-rm -r $(uidir)
+	-rm -r $(datadir)/glide
