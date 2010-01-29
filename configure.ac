@@ -30,7 +30,9 @@ AM_PROG_LIBTOOL
 
 
 
-PKG_CHECK_MODULES(GLIDE, [gtk+-2.0 >= 2.12    ])
+PKG_CHECK_MODULES(GTK, [gtk+-2.0 >= 2.12    ])
+PKG_CHECK_MODULES(CLUTTER, [clutter-1.0])
+PKG_CHECK_MODULES(CLUTTER_GTK, [clutter-gtk-0.90])
 
 
 

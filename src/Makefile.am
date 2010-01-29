@@ -7,7 +7,9 @@ AM_CPPFLAGS = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
-	$(GLIDE_CFLAGS)
+	$(GTK_CFLAGS) \
+	$(CLUTTER_CFLAGS) \
+	$(CLUTTER_GTK_CFLAGS)
 
 AM_CFLAGS =\
 	 -Wall\
@@ -21,7 +23,7 @@ glide_SOURCES = \
 glide_LDFLAGS = \
 	-Wl,--export-dynamic
 
-glide_LDADD = $(GLIDE_LIBS)
+glide_LDADD = $(GTK_LIBS) $(CLUTTER_LIBS) $(CLUTTER_GTK_CONFIG)
 
 EXTRA_DIST = $(ui_DATA)
 
