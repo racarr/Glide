@@ -18,7 +18,9 @@ AM_CFLAGS =\
 bin_PROGRAMS = glide
 
 glide_SOURCES = \
-	main.c
+	main.c \
+	glide-window.c \
+	glide-window.h
 
 glide_LDFLAGS = \
 	-Wl,--export-dynamic
