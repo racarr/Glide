@@ -55,4 +55,28 @@ glide_window_class_init (GlideWindowClass *klass)
 static void
 glide_window_init (GlideWindow *window)
 {
+  ClutterActor *stage;
+  ClutterColor black = {0x00, 0x00, 0x00, 0xff};
+  GtkWidget *vbox, *embed;
+  
+  vbox = gtk_vbox_new (FALSE, 0);
+  gtk_container_add (GTK_CONTAINER (window), vbox);
+  
+  embed = gtk_clutter_embed_new ();
+  gtk_container_add (GTK_CONTAINER (vbox), embed);
+  
+  stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (embed));
+  clutter_actor_set_size (stage, 800, 600);
+  gtk_widget_set_size_request (embed, 800, 600);
+  
+  clutter_stage_set_color (CLUTTER_STAGE (stage), &black);
+  clutter_actor_show (stage);
+
+  gtk_widget_show_all (GTK_WIDGET (window));
+}
+
+GlideWindow *
+glide_window_new ()
+{
+  return g_object_new (GLIDE_TYPE_WINDOW, NULL);
 }

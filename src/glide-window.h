@@ -70,6 +70,7 @@ struct _GlideWindowClass
  * Public methods
  */
 GType 		 glide_window_get_type 			(void) G_GNUC_CONST;
+GlideWindow     *glide_window_new                       (void);
 
 G_END_DECLS
 

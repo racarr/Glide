@@ -30,8 +30,9 @@
 #include <clutter/clutter.h>
 #include <clutter-gtk/clutter-gtk.h>
 
-
 #include <glib/gi18n.h>
+
+#include "glide-window.h"
 
 static void
 glide_setup_main_window (GtkBuilder *builder)
@@ -63,30 +64,13 @@ glide_setup_main_window (GtkBuilder *builder)
 int
 main (int argc, char *argv[])
 {
-	GError *e = NULL;
-	GtkBuilder *builder;
+	GlideWindow *window;
 
 	gtk_set_locale ();
 	gtk_init (&argc, &argv);
 	gtk_clutter_init (&argc, &argv);
 
-	builder = gtk_builder_new ();
-	gtk_builder_add_from_file (builder, "main.ui",
-							   &e);
-	if (e)
-		{
-			g_critical ("Failed to load main UI: %s", e->message);
-			g_error_free (e);
-
-			return 0;
-		}
-#ifdef ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
-	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-	textdomain (GETTEXT_PACKAGE);
-#endif
-
-	glide_setup_main_window (builder);
+	window = glide_window_new ();
 
 	gtk_main ();
 	return 0;
