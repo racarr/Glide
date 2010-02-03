@@ -30,6 +30,11 @@ G_DEFINE_TYPE(GlideManipulator, glide_manipulator, CLUTTER_TYPE_GROUP)
 
 #define GLIDE_MANIPULATOR_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GLIDE_TYPE_MANIPULATOR, GlideManipulatorPrivate))
 
+enum {
+  PROP_0,
+  PROP_TARGET
+};
+
 
 static void
 glide_manipulator_finalize (GObject *object)
@@ -72,6 +77,57 @@ glide_manipulator_paint (ClutterActor *self)
 }
 
 static void
+glide_manipulator_get_property (GObject *object,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *pspec)
+{
+  GlideManipulator *manip = GLIDE_MANIPULATOR (object);
+  
+  switch (prop_id)
+    {
+    case PROP_TARGET:
+      g_value_set_object (value, manip->priv->target);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
+}
+
+static void
+glide_manipulator_set_target_real (GlideManipulator *manip,
+				   ClutterActor *target)
+{
+  clutter_container_add_actor (CLUTTER_CONTAINER (manip), target);
+  
+  if (CLUTTER_ACTOR_IS_MAPPED (CLUTTER_ACTOR (manip)))
+    clutter_actor_show (target);
+  manip->priv->target = target;
+}
+				   
+
+static void
+glide_manipulator_set_property (GObject *object,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *pspec)
+{
+  GlideManipulator *manip = GLIDE_MANIPULATOR (object);
+  
+  switch (prop_id)
+    {
+    case PROP_TARGET:
+      g_return_if_fail (manip->priv->target == NULL);
+      glide_manipulator_set_target_real (manip, CLUTTER_ACTOR(g_value_get_object (value)));
+      break;
+    default: 
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
+}
+
+static void
 glide_manipulator_class_init (GlideManipulatorClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -80,6 +136,18 @@ glide_manipulator_class_init (GlideManipulatorClass *klass)
   actor_class->paint = glide_manipulator_paint;
 
   object_class->finalize = glide_manipulator_finalize;
+  object_class->set_property = glide_manipulator_set_property;
+  object_class->get_property = glide_manipulator_get_property;
+  
+  g_object_class_install_property (object_class,
+				   PROP_TARGET,
+				   g_param_spec_object ("target",
+							"Target",
+							"The target of the manipulator object",
+							CLUTTER_TYPE_ACTOR,
+							G_PARAM_READWRITE |
+							G_PARAM_CONSTRUCT_ONLY |
+							G_PARAM_STATIC_STRINGS));
   
   g_type_class_add_private (object_class, sizeof(GlideManipulatorPrivate));
 }
@@ -91,7 +159,13 @@ glide_manipulator_init (GlideManipulator *manipulator)
 }
 
 GlideManipulator *
-glide_manipulator_new ()
+glide_manipulator_new (ClutterActor *target)
 {
-  return g_object_new (GLIDE_TYPE_MANIPULATOR, NULL);
+  return g_object_new (GLIDE_TYPE_MANIPULATOR, "target", target, NULL);
+}
+
+ClutterActor *
+glide_manipulator_get_target (GlideManipulator *manip)
+{
+  return manip->priv->target;
 }

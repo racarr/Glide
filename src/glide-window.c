@@ -62,18 +62,16 @@ glide_window_new_image (GtkWidget *toolitem, gpointer data)
   ClutterActor *im, *g;
   
   im = (ClutterActor *)glide_image_new ();
-  g = (ClutterActor *)glide_manipulator_new ();
-  
-  clutter_container_add_actor (CLUTTER_CONTAINER (g), im);
-  clutter_container_add_actor (CLUTTER_CONTAINER (stage), g);
-
   clutter_actor_set_position(im, 0, 0);
   clutter_actor_set_size(im, 100, 100);
+  
+  g = (ClutterActor *)glide_manipulator_new (im);
 
   clutter_actor_set_position(g, 200, 200);
   
-  clutter_actor_show (im);
-  clutter_actor_show (g);
+  clutter_container_add_actor (CLUTTER_CONTAINER(stage), g);
+  
+  clutter_actor_show_all (g);
 
   g_message("New image!");
 }
