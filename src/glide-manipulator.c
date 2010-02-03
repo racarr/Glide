@@ -227,7 +227,7 @@ glide_manipulator_button_press (ClutterActor *actor,
   widg = glide_manipulator_get_widget_at (manip, event->x-ax, event->y-ay);
   if (widg != WIDGET_NONE)
     {
-      manip->priv->resizing = TRUE;
+      manip->priv->transforming = TRUE;
       manip->priv->resize_widget = widg;
 
       clutter_grab_pointer (actor);
@@ -269,10 +269,10 @@ glide_manipulator_button_release (ClutterActor *actor,
       manip->priv->swap_widgets = FALSE;
     }
   
-  if (manip->priv->resizing)
+  if (manip->priv->transforming)
     {
       clutter_ungrab_pointer ();
-      manip->priv->resizing = FALSE;
+      manip->priv->transforming = FALSE;
       manip->priv->resize_widget = WIDGET_NONE;
       
       return TRUE;
@@ -286,6 +286,64 @@ glide_manipulator_button_release (ClutterActor *actor,
       return TRUE;
     }
     return FALSE;
+}
+
+static void
+glide_manipulator_process_resize (GlideManipulator *manip,
+				  ClutterGeometry *geom,
+				  ClutterMotionEvent *mev)
+{
+  ClutterActor *actor = CLUTTER_ACTOR(manip);
+  switch (manip->priv->resize_widget)
+    {
+    case WIDGET_BOTTOM_RIGHT:
+      clutter_actor_set_size(manip->priv->target, mev->x-geom->x, mev->y-geom->y);
+      break;
+    case WIDGET_TOP_RIGHT:
+      clutter_actor_set_position (actor, geom->x, mev->y);
+      clutter_actor_set_size (manip->priv->target, mev->x-geom->x, (geom->height+geom->y)-(mev->y));
+      break;
+    case WIDGET_BOTTOM_LEFT:
+      clutter_actor_set_position (actor, mev->x, geom->y);
+      clutter_actor_set_size (manip->priv->target, (geom->width+geom->x)-mev->x,
+			      mev->y-geom->y);
+      break;
+    case WIDGET_TOP_LEFT:
+      clutter_actor_set_position (actor, mev->x, mev->y);
+      clutter_actor_set_size (manip->priv->target,
+			      (geom->width+geom->x)-mev->x,
+			      (geom->height+geom->y)-mev->y);
+      break;
+    default:
+      break;
+    }
+}
+
+static void
+glide_manipulator_process_rotate (GlideManipulator *manip,
+				  ClutterGeometry *geom,
+				  ClutterMotionEvent *mev)
+{
+  gfloat scalar_product,m1,m2,angle, v1a, v1b, v2a, v2b;
+  
+  v1a = geom->x - geom->width;
+  v1b = geom->y - geom->height;
+  v2a = mev->x - geom->width;
+  v2b = mev->y - geom->height;
+  
+  scalar_product = v1a*v2a+v1b*v2b;
+  m1  = sqrt(v1a*v1a+v1b*v1b);
+  m2 = sqrt(v2a*v2a+v2b*v2b);
+
+  angle = acos(scalar_product/(m1*m2))*(180.0/M_PI);
+  
+  g_message("Angle: %f", angle);
+  clutter_actor_set_rotation (CLUTTER_ACTOR (manip),
+			      CLUTTER_Z_AXIS,
+			      -angle,
+			      geom->width/2.0,
+			      geom->height/2.0,
+			      0);
 }
 
 static gboolean
@@ -310,31 +368,13 @@ glide_manipulator_motion (ClutterActor *actor,
       clutter_actor_queue_redraw (CLUTTER_ACTOR (actor));
     }
   
-  if (manip->priv->resizing)
+  if (manip->priv->transforming)
     {
-      switch (manip->priv->resize_widget)
-	{
-	case WIDGET_BOTTOM_RIGHT:
-	  clutter_actor_set_size(manip->priv->target, mev->x-geom.x, mev->y-geom.y);
-	  break;
-	case WIDGET_TOP_RIGHT:
-	  clutter_actor_set_position (actor, geom.x, mev->y);
-	  clutter_actor_set_size (manip->priv->target, mev->x-geom.x, (geom.height+geom.y)-(mev->y));
-	    break;
-	case WIDGET_BOTTOM_LEFT:
-	  clutter_actor_set_position (actor, mev->x, geom.y);
-	  clutter_actor_set_size (manip->priv->target, (geom.width+geom.x)-mev->x,
-				  mev->y-geom.y);
-	  break;
-	case WIDGET_TOP_LEFT:
-	  clutter_actor_set_position (actor, mev->x, mev->y);
-	  clutter_actor_set_size (manip->priv->target,
-				  (geom.width+geom.x)-mev->x,
-				  (geom.height+geom.y)-mev->y);
-	  break;
-	default:
-	  break;
-	}
+      if (manip->priv->mode == WIDGET_MODE_RESIZE)
+	glide_manipulator_process_resize (manip, &geom, mev);
+      else
+	glide_manipulator_process_rotate (manip, &geom, mev);
+
     }
 
   if (manip->priv->dragging)
