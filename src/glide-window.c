@@ -24,6 +24,9 @@
 
 
 #include "glide-window.h"
+#include "glide-image.h"
+#include "glide-manipulator.h"
+
 #include "glide-window-private.h"
 
 #define GLIDE_WINDOW_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object),	\
@@ -51,21 +54,69 @@ glide_window_class_init (GlideWindowClass *klass)
   g_type_class_add_private (object_class, sizeof(GlideWindowPrivate));
 }
 
+static void
+glide_window_new_image (GtkWidget *toolitem, gpointer data)
+{
+  GlideWindow *window = (GlideWindow *)data;
+  ClutterActor *stage = window->priv->stage;
+  ClutterActor *im, *g;
+  
+  im = (ClutterActor *)glide_image_new ();
+  g = (ClutterActor *)glide_manipulator_new ();
+  
+  clutter_container_add_actor (CLUTTER_CONTAINER (g), im);
+  clutter_container_add_actor (CLUTTER_CONTAINER (stage), g);
+
+  clutter_actor_set_position(im, 0, 0);
+  clutter_actor_set_size(im, 100, 100);
+
+  clutter_actor_set_position(g, 200, 200);
+  
+  clutter_actor_show (im);
+  clutter_actor_show (g);
+
+  g_message("New image!");
+}
+
+static GtkWidget *
+glide_window_make_toolbar (GlideWindow *w)
+{
+  GtkWidget *toolbar, *image;
+
+  toolbar = gtk_toolbar_new ();
+  
+  image = 
+    gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_LARGE_TOOLBAR);
+  
+  gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New image", 
+			   "Insert a new image in to the document", 
+			   NULL, image, G_CALLBACK(glide_window_new_image), w);  
+  
+  
+  return toolbar;
+}
 
 static void
 glide_window_init (GlideWindow *window)
 {
   ClutterActor *stage;
   ClutterColor black = {0x00, 0x00, 0x00, 0xff};
-  GtkWidget *vbox, *embed;
+  GtkWidget *vbox, *embed, *toolbar;
+  
+  window->priv = GLIDE_WINDOW_GET_PRIVATE (window);
   
   vbox = gtk_vbox_new (FALSE, 0);
   gtk_container_add (GTK_CONTAINER (window), vbox);
   
   embed = gtk_clutter_embed_new ();
+  stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (embed));
+  
+  window->priv->stage = stage;
+  toolbar = glide_window_make_toolbar (window);
+
+  gtk_container_add (GTK_CONTAINER (vbox), toolbar);
   gtk_container_add (GTK_CONTAINER (vbox), embed);
   
-  stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (embed));
   clutter_actor_set_size (stage, 800, 600);
   gtk_widget_set_size_request (embed, 800, 600);
   

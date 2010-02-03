@@ -20,7 +20,11 @@ bin_PROGRAMS = glide
 glide_SOURCES = \
 	main.c \
 	glide-window.c \
-	glide-window.h
+	glide-window.h \
+	glide-manipulator.c \
+	glide-manipulator.h \
+	glide-image.c \
+	glide-image.h 
 
 glide_LDFLAGS = \
 	-Wl,--export-dynamic
