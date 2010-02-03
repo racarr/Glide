@@ -230,8 +230,17 @@ glide_manipulator_button_press (ClutterActor *actor,
   widg = glide_manipulator_get_widget_at (manip, event->x, event->y);
   if (widg != WIDGET_NONE)
     {
+      gfloat rx, ry, rz;
       manip->priv->transforming = TRUE;
       manip->priv->resize_widget = widg;
+      
+      manip->priv->rpx = event->x;
+      manip->priv->rpy = event->y;
+
+      manip->priv->ra = clutter_actor_get_rotation (CLUTTER_ACTOR (actor), 
+						    CLUTTER_Z_AXIS,
+						    &rx, &ry, &rz);
+
 
       clutter_grab_pointer (actor);
 
@@ -327,26 +336,7 @@ glide_manipulator_process_rotate (GlideManipulator *manip,
 				  ClutterGeometry *geom,
 				  ClutterMotionEvent *mev)
 {
-  gfloat scalar_product,m1,m2,angle, v1a, v1b, v2a, v2b;
-  
-  v1a = geom->x - geom->width;
-  v1b = geom->y - geom->height;
-  v2a = mev->x - geom->width;
-  v2b = mev->y - geom->height;
-  
-  scalar_product = v1a*v2a+v1b*v2b;
-  m1  = sqrt(v1a*v1a+v1b*v1b);
-  m2 = sqrt(v2a*v2a+v2b*v2b);
-
-  angle = acos(scalar_product/(m1*m2))*(180.0/M_PI);
-  
-  g_message("Angle: %f", angle);
-  clutter_actor_set_rotation (CLUTTER_ACTOR (manip),
-			      CLUTTER_Z_AXIS,
-			      -angle,
-			      geom->width/2.0,
-			      geom->height/2.0,
-			      0);
+  // Epic fail.
 }
 
 static gboolean
