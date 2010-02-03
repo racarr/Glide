@@ -35,6 +35,9 @@ enum {
   PROP_TARGET
 };
 
+#define GLIDE_MANIPULATOR_BORDER_WIDTH 2.5
+#define GLIDE_MANIPULATOR_WIDGET_WIDTH 4
+
 
 static void
 glide_manipulator_finalize (GObject *object)
@@ -63,17 +66,92 @@ glide_manipulator_paint (ClutterActor *self)
   
   cogl_set_source_color4ub (0xcc, 0xcc, 0xcc, 0xff);
   
-  cogl_rectangle (2.5, 0, geom.width, 2.5);
-  cogl_rectangle (geom.width - 2.5, 2.5, geom.width, geom.height);
-  cogl_rectangle (0, geom.height - 2.5, geom.width - 2.5, geom.height);
-  cogl_rectangle (0, 0, 2.5, geom.height - 2.5);
+  cogl_rectangle (GLIDE_MANIPULATOR_BORDER_WIDTH, 0, 
+		  geom.width, GLIDE_MANIPULATOR_BORDER_WIDTH);
+  cogl_rectangle (geom.width - GLIDE_MANIPULATOR_BORDER_WIDTH, 
+		  GLIDE_MANIPULATOR_BORDER_WIDTH, 
+		  geom.width, geom.height);
+  cogl_rectangle (0, geom.height - GLIDE_MANIPULATOR_BORDER_WIDTH, 
+		  geom.width - GLIDE_MANIPULATOR_BORDER_WIDTH, geom.height);
+  cogl_rectangle (0, 0, 
+		  GLIDE_MANIPULATOR_BORDER_WIDTH, 
+		  geom.height - GLIDE_MANIPULATOR_BORDER_WIDTH);
   
   cogl_set_source_color4ub (0xcc, 0xcc, 0xff, 0xff);
   
-  cogl_rectangle (-4, -4, 4, 4);
-  cogl_rectangle (-4, -4+geom.height, 4, 4+geom.height);
-  cogl_rectangle (-4+geom.width, -4+geom.height, 4+geom.width, 4+geom.height);
-  cogl_rectangle (-4+geom.width, -4, 4+geom.width, 4);
+  cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH, 
+		  -GLIDE_MANIPULATOR_WIDGET_WIDTH, 
+		  GLIDE_MANIPULATOR_WIDGET_WIDTH, 
+		  GLIDE_MANIPULATOR_WIDGET_WIDTH);
+  cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH, 
+		  -GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.height, 
+		  GLIDE_MANIPULATOR_WIDGET_WIDTH, 
+		  GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.height);
+  cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width, 
+		  -GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.height, 
+		  GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width, 
+		  GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.height);
+  cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width, 
+		  -GLIDE_MANIPULATOR_WIDGET_WIDTH, 
+		  GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width, 
+		  GLIDE_MANIPULATOR_WIDGET_WIDTH);
+}
+
+static gboolean
+glide_manipulator_button_press (ClutterActor *actor,
+				ClutterButtonEvent *event)
+{
+  GlideManipulator *manip = GLIDE_MANIPULATOR (actor);
+  gfloat ax, ay;
+  g_message ("Button press event!");
+  if (event->button != 1)
+    {
+      return FALSE;
+    }
+  
+  clutter_actor_get_position (actor, &ax, &ay);
+  
+  manip->priv->dragging = TRUE;
+
+  //Proper point transforms?
+  manip->priv->drag_center_x = event->x - ax;
+  manip->priv->drag_center_y = event->y - ay;
+
+  clutter_grab_pointer (actor);
+  
+  return TRUE;
+}
+
+static gboolean
+glide_manipulator_button_release (ClutterActor *actor,
+				  ClutterButtonEvent *bev)
+{
+  GlideManipulator *manip = GLIDE_MANIPULATOR (actor);
+  
+  if (manip->priv->dragging);
+    {
+      clutter_ungrab_pointer ();
+      manip->priv->dragging = FALSE;
+      
+      return TRUE;
+    }
+    return FALSE;
+}
+
+static gboolean
+glide_manipulator_motion (ClutterActor *actor,
+			  ClutterMotionEvent *mev)
+{
+  GlideManipulator *manip = GLIDE_MANIPULATOR (actor);
+  
+  if (manip->priv->dragging)
+    {
+      clutter_actor_set_position (actor, 
+				  mev->x - manip->priv->drag_center_x,
+				  mev->y - manip->priv->drag_center_y);
+      return TRUE;
+    }
+  return FALSE;
 }
 
 static void
@@ -134,6 +212,10 @@ glide_manipulator_class_init (GlideManipulatorClass *klass)
   ClutterActorClass *actor_class = CLUTTER_ACTOR_CLASS (klass);
   
   actor_class->paint = glide_manipulator_paint;
+  actor_class->button_press_event = glide_manipulator_button_press;
+  actor_class->button_release_event = glide_manipulator_button_release;
+  actor_class->motion_event = glide_manipulator_motion;
+
 
   object_class->finalize = glide_manipulator_finalize;
   object_class->set_property = glide_manipulator_set_property;
@@ -156,6 +238,8 @@ static void
 glide_manipulator_init (GlideManipulator *manipulator)
 {
   manipulator->priv = GLIDE_MANIPULATOR_GET_PRIVATE (manipulator);
+  
+  clutter_actor_set_reactive (CLUTTER_ACTOR (manipulator), TRUE);
 }
 
 GlideManipulator *
