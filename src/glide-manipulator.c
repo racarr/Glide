@@ -23,6 +23,8 @@
 #include <glib/gi18n.h>
 #include "glide-manipulator.h"
 
+#include <math.h>
+
 #include "glide-manipulator-priv.h"
 
 
@@ -47,9 +49,66 @@ glide_manipulator_finalize (GObject *object)
   G_OBJECT_CLASS (glide_manipulator_parent_class)->finalize (object);
 }
 
+static GlideManipulatorWidget
+glide_manipulator_get_widget_at (GlideManipulator *self,
+				 gfloat x, 
+				 gfloat y)
+{
+  ClutterGeometry geom;
+  
+  clutter_actor_get_allocation_geometry (CLUTTER_ACTOR (self), &geom);
+  
+  if ((x > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
+      (x < GLIDE_MANIPULATOR_WIDGET_WIDTH))
+    {
+      if ((y > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
+	  (y < GLIDE_MANIPULATOR_WIDGET_WIDTH))
+	{
+	  return WIDGET_TOP_LEFT;
+	}
+      else if ((y > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
+	       (y < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height))
+	{
+	  return WIDGET_BOTTOM_LEFT;
+	}
+    }
+  else if ((x > -GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width) &&
+      (x < GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width))
+    {
+      if ((y > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
+	  (y < GLIDE_MANIPULATOR_WIDGET_WIDTH))
+	{
+	  return WIDGET_TOP_RIGHT;
+	}
+      else if ((y > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
+	       (y < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height))
+	{
+	  return WIDGET_BOTTOM_RIGHT;
+	}
+    }
+  return WIDGET_NONE;
+}
+
+static void
+glide_manipulator_pick (ClutterActor *actor,
+		    const ClutterColor *color)
+{
+  ClutterGeometry geom;
+
+  clutter_actor_get_allocation_geometry (actor, &geom);
+  
+  CLUTTER_ACTOR_CLASS (glide_manipulator_parent_class)->pick (actor, color);
+  
+  cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH,
+		  -GLIDE_MANIPULATOR_WIDGET_WIDTH,
+		  geom.height + GLIDE_MANIPULATOR_WIDGET_WIDTH,
+		  geom.height + GLIDE_MANIPULATOR_WIDGET_WIDTH);
+}
+
 static void
 glide_manipulator_paint (ClutterActor *self)
 {
+  GlideManipulator *manip = GLIDE_MANIPULATOR (self);
   ClutterGeometry geom;
   guint n_children, i;
   
@@ -66,6 +125,7 @@ glide_manipulator_paint (ClutterActor *self)
   
   cogl_set_source_color4ub (0xcc, 0xcc, 0xcc, 0xff);
   
+
   cogl_rectangle (GLIDE_MANIPULATOR_BORDER_WIDTH, 0, 
 		  geom.width, GLIDE_MANIPULATOR_BORDER_WIDTH);
   cogl_rectangle (geom.width - GLIDE_MANIPULATOR_BORDER_WIDTH, 
@@ -78,19 +138,46 @@ glide_manipulator_paint (ClutterActor *self)
 		  geom.height - GLIDE_MANIPULATOR_BORDER_WIDTH);
   
   cogl_set_source_color4ub (0xcc, 0xcc, 0xff, 0xff);
-  
+
+  if (manip->priv->hovered == WIDGET_TOP_LEFT ||
+      manip->priv->resize_widget == WIDGET_TOP_LEFT)
+    {
+      cogl_set_source_color4ub (0xff, 0xcc, 0xcc, 0xff);
+    }
   cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH, 
 		  -GLIDE_MANIPULATOR_WIDGET_WIDTH, 
 		  GLIDE_MANIPULATOR_WIDGET_WIDTH, 
 		  GLIDE_MANIPULATOR_WIDGET_WIDTH);
+  cogl_set_source_color4ub (0xcc, 0xcc, 0xff, 0xff);
+
+  if (manip->priv->hovered == WIDGET_BOTTOM_LEFT ||
+      manip->priv->resize_widget == WIDGET_BOTTOM_LEFT)
+    {
+      cogl_set_source_color4ub (0xff, 0xcc, 0xcc, 0xff);
+    }
   cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH, 
 		  -GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.height, 
 		  GLIDE_MANIPULATOR_WIDGET_WIDTH, 
 		  GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.height);
+  cogl_set_source_color4ub (0xcc, 0xcc, 0xff, 0xff);
+
+  if (manip->priv->hovered == WIDGET_BOTTOM_RIGHT ||
+      manip->priv->resize_widget == WIDGET_BOTTOM_RIGHT)
+    {
+      cogl_set_source_color4ub (0xff, 0xcc, 0xcc, 0xff);
+    }
   cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width, 
 		  -GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.height, 
 		  GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width, 
 		  GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.height);
+  cogl_set_source_color4ub (0xcc, 0xcc, 0xff, 0xff);
+
+  if (manip->priv->hovered == WIDGET_TOP_RIGHT ||
+      manip->priv->resize_widget == WIDGET_TOP_RIGHT)
+    {
+      cogl_set_source_color4ub (0xff, 0xcc, 0xcc, 0xff);
+    }
+
   cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width, 
 		  -GLIDE_MANIPULATOR_WIDGET_WIDTH, 
 		  GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width, 
@@ -102,15 +189,27 @@ glide_manipulator_button_press (ClutterActor *actor,
 				ClutterButtonEvent *event)
 {
   GlideManipulator *manip = GLIDE_MANIPULATOR (actor);
+  GlideManipulatorWidget widg;
   gfloat ax, ay;
-  g_message ("Button press event!");
+
   if (event->button != 1)
     {
       return FALSE;
     }
-  
+
   clutter_actor_get_position (actor, &ax, &ay);
   
+  widg = glide_manipulator_get_widget_at (manip, event->x-ax, event->y-ay);
+  if (widg != WIDGET_NONE)
+    {
+      manip->priv->resizing = TRUE;
+      manip->priv->resize_widget = widg;
+
+      clutter_grab_pointer (actor);
+
+      return TRUE;
+    }
+    
   manip->priv->dragging = TRUE;
 
   //Proper point transforms?
@@ -128,6 +227,15 @@ glide_manipulator_button_release (ClutterActor *actor,
 {
   GlideManipulator *manip = GLIDE_MANIPULATOR (actor);
   
+  if (manip->priv->resizing)
+    {
+      clutter_ungrab_pointer ();
+      manip->priv->resizing = FALSE;
+      manip->priv->resize_widget = WIDGET_NONE;
+      
+      return TRUE;
+    }
+  
   if (manip->priv->dragging);
     {
       clutter_ungrab_pointer ();
@@ -142,8 +250,50 @@ static gboolean
 glide_manipulator_motion (ClutterActor *actor,
 			  ClutterMotionEvent *mev)
 {
+  ClutterGeometry geom;
+  GlideManipulatorWidget widg;
   GlideManipulator *manip = GLIDE_MANIPULATOR (actor);
+  gfloat ax,ay;
+
   
+  clutter_actor_get_position (actor, &ax, &ay);
+  clutter_actor_get_allocation_geometry (actor, &geom);
+  
+  widg = glide_manipulator_get_widget_at (manip, mev->x-ax, mev->y-ay);
+  
+  if (manip->priv->hovered != widg)
+    {
+      manip->priv->hovered = widg;
+      clutter_actor_queue_redraw (CLUTTER_ACTOR (actor));
+    }
+  
+  if (manip->priv->resizing)
+    {
+      switch (manip->priv->resize_widget)
+	{
+	case WIDGET_BOTTOM_RIGHT:
+	  clutter_actor_set_size(manip->priv->target, mev->x-geom.x, mev->y-geom.y);
+	  break;
+	case WIDGET_TOP_RIGHT:
+	  clutter_actor_set_position (actor, geom.x, mev->y);
+	  clutter_actor_set_size (manip->priv->target, mev->x-geom.x, (geom.height+geom.y)-(mev->y));
+	    break;
+	case WIDGET_BOTTOM_LEFT:
+	  clutter_actor_set_position (actor, mev->x, geom.y);
+	  clutter_actor_set_size (manip->priv->target, (geom.width+geom.x)-mev->x,
+				  mev->y-geom.y);
+	  break;
+	case WIDGET_TOP_LEFT:
+	  clutter_actor_set_position (actor, mev->x, mev->y);
+	  clutter_actor_set_size (manip->priv->target,
+				  (geom.width+geom.x)-mev->x,
+				  (geom.height+geom.y)-mev->y);
+	  break;
+	default:
+	  break;
+	}
+    }
+
   if (manip->priv->dragging)
     {
       clutter_actor_set_position (actor, 
@@ -212,6 +362,8 @@ glide_manipulator_class_init (GlideManipulatorClass *klass)
   ClutterActorClass *actor_class = CLUTTER_ACTOR_CLASS (klass);
   
   actor_class->paint = glide_manipulator_paint;
+  actor_class->pick = glide_manipulator_pick;
+
   actor_class->button_press_event = glide_manipulator_button_press;
   actor_class->button_release_event = glide_manipulator_button_release;
   actor_class->motion_event = glide_manipulator_motion;
