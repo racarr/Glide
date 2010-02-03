@@ -106,6 +106,75 @@ glide_manipulator_pick (ClutterActor *actor,
 }
 
 static void
+glide_manipulator_paint_border (ClutterGeometry *geom)
+{
+
+  cogl_set_source_color4ub (0xcc, 0xcc, 0xcc, 0xff);
+
+  
+  cogl_rectangle (GLIDE_MANIPULATOR_BORDER_WIDTH, 0, 
+		  geom->width, GLIDE_MANIPULATOR_BORDER_WIDTH);
+  cogl_rectangle (geom->width - GLIDE_MANIPULATOR_BORDER_WIDTH, 
+		  GLIDE_MANIPULATOR_BORDER_WIDTH, 
+		  geom->width, geom->height);
+  cogl_rectangle (0, geom->height - GLIDE_MANIPULATOR_BORDER_WIDTH, 
+		  geom->width - GLIDE_MANIPULATOR_BORDER_WIDTH, geom->height);
+  cogl_rectangle (0, 0, 
+		  GLIDE_MANIPULATOR_BORDER_WIDTH, 
+		  geom->height - GLIDE_MANIPULATOR_BORDER_WIDTH);
+}
+
+static void
+glide_manipulator_paint_widget (GlideManipulator *manip,
+				ClutterGeometry *geom,
+				GlideManipulatorWidget widg)
+{
+  gfloat center_x, center_y;
+
+  if (manip->priv->hovered == widg ||
+      manip->priv->resize_widget == widg)
+    cogl_set_source_color4ub (0xff, 0xcc, 0xcc, 0xff);
+  else
+    cogl_set_source_color4ub (0xcc, 0xcc, 0xff, 0xff);
+  
+  switch (widg)
+    {
+    case WIDGET_TOP_LEFT:
+      center_x = center_y = 0;
+      break;
+    case WIDGET_TOP_RIGHT:
+      center_x = geom->width; 
+      center_y = 0;
+      break;
+    case WIDGET_BOTTOM_LEFT:
+      center_x = 0;
+      center_y = geom->height;
+      break;
+    case WIDGET_BOTTOM_RIGHT:
+      center_x = geom->width;
+      center_y = geom->height;
+      break;
+    default:
+      break;
+    }
+  
+  cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH + center_x,
+		  -GLIDE_MANIPULATOR_WIDGET_WIDTH + center_y,
+		  GLIDE_MANIPULATOR_WIDGET_WIDTH + center_x,
+		  GLIDE_MANIPULATOR_WIDGET_WIDTH + center_y);
+}
+
+static void
+glide_manipulator_paint_widgets (GlideManipulator *manip,
+				 ClutterGeometry *geom)
+{
+  glide_manipulator_paint_widget (manip, geom, WIDGET_TOP_LEFT);
+  glide_manipulator_paint_widget (manip, geom, WIDGET_BOTTOM_LEFT);
+  glide_manipulator_paint_widget (manip, geom, WIDGET_TOP_RIGHT);
+  glide_manipulator_paint_widget (manip, geom, WIDGET_BOTTOM_RIGHT);
+}
+
+static void
 glide_manipulator_paint (ClutterActor *self)
 {
   GlideManipulator *manip = GLIDE_MANIPULATOR (self);
@@ -123,65 +192,8 @@ glide_manipulator_paint (ClutterActor *self)
   
   clutter_actor_get_allocation_geometry (self, &geom);
   
-  cogl_set_source_color4ub (0xcc, 0xcc, 0xcc, 0xff);
-  
-
-  cogl_rectangle (GLIDE_MANIPULATOR_BORDER_WIDTH, 0, 
-		  geom.width, GLIDE_MANIPULATOR_BORDER_WIDTH);
-  cogl_rectangle (geom.width - GLIDE_MANIPULATOR_BORDER_WIDTH, 
-		  GLIDE_MANIPULATOR_BORDER_WIDTH, 
-		  geom.width, geom.height);
-  cogl_rectangle (0, geom.height - GLIDE_MANIPULATOR_BORDER_WIDTH, 
-		  geom.width - GLIDE_MANIPULATOR_BORDER_WIDTH, geom.height);
-  cogl_rectangle (0, 0, 
-		  GLIDE_MANIPULATOR_BORDER_WIDTH, 
-		  geom.height - GLIDE_MANIPULATOR_BORDER_WIDTH);
-  
-  cogl_set_source_color4ub (0xcc, 0xcc, 0xff, 0xff);
-
-  if (manip->priv->hovered == WIDGET_TOP_LEFT ||
-      manip->priv->resize_widget == WIDGET_TOP_LEFT)
-    {
-      cogl_set_source_color4ub (0xff, 0xcc, 0xcc, 0xff);
-    }
-  cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH, 
-		  -GLIDE_MANIPULATOR_WIDGET_WIDTH, 
-		  GLIDE_MANIPULATOR_WIDGET_WIDTH, 
-		  GLIDE_MANIPULATOR_WIDGET_WIDTH);
-  cogl_set_source_color4ub (0xcc, 0xcc, 0xff, 0xff);
-
-  if (manip->priv->hovered == WIDGET_BOTTOM_LEFT ||
-      manip->priv->resize_widget == WIDGET_BOTTOM_LEFT)
-    {
-      cogl_set_source_color4ub (0xff, 0xcc, 0xcc, 0xff);
-    }
-  cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH, 
-		  -GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.height, 
-		  GLIDE_MANIPULATOR_WIDGET_WIDTH, 
-		  GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.height);
-  cogl_set_source_color4ub (0xcc, 0xcc, 0xff, 0xff);
-
-  if (manip->priv->hovered == WIDGET_BOTTOM_RIGHT ||
-      manip->priv->resize_widget == WIDGET_BOTTOM_RIGHT)
-    {
-      cogl_set_source_color4ub (0xff, 0xcc, 0xcc, 0xff);
-    }
-  cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width, 
-		  -GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.height, 
-		  GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width, 
-		  GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.height);
-  cogl_set_source_color4ub (0xcc, 0xcc, 0xff, 0xff);
-
-  if (manip->priv->hovered == WIDGET_TOP_RIGHT ||
-      manip->priv->resize_widget == WIDGET_TOP_RIGHT)
-    {
-      cogl_set_source_color4ub (0xff, 0xcc, 0xcc, 0xff);
-    }
-
-  cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width, 
-		  -GLIDE_MANIPULATOR_WIDGET_WIDTH, 
-		  GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width, 
-		  GLIDE_MANIPULATOR_WIDGET_WIDTH);
+  glide_manipulator_paint_border (&geom);
+  glide_manipulator_paint_widgets (manip, &geom);
 }
 
 static gboolean
