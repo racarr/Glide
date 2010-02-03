@@ -129,7 +129,7 @@ glide_manipulator_paint_widget (GlideManipulator *manip,
 				ClutterGeometry *geom,
 				GlideManipulatorWidget widg)
 {
-  gfloat center_x, center_y;
+  gfloat center_x = 0, center_y = 0;
 
   if (manip->priv->hovered == widg ||
       manip->priv->resize_widget == widg)
@@ -158,10 +158,21 @@ glide_manipulator_paint_widget (GlideManipulator *manip,
       break;
     }
   
-  cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH + center_x,
-		  -GLIDE_MANIPULATOR_WIDGET_WIDTH + center_y,
-		  GLIDE_MANIPULATOR_WIDGET_WIDTH + center_x,
-		  GLIDE_MANIPULATOR_WIDGET_WIDTH + center_y);
+  if (manip->priv->mode == WIDGET_MODE_RESIZE)
+    {
+      cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH + center_x,
+		      -GLIDE_MANIPULATOR_WIDGET_WIDTH + center_y,
+		      GLIDE_MANIPULATOR_WIDGET_WIDTH + center_x,
+		      GLIDE_MANIPULATOR_WIDGET_WIDTH + center_y);
+    }
+  else
+    {
+      cogl_path_new ();
+      cogl_path_ellipse (center_x, center_y,
+			 GLIDE_MANIPULATOR_WIDGET_WIDTH,
+			 GLIDE_MANIPULATOR_WIDGET_WIDTH);
+      cogl_path_fill ();
+    }
 }
 
 static void
@@ -208,6 +219,8 @@ glide_manipulator_button_press (ClutterActor *actor,
     {
       return FALSE;
     }
+  
+  manip->priv->swap_widgets = TRUE;
 
   clutter_actor_get_position (actor, &ax, &ay);
   
@@ -239,6 +252,23 @@ glide_manipulator_button_release (ClutterActor *actor,
 {
   GlideManipulator *manip = GLIDE_MANIPULATOR (actor);
   
+  if (manip->priv->swap_widgets)
+    {
+      if (manip->priv->mode == WIDGET_MODE_RESIZE)
+	{
+	  g_message("rotate");
+	  manip->priv->mode = WIDGET_MODE_ROTATE;
+	}
+      else
+	{
+	  g_message("resize");
+	  manip->priv->mode = WIDGET_MODE_RESIZE;
+	}
+
+      clutter_actor_queue_redraw (actor);
+      manip->priv->swap_widgets = FALSE;
+    }
+  
   if (manip->priv->resizing)
     {
       clutter_ungrab_pointer ();
@@ -267,6 +297,7 @@ glide_manipulator_motion (ClutterActor *actor,
   GlideManipulator *manip = GLIDE_MANIPULATOR (actor);
   gfloat ax,ay;
 
+  manip->priv->swap_widgets = FALSE;
   
   clutter_actor_get_position (actor, &ax, &ay);
   clutter_actor_get_allocation_geometry (actor, &geom);
@@ -402,6 +433,8 @@ static void
 glide_manipulator_init (GlideManipulator *manipulator)
 {
   manipulator->priv = GLIDE_MANIPULATOR_GET_PRIVATE (manipulator);
+  
+  manipulator->priv->mode = WIDGET_MODE_RESIZE;
   
   clutter_actor_set_reactive (CLUTTER_ACTOR (manipulator), TRUE);
 }
