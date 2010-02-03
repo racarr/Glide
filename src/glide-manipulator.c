@@ -331,12 +331,48 @@ glide_manipulator_process_resize (GlideManipulator *manip,
     }
 }
 
+static gdouble
+glide_manipulator_get_zrot (GlideManipulator *manip)
+{
+  gfloat rx, ry, rz;
+  
+  return clutter_actor_get_rotation (CLUTTER_ACTOR (manip), CLUTTER_Z_AXIS, &rx, &ry, &rz);
+}
+
 static void
 glide_manipulator_process_rotate (GlideManipulator *manip,
 				  ClutterGeometry *geom,
 				  ClutterMotionEvent *mev)
 {
-  // Epic fail.
+  ClutterVertex top_left = {0, 0, 0};
+  ClutterVertex top_left_screen;
+  gdouble d1x, d1y, d2x, d2y, h1, h2, degrees, odegrees;
+  // Epic fail.  
+  
+  clutter_actor_apply_transform_to_point (CLUTTER_ACTOR (manip),
+					  &top_left,
+					  &top_left_screen);
+  
+  d1x = top_left_screen.x - (geom->x + geom->width/2.0);
+  d1y = top_left_screen.y - (geom->y + geom->height/2.0);
+  d2x = mev->x - (geom->x + geom->width/2.0);
+  d2y = mev->y - (geom->y + geom->height/2.0);
+  
+  h1 = sqrt (d1x*d1x+d1y*d1y);
+  h2 = sqrt (d2x*d2x+d2y*d2y);
+  
+  degrees = -acos ((d1x*d2x+d1y*d2y)/(h1*h2));
+  if (degrees < 0)
+    degrees = 360 + degrees;
+  odegrees = glide_manipulator_get_zrot (manip);
+  clutter_actor_set_rotation (CLUTTER_ACTOR (manip),
+			      CLUTTER_Z_AXIS,
+			      (odegrees),
+			      geom->width/2.0,
+			      geom->height/2.0,
+			      0);
+  
+
 }
 
 static gboolean

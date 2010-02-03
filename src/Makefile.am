@@ -24,7 +24,9 @@ glide_SOURCES = \
 	glide-manipulator.c \
 	glide-manipulator.h \
 	glide-image.c \
-	glide-image.h 
+	glide-image.h \
+	glide-text.c \
+	glide-text.h
 
 glide_LDFLAGS = \
 	-Wl,--export-dynamic

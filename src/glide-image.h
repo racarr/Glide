@@ -47,7 +47,7 @@ typedef struct _GlideImage GlideImage;
 
 struct _GlideImage 
 {
-  ClutterTexture group;
+  ClutterTexture image;
 };
 
 /*
