@@ -55,33 +55,36 @@ glide_manipulator_get_widget_at (GlideManipulator *self,
 				 gfloat y)
 {
   ClutterGeometry geom;
+  gfloat ax, ay;
+  
+  clutter_actor_transform_stage_point (CLUTTER_ACTOR (self), x, y, &ax, &ay);
   
   clutter_actor_get_allocation_geometry (CLUTTER_ACTOR (self), &geom);
   
-  if ((x > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
-      (x < GLIDE_MANIPULATOR_WIDGET_WIDTH))
+  if ((ax > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
+      (ax < GLIDE_MANIPULATOR_WIDGET_WIDTH))
     {
-      if ((y > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
-	  (y < GLIDE_MANIPULATOR_WIDGET_WIDTH))
+      if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
+	  (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH))
 	{
 	  return WIDGET_TOP_LEFT;
 	}
-      else if ((y > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
-	       (y < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height))
+      else if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
+	       (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height))
 	{
 	  return WIDGET_BOTTOM_LEFT;
 	}
     }
-  else if ((x > -GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width) &&
-      (x < GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width))
+  else if ((ax > -GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width) &&
+      (ax < GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width))
     {
-      if ((y > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
-	  (y < GLIDE_MANIPULATOR_WIDGET_WIDTH))
+      if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
+	  (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH))
 	{
 	  return WIDGET_TOP_RIGHT;
 	}
-      else if ((y > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
-	       (y < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height))
+      else if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
+	       (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height))
 	{
 	  return WIDGET_BOTTOM_RIGHT;
 	}
@@ -224,7 +227,7 @@ glide_manipulator_button_press (ClutterActor *actor,
 
   clutter_actor_get_position (actor, &ax, &ay);
   
-  widg = glide_manipulator_get_widget_at (manip, event->x-ax, event->y-ay);
+  widg = glide_manipulator_get_widget_at (manip, event->x, event->y);
   if (widg != WIDGET_NONE)
     {
       manip->priv->transforming = TRUE;
@@ -360,7 +363,7 @@ glide_manipulator_motion (ClutterActor *actor,
   clutter_actor_get_position (actor, &ax, &ay);
   clutter_actor_get_allocation_geometry (actor, &geom);
   
-  widg = glide_manipulator_get_widget_at (manip, mev->x-ax, mev->y-ay);
+  widg = glide_manipulator_get_widget_at (manip, mev->x, mev->y);
   
   if (manip->priv->hovered != widg)
     {
