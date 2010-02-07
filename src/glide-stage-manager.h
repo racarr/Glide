@@ -68,7 +68,8 @@ struct _GlideStageManagerClass
  */
 GType 		 glide_stage_manager_get_type 			(void) G_GNUC_CONST;
 
-GlideStageManager *glide_stage_manager_new ();
+GlideStageManager *glide_stage_manager_new (ClutterStage *stage);
+ClutterStage *glide_stage_manager_get_stage (GlideStageManager *manager);
 
 G_END_DECLS
 

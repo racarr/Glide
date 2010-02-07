@@ -32,10 +32,10 @@ G_DEFINE_ABSTRACT_TYPE(GlideStageManager, glide_stage_manager, G_TYPE_OBJECT)
 
 #define GLIDE_STAGE_MANAGER_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GLIDE_TYPE_STAGE_MANAGER, GlideStageManagerPrivate))
 
-/*enum {
+enum {
   PROP_0,
-  PROP_TARGET
-  };*/
+  PROP_STAGE
+};
 
 static void
 glide_stage_manager_finalize (GObject *object)
@@ -45,65 +45,65 @@ glide_stage_manager_finalize (GObject *object)
   G_OBJECT_CLASS (glide_stage_manager_parent_class)->finalize (object);
 }
 
-/*
+
 static void
 glide_stage_manager_get_property (GObject *object,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *pspec)
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *pspec)
 {
-  GlideStageManager *manip = GLIDE_STAGE_MANAGER (object);
+  GlideStageManager *manager = GLIDE_STAGE_MANAGER (object);
   
   switch (prop_id)
     {
-    case PROP_TARGET:
-      g_value_set_object (value, manip->priv->target);
+    case PROP_STAGE:
+      g_value_set_object (value, manager->priv->stage);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
     }
-    }*/
+}
 
-/*static void
+static void
 glide_stage_manager_set_property (GObject *object,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *pspec)
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *pspec)
 {
-  GlideStageManager *manip = GLIDE_STAGE_MANAGER (object);
+  GlideStageManager *manager = GLIDE_STAGE_MANAGER (object);
   
   switch (prop_id)
     {
-    case PROP_TARGET:
-      g_return_if_fail (manip->priv->target == NULL);
-      glide_stage_manager_set_target_real (manip, CLUTTER_STAGE_MANAGER(g_value_get_object (value)));
+    case PROP_STAGE:
+      g_return_if_fail (manager->priv->stage == NULL);
+      manager->priv->stage = CLUTTER_ACTOR (g_value_get_object (value));
       break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
     }
-    }*/
+}
 
 static void
 glide_stage_manager_class_init (GlideStageManagerClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   
-  /*  object_class->finalize = glide_stage_manager_finalize;
+  object_class->finalize = glide_stage_manager_finalize;
   object_class->set_property = glide_stage_manager_set_property;
   object_class->get_property = glide_stage_manager_get_property;
   
   g_object_class_install_property (object_class,
-				   PROP_TARGET,
-				   g_param_spec_object ("target",
-							"Target",
-							"The target of the actor object",
-							CLUTTER_TYPE_STAGE_MANAGER,
+				   PROP_STAGE,
+				   g_param_spec_object ("stage",
+							"Stage",
+							"The ClutterStage to manage",
+							CLUTTER_TYPE_STAGE,
 							G_PARAM_READWRITE |
 							G_PARAM_CONSTRUCT_ONLY |
 							G_PARAM_STATIC_STRINGS));
-  */
+
   g_type_class_add_private (object_class, sizeof(GlideStageManagerPrivate));
 }
 
@@ -111,4 +111,19 @@ static void
 glide_stage_manager_init (GlideStageManager *manager)
 {
 }
+
+GlideStageManager *
+glide_stage_manager_new (ClutterStage *stage)
+{
+  return g_object_new (GLIDE_TYPE_STAGE_MANAGER,
+		       "stage", stage,
+		       NULL);
+}
+
+ClutterStage *
+glide_stage_manager_get_stage (GlideStageManager *m)
+{
+  return (ClutterStage *)m->priv->stage;
+}
+
 
