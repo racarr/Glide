@@ -70,6 +70,21 @@ glide_actor_get_property (GObject *object,
 }
 
 static void
+glide_actor_selection_changed_callback (GlideStageManager *manager,
+					GObject *old_selection,
+					gpointer data)
+{
+  GlideActor *this = (GlideActor *)data;
+  
+  if (((GlideActor *)glide_stage_manager_get_selection (manager) != this) &&
+      (this->priv->selected == TRUE))
+    {
+      this->priv->selected = FALSE;
+      g_object_notify (G_OBJECT (this), "selected");
+    }
+}
+
+static void
 glide_actor_set_property (GObject *object,
 			  guint prop_id,
 			  const GValue *value,
@@ -82,6 +97,9 @@ glide_actor_set_property (GObject *object,
     case PROP_STAGE_MANAGER:
       g_return_if_fail (actor->priv->manager == NULL);
       actor->priv->manager = (GlideStageManager *)g_value_get_object (value);
+      g_signal_connect (actor->priv->manager, "selection-changed",
+			G_CALLBACK (glide_actor_selection_changed_callback),
+			actor);
       break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -93,7 +111,6 @@ static void
 glide_actor_class_init (GlideActorClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
-  ClutterActorClass *actor_class = CLUTTER_ACTOR_CLASS (klass);
   
   object_class->finalize = glide_actor_finalize;
   object_class->set_property = glide_actor_set_property;
@@ -119,6 +136,7 @@ glide_actor_class_init (GlideActorClass *klass)
 
   g_type_class_add_private (object_class, sizeof(GlideActorPrivate));
 }
+
 
 static void
 glide_actor_init (GlideActor *actor)
