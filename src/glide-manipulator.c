@@ -28,7 +28,7 @@
 #include "glide-manipulator-priv.h"
 
 
-G_DEFINE_TYPE(GlideManipulator, glide_manipulator, CLUTTER_TYPE_GROUP)
+G_DEFINE_TYPE(GlideManipulator, glide_manipulator, CLUTTER_TYPE_RECTANGLE)
 
 #define GLIDE_MANIPULATOR_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GLIDE_TYPE_MANIPULATOR, GlideManipulatorPrivate))
 
@@ -193,21 +193,13 @@ glide_manipulator_paint (ClutterActor *self)
 {
   GlideManipulator *manip = GLIDE_MANIPULATOR (self);
   ClutterGeometry geom;
-  guint n_children, i;
-  
-  n_children = clutter_group_get_n_children (CLUTTER_GROUP (self));
-  
-  for (i = 0; i < n_children; i++)
-    {
-      ClutterActor *c = clutter_group_get_nth_child (CLUTTER_GROUP (self), i);
-      
-      clutter_actor_paint (c);
-    }
-  
+
   clutter_actor_get_allocation_geometry (self, &geom);
   
   glide_manipulator_paint_border (&geom);
   glide_manipulator_paint_widgets (manip, &geom);
+  
+  clutter_actor_queue_redraw (manip->priv->target);
 }
 
 static gboolean
@@ -224,8 +216,10 @@ glide_manipulator_button_press (ClutterActor *actor,
     }
   
   manip->priv->swap_widgets = TRUE;
-
+  
   clutter_actor_get_position (actor, &ax, &ay);
+  
+  clutter_stage_set_key_focus (CLUTTER_STAGE (clutter_actor_get_parent (actor)), manip->priv->target);
   
   widg = glide_manipulator_get_widget_at (manip, event->x, event->y);
   if (widg != WIDGET_NONE)
@@ -234,12 +228,10 @@ glide_manipulator_button_press (ClutterActor *actor,
       manip->priv->transforming = TRUE;
       manip->priv->resize_widget = widg;
       
-      manip->priv->rpx = event->x;
-      manip->priv->rpy = event->y;
 
-      manip->priv->ra = clutter_actor_get_rotation (CLUTTER_ACTOR (actor), 
-						    CLUTTER_Z_AXIS,
-						    &rx, &ry, &rz);
+      manip->priv->rot_angle = 
+	clutter_actor_get_rotation (CLUTTER_ACTOR (actor), 						           CLUTTER_Z_AXIS,
+				    &rx, &ry, &rz);
 
 
       clutter_grab_pointer (actor);
@@ -278,6 +270,7 @@ glide_manipulator_button_release (ClutterActor *actor,
 	}
 
       clutter_actor_queue_redraw (actor);
+      clutter_actor_queue_redraw (manip->priv->target);
       manip->priv->swap_widgets = FALSE;
     }
   
@@ -310,19 +303,29 @@ glide_manipulator_process_resize (GlideManipulator *manip,
     {
     case WIDGET_BOTTOM_RIGHT:
       clutter_actor_set_size(manip->priv->target, mev->x-geom->x, mev->y-geom->y);
+      clutter_actor_set_size(CLUTTER_ACTOR (manip), mev->x-geom->x, mev->y-geom->y);
       break;
     case WIDGET_TOP_RIGHT:
       clutter_actor_set_position (actor, geom->x, mev->y);
+      clutter_actor_set_position (manip->priv->target, geom->x, mev->y);
       clutter_actor_set_size (manip->priv->target, mev->x-geom->x, (geom->height+geom->y)-(mev->y));
+      clutter_actor_set_size (CLUTTER_ACTOR(manip), mev->x-geom->x, (geom->height+geom->y)-(mev->y));
       break;
     case WIDGET_BOTTOM_LEFT:
       clutter_actor_set_position (actor, mev->x, geom->y);
+      clutter_actor_set_position (manip->priv->target, mev->x, geom->y);
       clutter_actor_set_size (manip->priv->target, (geom->width+geom->x)-mev->x,
+			      mev->y-geom->y);
+      clutter_actor_set_size (CLUTTER_ACTOR (manip), (geom->width+geom->x)-mev->x,
 			      mev->y-geom->y);
       break;
     case WIDGET_TOP_LEFT:
       clutter_actor_set_position (actor, mev->x, mev->y);
+      clutter_actor_set_position (manip->priv->target, mev->x, mev->y);
       clutter_actor_set_size (manip->priv->target,
+			      (geom->width+geom->x)-mev->x,
+			      (geom->height+geom->y)-mev->y);
+      clutter_actor_set_size (CLUTTER_ACTOR (manip),
 			      (geom->width+geom->x)-mev->x,
 			      (geom->height+geom->y)-mev->y);
       break;
@@ -344,35 +347,53 @@ glide_manipulator_process_rotate (GlideManipulator *manip,
 				  ClutterGeometry *geom,
 				  ClutterMotionEvent *mev)
 {
-  ClutterVertex top_left = {0, 0, 0};
-  ClutterVertex top_left_screen;
-  gdouble d1x, d1y, d2x, d2y, h1, h2, degrees, odegrees;
-  // Epic fail.  
+  ClutterVertex click_point = {0, 0, 0};
+  ClutterVertex screen_click_point;
+  gfloat v1x, v1y, v2x, v2y, h1, h2, deg;
   
-  clutter_actor_apply_transform_to_point (CLUTTER_ACTOR (manip),
-					  &top_left,
-					  &top_left_screen);
+  clutter_actor_apply_transform_to_point (CLUTTER_ACTOR (manip), &click_point,
+					  &screen_click_point);
+  g_message("screen_click: %f %f", screen_click_point.x,
+	    screen_click_point.y);
   
-  d1x = top_left_screen.x - (geom->x + geom->width/2.0);
-  d1y = top_left_screen.y - (geom->y + geom->height/2.0);
-  d2x = mev->x - (geom->x + geom->width/2.0);
-  d2y = mev->y - (geom->y + geom->height/2.0);
+  v1x = screen_click_point.x - (geom->x + geom->width/2.0);
+  v1y = screen_click_point.y - (geom->y + geom->height/2.0);
+  h1 = sqrt (v1x*v1x+v1y*v1y);
   
-  h1 = sqrt (d1x*d1x+d1y*d1y);
-  h2 = sqrt (d2x*d2x+d2y*d2y);
+  v1x /= h1;
+  v1y /= h1;
+
+  v2x = mev->x - (geom->x + geom->width/2.0);
+  v2y = mev->y - (geom->y + geom->height/2.0);
+  h2 = sqrt (v2x*v2x+v2y*v2y);
   
-  degrees = -acos ((d1x*d2x+d1y*d2y)/(h1*h2));
-  if (degrees < 0)
-    degrees = 360 + degrees;
-  odegrees = glide_manipulator_get_zrot (manip);
+  v2x /= h2;
+  v2y /= h2;
+  
+  g_message("v1 x/y: %f %f", 
+	    v1x, v1y);
+  g_message("v2 x/y: %f %f", 
+	    v2x, v2y);
+
+  deg = acos((v1x*v2x+v1y*v2y))*(180/M_PI);
+  
+  g_message("h1, h2 %f %f", h1, h2);
+  //  if (v2x < v1x || v2y < v1y)
+  //    deg = -deg;
+  
   clutter_actor_set_rotation (CLUTTER_ACTOR (manip),
 			      CLUTTER_Z_AXIS,
-			      (odegrees),
+			      manip->priv->rot_angle+deg+180,
 			      geom->width/2.0,
 			      geom->height/2.0,
 			      0);
-  
-
+  clutter_actor_set_rotation (CLUTTER_ACTOR (manip->priv->target),
+			      CLUTTER_Z_AXIS,
+			      manip->priv->rot_angle+deg+180,
+			      geom->width/2.0,
+			      geom->height/2.0,
+			      0);
+  manip->priv->rot_angle += deg;
 }
 
 static gboolean
@@ -411,6 +432,9 @@ glide_manipulator_motion (ClutterActor *actor,
       clutter_actor_set_position (actor, 
 				  mev->x - manip->priv->drag_center_x,
 				  mev->y - manip->priv->drag_center_y);
+      clutter_actor_set_position (manip->priv->target, 
+				  mev->x - manip->priv->drag_center_x
+				  , mev->y - manip->priv->drag_center_y);
       return TRUE;
     }
   return FALSE;
@@ -439,10 +463,6 @@ static void
 glide_manipulator_set_target_real (GlideManipulator *manip,
 				   ClutterActor *target)
 {
-  clutter_container_add_actor (CLUTTER_CONTAINER (manip), target);
-  
-  if (CLUTTER_ACTOR_IS_MAPPED (CLUTTER_ACTOR (manip)))
-    clutter_actor_show (target);
   manip->priv->target = target;
 }
 				   

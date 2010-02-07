@@ -50,7 +50,7 @@ typedef struct _GlideManipulator GlideManipulator;
 
 struct _GlideManipulator 
 {
-  ClutterGroup group;
+  ClutterRectangle rectangle;
   
   GlideManipulatorPrivate *priv;
 };
@@ -62,7 +62,7 @@ typedef struct _GlideManipulatorClass GlideManipulatorClass;
 
 struct _GlideManipulatorClass 
 {
-	ClutterGroupClass parent_class;
+	ClutterRectangleClass parent_class;
 };
 
 /*

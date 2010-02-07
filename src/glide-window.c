@@ -24,8 +24,10 @@
 
 
 #include "glide-window.h"
-#include "glide-image.h"
 #include "glide-manipulator.h"
+
+
+#include "glide-rectangle.h"
 
 #include "glide-window-private.h"
 
@@ -61,34 +63,70 @@ glide_window_new_image (GtkWidget *toolitem, gpointer data)
   ClutterActor *stage = window->priv->stage;
   ClutterActor *im, *g;
   
-  im = (ClutterActor *)glide_image_new ();
+  im = (ClutterActor *)glide_rectangle_new ();
   clutter_actor_set_position(im, 0, 0);
   clutter_actor_set_size(im, 100, 100);
   
   g = (ClutterActor *)glide_manipulator_new (im);
+  clutter_actor_set_size(g, 100, 100);
 
   clutter_actor_set_position(g, 200, 200);
+  clutter_actor_set_position(im, 200, 200);
   
   clutter_container_add_actor (CLUTTER_CONTAINER(stage), g);
+  clutter_container_add_actor (CLUTTER_CONTAINER(stage), im);
+
+  clutter_actor_raise (g, im);
+  
+  clutter_actor_show_all (stage);
+
+  g_message("New image!");
+}
+
+static void
+glide_window_new_text (GtkWidget *toolitem, gpointer data)
+{
+  GlideWindow *window = (GlideWindow *)data;
+  ClutterActor *stage = window->priv->stage;
+  ClutterActor *im, *g;
+  
+  im = (ClutterActor *)glide_rectangle_new();
+  
+  g = (ClutterActor *)glide_manipulator_new (im);
+
+  clutter_actor_set_position(g, 400, 200);
+  clutter_actor_set_position(im, 400, 200);
+  
+  clutter_actor_set_size(g, 400, 20);
+  
+  clutter_container_add_actor (CLUTTER_CONTAINER(stage), g);
+  clutter_container_add_actor (CLUTTER_CONTAINER(stage), im);
+  
+  clutter_actor_lower(g, im);
   
   clutter_actor_show_all (g);
 
-  g_message("New image!");
+  g_message("New text!");
 }
 
 static GtkWidget *
 glide_window_make_toolbar (GlideWindow *w)
 {
-  GtkWidget *toolbar, *image;
+  GtkWidget *toolbar, *image, *image2;
 
   toolbar = gtk_toolbar_new ();
   
   image = 
     gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_LARGE_TOOLBAR);
+  image2 = 
+    gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_LARGE_TOOLBAR);
   
   gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New image", 
 			   "Insert a new image in to the document", 
 			   NULL, image, G_CALLBACK(glide_window_new_image), w);  
+  gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New text", 
+			   "Insert a new text object in to the document", 
+			   NULL, image2, G_CALLBACK(glide_window_new_text), w);  
   
   
   return toolbar;

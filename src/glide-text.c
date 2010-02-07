@@ -51,10 +51,11 @@ glide_text_init (GlideText *text)
   clutter_text_set_text (CLUTTER_TEXT (text), "This is a test of text"
 			 " in Glide.");
   clutter_text_set_font_name (CLUTTER_TEXT (text), "Sans 12");
-  clutter_text_set_editable (CLUTTER_TEXT (text), FALSE);
-  clutter_text_set_line_wrap (CLUTTER_TEXT (text), FALSE);
+  clutter_text_set_editable (CLUTTER_TEXT (text), TRUE);
+  clutter_text_set_line_wrap (CLUTTER_TEXT (text), TRUE);
   
-  clutter_actor_set_size (CLUTTER_ACTOR (text), 400, 200);
+  clutter_actor_set_size (CLUTTER_ACTOR (text), 400, 20);
+  clutter_actor_set_reactive (CLUTTER_ACTOR (text), TRUE);
 }
 
 GlideText *
