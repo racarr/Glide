@@ -26,7 +26,9 @@ glide_SOURCES = \
 	glide-actor.c \
 	glide-actor.h \
 	glide-rectangle.c \
-	glide-rectangle.h 
+	glide-rectangle.h \	
+	glide-stage-manager.c \
+	glide-stage-manager.h
 
 glide_LDFLAGS = \
 	-Wl,--export-dynamic

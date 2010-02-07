@@ -105,7 +105,7 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
   
   clutter_actor_lower(g, im);
   
-  clutter_actor_show_all (g);
+  clutter_actor_show_all (stage);
 
   g_message("New text!");
 }
