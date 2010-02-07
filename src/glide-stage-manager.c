@@ -38,6 +38,13 @@ enum {
   PROP_SELECTION
 };
 
+enum {
+  SELECTION_CHANGED,
+  LAST_SIGNAL
+};
+
+static guint stage_manager_signals[LAST_SIGNAL] = { 0, };
+
 static void
 glide_stage_manager_finalize (GObject *object)
 {
@@ -70,6 +77,16 @@ glide_stage_manager_get_property (GObject *object,
 }
 
 static void
+glide_stage_manager_set_selection_real (GlideStageManager *m,
+					ClutterActor *a)
+{
+  ClutterActor *old = m->priv->selection;
+  m->priv->selection = a;
+  
+  g_signal_emit (m, stage_manager_signals[SELECTION_CHANGED], 0, old);
+}
+
+static void
 glide_stage_manager_set_property (GObject *object,
 				  guint prop_id,
 				  const GValue *value,
@@ -84,7 +101,8 @@ glide_stage_manager_set_property (GObject *object,
       manager->priv->stage = CLUTTER_ACTOR (g_value_get_object (value));
       break;
     case PROP_SELECTION:
-      manager->priv->selection = CLUTTER_ACTOR (g_value_get_object (value));
+      glide_stage_manager_set_selection_real (manager,
+	      CLUTTER_ACTOR (g_value_get_object (value)));
       break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -120,6 +138,18 @@ glide_stage_manager_class_init (GlideStageManagerClass *klass)
 							G_PARAM_READWRITE |
 							G_PARAM_CONSTRUCT_ONLY |
 							G_PARAM_STATIC_STRINGS));
+  
+  // Argument is old selection
+  stage_manager_signals[SELECTION_CHANGED] = 
+    g_signal_new ("selection-changed",
+		  G_TYPE_FROM_CLASS (object_class),
+		  G_SIGNAL_RUN_LAST,
+		  0,
+		  NULL, NULL,
+		  g_cclosure_marshal_VOID__OBJECT,
+		  G_TYPE_NONE, 1,
+		  G_TYPE_OBJECT);
+    
 
   g_type_class_add_private (object_class, sizeof(GlideStageManagerPrivate));
 }
@@ -154,6 +184,6 @@ void
 glide_stage_manager_set_selection (GlideStageManager *m,
 				   ClutterActor *a)
 {
-  m->priv->selection = a;
+  glide_stage_manager_set_selection_real (m, a);
 }
 
