@@ -75,8 +75,10 @@ glide_rectangle_init (GlideRectangle *self)
 }
 
 ClutterActor*
-glide_rectangle_new (void)
+glide_rectangle_new (GlideStageManager *m)
 {
-  return g_object_new (GLIDE_TYPE_RECTANGLE, NULL);
+  return g_object_new (GLIDE_TYPE_RECTANGLE, 
+		       "stage-manager", m,
+		       NULL);
 }
 

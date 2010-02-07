@@ -23,10 +23,8 @@
 #ifndef __GLIDE_ACTOR_H__
 #define __GLIDE_ACTOR_H__
 
-#include <gtk/gtk.h>
-
 #include <clutter/clutter.h>
-#include <clutter-gtk/clutter-gtk.h>
+#include "glide-stage-manager.h"
 
 G_BEGIN_DECLS
 
@@ -69,6 +67,8 @@ struct _GlideActorClass
  * Public methods
  */
 GType 		 glide_actor_get_type 			(void) G_GNUC_CONST;
+
+GlideStageManager *glide_actor_get_stage_manager (GlideActor *actor);
 
 G_END_DECLS
 

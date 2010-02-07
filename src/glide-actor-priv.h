@@ -29,7 +29,7 @@ G_BEGIN_DECLS
 
 struct _GlideActorPrivate
 {
-  gpointer fill;
+  GlideStageManager *manager;
 };
 
 G_END_DECLS

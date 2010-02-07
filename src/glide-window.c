@@ -28,7 +28,7 @@
 
 
 #include "glide-rectangle.h"
-
+#include "glide-stage-manager.h"
 #include "glide-window-private.h"
 
 #define GLIDE_WINDOW_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object),	\
@@ -59,11 +59,12 @@ glide_window_class_init (GlideWindowClass *klass)
 static void
 glide_window_new_image (GtkWidget *toolitem, gpointer data)
 {
-  GlideWindow *window = (GlideWindow *)data;
-  ClutterActor *stage = window->priv->stage;
+  GlideStageManager *manager = (GlideStageManager *)data;
+  ClutterActor *stage = (ClutterActor *)
+    glide_stage_manager_get_stage (manager);
   ClutterActor *im, *g;
   
-  im = (ClutterActor *)glide_rectangle_new ();
+  im = (ClutterActor *)glide_rectangle_new (manager);
   clutter_actor_set_position(im, 0, 0);
   clutter_actor_set_size(im, 100, 100);
   
@@ -86,11 +87,12 @@ glide_window_new_image (GtkWidget *toolitem, gpointer data)
 static void
 glide_window_new_text (GtkWidget *toolitem, gpointer data)
 {
-  GlideWindow *window = (GlideWindow *)data;
-  ClutterActor *stage = window->priv->stage;
+  GlideStageManager *manager = (GlideStageManager *)data;
+  ClutterActor *stage = 
+    (ClutterActor *)glide_stage_manager_get_stage (manager);
   ClutterActor *im, *g;
   
-  im = (ClutterActor *)glide_rectangle_new();
+  im = (ClutterActor *)glide_rectangle_new(manager);
   
   g = (ClutterActor *)glide_manipulator_new (im);
 
@@ -114,6 +116,8 @@ static GtkWidget *
 glide_window_make_toolbar (GlideWindow *w)
 {
   GtkWidget *toolbar, *image, *image2;
+  GlideStageManager *manager = 
+    glide_stage_manager_new (CLUTTER_STAGE(w->priv->stage));
 
   toolbar = gtk_toolbar_new ();
   
@@ -124,10 +128,12 @@ glide_window_make_toolbar (GlideWindow *w)
   
   gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New image", 
 			   "Insert a new image in to the document", 
-			   NULL, image, G_CALLBACK(glide_window_new_image), w);  
+			   NULL, image, G_CALLBACK(glide_window_new_image), 
+			   manager);  
   gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New text", 
 			   "Insert a new text object in to the document", 
-			   NULL, image2, G_CALLBACK(glide_window_new_text), w);  
+			   NULL, image2, G_CALLBACK(glide_window_new_text), 
+			   manager);  
   
   
   return toolbar;

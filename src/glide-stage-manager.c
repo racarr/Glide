@@ -28,7 +28,7 @@
 #include "glide-stage-manager-priv.h"
 
 
-G_DEFINE_ABSTRACT_TYPE(GlideStageManager, glide_stage_manager, G_TYPE_OBJECT)
+G_DEFINE_TYPE(GlideStageManager, glide_stage_manager, G_TYPE_OBJECT)
 
 #define GLIDE_STAGE_MANAGER_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GLIDE_TYPE_STAGE_MANAGER, GlideStageManagerPrivate))
 
@@ -110,6 +110,7 @@ glide_stage_manager_class_init (GlideStageManagerClass *klass)
 static void
 glide_stage_manager_init (GlideStageManager *manager)
 {
+  manager->priv = GLIDE_STAGE_MANAGER_GET_PRIVATE (manager);
 }
 
 GlideStageManager *

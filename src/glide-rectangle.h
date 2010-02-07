@@ -55,7 +55,7 @@ struct _GlideRectangleClass
 
 GType glide_rectangle_get_type (void) G_GNUC_CONST;
 
-ClutterActor *glide_rectangle_new              (void);
+ClutterActor *glide_rectangle_new              (GlideStageManager *manager);
 
 G_END_DECLS
 
