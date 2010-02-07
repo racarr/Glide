@@ -30,6 +30,8 @@ G_BEGIN_DECLS
 struct _GlideActorPrivate
 {
   GlideStageManager *manager;
+  
+  gboolean selected;
 };
 
 G_END_DECLS

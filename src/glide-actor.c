@@ -34,7 +34,8 @@ G_DEFINE_ABSTRACT_TYPE(GlideActor, glide_actor, CLUTTER_TYPE_ACTOR)
 
 enum {
   PROP_0,
-  PROP_STAGE_MANAGER
+  PROP_STAGE_MANAGER,
+  PROP_SELECTED
   };
 
 static void
@@ -58,6 +59,9 @@ glide_actor_get_property (GObject *object,
     {
     case PROP_STAGE_MANAGER:
       g_value_set_object (value, actor->priv->manager);
+      break;
+    case PROP_SELECTED:
+      g_value_set_boolean (value, actor->priv->selected);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -104,6 +108,14 @@ glide_actor_class_init (GlideActorClass *klass)
 							G_PARAM_READWRITE |
 							G_PARAM_CONSTRUCT_ONLY |
 							G_PARAM_STATIC_STRINGS));
+  
+  g_object_class_install_property (object_class,
+				   PROP_SELECTED,
+				   g_param_spec_boolean("selected",
+							"Selected",
+							"Whether the glide actor is selected",
+							FALSE,
+							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS));
 
   g_type_class_add_private (object_class, sizeof(GlideActorPrivate));
 }
@@ -118,4 +130,10 @@ GlideStageManager *
 glide_actor_get_stage_manager (GlideActor *actor)
 {
   return actor->priv->manager;
+}
+
+gboolean
+glide_actor_get_selected (GlideActor *actor)
+{
+  return actor->priv->selected;
 }

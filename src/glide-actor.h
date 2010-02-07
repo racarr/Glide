@@ -70,6 +70,8 @@ GType 		 glide_actor_get_type 			(void) G_GNUC_CONST;
 
 GlideStageManager *glide_actor_get_stage_manager (GlideActor *actor);
 
+gboolean glide_actor_get_selected (GlideActor *actor);
+
 G_END_DECLS
 
 #endif  /* __GLIDE_ACTOR_H__  */
