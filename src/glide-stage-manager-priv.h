@@ -30,6 +30,8 @@ G_BEGIN_DECLS
 struct _GlideStageManagerPrivate
 {
   ClutterActor *stage;
+  
+  ClutterActor *selection;
 };
 
 G_END_DECLS

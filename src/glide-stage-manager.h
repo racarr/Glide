@@ -71,6 +71,10 @@ GType 		 glide_stage_manager_get_type 			(void) G_GNUC_CONST;
 GlideStageManager *glide_stage_manager_new (ClutterStage *stage);
 ClutterStage *glide_stage_manager_get_stage (GlideStageManager *manager);
 
+ClutterActor *glide_stage_manager_get_selection (GlideStageManager *manager);
+void glide_stage_manager_set_selection (GlideStageManager *manager,
+					ClutterActor *actor);
+
 G_END_DECLS
 
 #endif  /* __GLIDE_STAGE_MANAGER_H__  */

@@ -34,7 +34,8 @@ G_DEFINE_TYPE(GlideStageManager, glide_stage_manager, G_TYPE_OBJECT)
 
 enum {
   PROP_0,
-  PROP_STAGE
+  PROP_STAGE,
+  PROP_SELECTION
 };
 
 static void
@@ -59,6 +60,9 @@ glide_stage_manager_get_property (GObject *object,
     case PROP_STAGE:
       g_value_set_object (value, manager->priv->stage);
       break;
+    case PROP_SELECTION:
+      g_value_set_object (value, manager->priv->selection);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -78,6 +82,9 @@ glide_stage_manager_set_property (GObject *object,
     case PROP_STAGE:
       g_return_if_fail (manager->priv->stage == NULL);
       manager->priv->stage = CLUTTER_ACTOR (g_value_get_object (value));
+      break;
+    case PROP_SELECTION:
+      manager->priv->selection = CLUTTER_ACTOR (g_value_get_object (value));
       break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -100,6 +107,16 @@ glide_stage_manager_class_init (GlideStageManagerClass *klass)
 							"Stage",
 							"The ClutterStage to manage",
 							CLUTTER_TYPE_STAGE,
+							G_PARAM_READWRITE |
+							G_PARAM_CONSTRUCT_ONLY |
+							G_PARAM_STATIC_STRINGS));
+
+  g_object_class_install_property (object_class,
+				   PROP_SELECTION,
+				   g_param_spec_object ("selection",
+							"Selection",
+							"The GlideActor currently selected",
+							CLUTTER_TYPE_ACTOR,
 							G_PARAM_READWRITE |
 							G_PARAM_CONSTRUCT_ONLY |
 							G_PARAM_STATIC_STRINGS));
@@ -127,4 +144,16 @@ glide_stage_manager_get_stage (GlideStageManager *m)
   return (ClutterStage *)m->priv->stage;
 }
 
+ClutterActor *
+glide_stage_manager_get_selection (GlideStageManager *m)
+{
+  return m->priv->selection;
+}
+
+void
+glide_stage_manager_set_selection (GlideStageManager *m,
+				   ClutterActor *a)
+{
+  m->priv->selection = a;
+}
 
