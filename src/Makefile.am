@@ -23,10 +23,6 @@ glide_SOURCES = \
 	glide-window.h \
 	glide-manipulator.c \
 	glide-manipulator.h \
-	glide-image.c \
-	glide-image.h \
-	glide-text.c \
-	glide-text.h \
 	glide-actor.c \
 	glide-actor.h \
 	glide-rectangle.c \

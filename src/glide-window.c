@@ -97,7 +97,8 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
   clutter_actor_set_position(g, 400, 200);
   clutter_actor_set_position(im, 400, 200);
   
-  clutter_actor_set_size(g, 400, 20);
+  clutter_actor_set_size(g, 100, 100);
+  clutter_actor_set_size(im, 100, 100);
   
   clutter_container_add_actor (CLUTTER_CONTAINER(stage), g);
   clutter_container_add_actor (CLUTTER_CONTAINER(stage), im);
