@@ -30,43 +30,39 @@ G_DEFINE_TYPE (GlideImage, glide_image, GLIDE_TYPE_ACTOR);
 static void
 glide_image_paint (ClutterActor *self)
 {
-  ClutterGeometry          geom;
-
-  clutter_actor_get_allocation_geometry (self, &geom);
-
-  cogl_set_source_color4ub (0xff, 0x00, 0x00, 0xff);
-
+  GlideImage *image = GLIDE_IMAGE (self);
+  GlideImagePrivate *priv = image->priv;
+  ClutterActorBox box = {0, };
+  gfloat t_w, t_h;
+  guint8 paint_opacity = clutter_actor_get_paint_opacity (self);
   
-  cogl_rectangle (10, 0,
-		  geom.width,
-		  10);
+  if (paint_opacity == 0)
+    {
+      return;
+    }
   
-  cogl_rectangle (geom.width - 10,
-		  10,
-		  geom.width,
-		  geom.height);
+  cogl_material_set_color4ub (priv->material, paint_opacity, paint_opacity, paint_opacity, paint_opacity);
+  clutter_actor_get_allocation_box (self, &box);
   
-  cogl_rectangle (0, geom.height - 10,
-		  geom.width - 10,
-		  geom.height);
+  t_w = 1.0;
+  t_h = 1.0;
   
-  cogl_rectangle (0, 0,
-		  10,
-		  geom.height - 10);
-  
-  
-  cogl_set_source_color4ub (0x00, 0xff, 0x00, 0xff);
+  cogl_set_source (priv->material);
+  cogl_rectangle_with_texture_coords (0, 0,
+				      box.x2 - box.x1, box.y2 - box.y1,
+				      0, 0, t_w, t_h);
+}
 
-  cogl_rectangle (10, 10,
-		  geom.width - 10,
-		  geom.height - 10);
-
-
+static void
+image_free_gl_resources (GlideImage *image)
+{
+  if (image->priv->material != COGL_INVALID_HANDLE)
+    cogl_material_set_layer (image->priv->material, 0, COGL_INVALID_HANDLE);
 }
 
 static gboolean
 glide_image_button_press (ClutterActor *actor,
-			      ClutterButtonEvent *event)
+			  ClutterButtonEvent *event)
 {
   GlideStageManager *m;
   GlideActor *ga = GLIDE_ACTOR (actor);
@@ -96,6 +92,8 @@ static void
 glide_image_init (GlideImage *self)
 {
   self->priv = GLIDE_IMAGE_GET_PRIVATE (self);
+  
+  self->priv->material = cogl_material_new();
 }
 
 ClutterActor*
@@ -106,3 +104,80 @@ glide_image_new (GlideStageManager *m)
 		       NULL);
 }
 
+void
+glide_image_set_cogl_texture (GlideImage *image,
+			      CoglHandle new_texture)
+{
+  guint width, height;
+  
+  width = cogl_texture_get_width (new_texture);
+  height = cogl_texture_get_height (new_texture);
+  
+  cogl_handle_ref (new_texture);
+  
+  /* TODO: Free old texture */
+  image_free_gl_resources (image);
+  
+  cogl_material_set_layer (image->priv->material, 0, new_texture);
+  
+  image->priv->image_width = width;
+  image->priv->image_height = height;
+  
+  cogl_handle_unref (new_texture);
+}
+
+gboolean
+glide_image_set_from_file (GlideImage *image,
+			   const gchar *filename,
+			   GError **error)
+{
+  GlideImagePrivate *priv;
+  CoglHandle new_texture = COGL_INVALID_HANDLE;
+  GError *internal_error = NULL;
+  CoglTextureFlags flags = COGL_TEXTURE_NONE;
+  
+  priv = image->priv;
+  
+  new_texture = cogl_texture_new_from_file (filename,
+					    flags,
+					    COGL_PIXEL_FORMAT_ANY,
+					    &internal_error);
+  
+  if (internal_error == NULL && new_texture == COGL_INVALID_HANDLE)
+    {
+      g_set_error (&internal_error, CLUTTER_TEXTURE_ERROR,
+		   CLUTTER_TEXTURE_ERROR_BAD_FORMAT,
+		   "Failed to create COGL texture");
+    }
+  if (internal_error != NULL)
+    {
+      g_propagate_error (error, internal_error);
+      
+      return FALSE;
+    }
+  
+  glide_image_set_cogl_texture (image, new_texture);
+  
+  cogl_handle_unref (new_texture);
+  
+  return TRUE;
+}
+
+ClutterActor *
+glide_image_new_from_file (GlideStageManager *m, 
+			   const gchar *filename, 
+			   GError **error)
+{
+  ClutterActor *image = glide_image_new (m);
+  
+  if (!glide_image_set_from_file (GLIDE_IMAGE (image),
+				  filename, error))
+    {
+      g_object_ref_sink (image);
+      g_object_unref (image);
+      
+      return NULL;
+    }
+  else
+    return image;
+}

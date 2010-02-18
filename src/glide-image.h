@@ -57,6 +57,10 @@ struct _GlideImageClass
 GType glide_image_get_type (void) G_GNUC_CONST;
 
 ClutterActor *glide_image_new              (GlideStageManager *manager);
+ClutterActor *glide_image_new_from_file    (GlideStageManager *manager, const gchar *filename, GError **error);
+
+gboolean glide_image_set_from_file         (GlideImage *image, const gchar *filename, GError **error);
+void glide_image_set_cogl_texture          (GlideImage *image, CoglHandle new_texture);
 
 G_END_DECLS
 

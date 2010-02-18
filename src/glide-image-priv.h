@@ -29,7 +29,10 @@ G_BEGIN_DECLS
 
 struct _GlideImagePrivate
 {
-  gpointer filler;
+  CoglHandle material;
+  
+  guint image_width;
+  guint image_height;
 };
 
 G_END_DECLS

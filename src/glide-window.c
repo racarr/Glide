@@ -30,6 +30,7 @@
 #include "glide-rectangle.h"
 #include "glide-stage-manager.h"
 #include "glide-window-private.h"
+#include "glide-image.h"
 
 #define GLIDE_WINDOW_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object),	\
 								      GLIDE_TYPE_WINDOW, \
@@ -64,7 +65,9 @@ glide_window_new_image (GtkWidget *toolitem, gpointer data)
     glide_stage_manager_get_stage (manager);
   ClutterActor *im, *g;
   
-  im = (ClutterActor *)glide_rectangle_new (manager);
+  im = (ClutterActor *)glide_image_new_from_file (manager,
+						  "/home/racarr/surprise.jpg",
+						  NULL);
   clutter_actor_set_position(im, 0, 0);
   clutter_actor_set_size(im, 100, 100);
   
