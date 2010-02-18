@@ -39,11 +39,13 @@ G_BEGIN_DECLS
 
 typedef struct _GlideImage        GlideImage;
 typedef struct _GlideImageClass   GlideImageClass;
+typedef struct _GlideImagePrivate GlideImagePrivate;
 
 struct _GlideImage
 {
   GlideActor           parent;
 
+  GlideImagePrivate *priv;
 }; 
 
 struct _GlideImageClass 

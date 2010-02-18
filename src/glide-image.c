@@ -21,8 +21,11 @@
  */
 
 #include "glide-image.h"
+#include "glide-image-priv.h"
 
 G_DEFINE_TYPE (GlideImage, glide_image, GLIDE_TYPE_ACTOR);
+
+#define GLIDE_IMAGE_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GLIDE_TYPE_IMAGE, GlideImagePrivate))
 
 static void
 glide_image_paint (ClutterActor *self)
@@ -81,14 +84,18 @@ static void
 glide_image_class_init (GlideImageClass *klass)
 {
   ClutterActorClass *actor_class = CLUTTER_ACTOR_CLASS (klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   
   actor_class->paint = glide_image_paint;
   actor_class->button_press_event = glide_image_button_press;
+  
+  g_type_class_add_private (object_class, sizeof(GlideImagePrivate));
 }
 
 static void
 glide_image_init (GlideImage *self)
 {
+  self->priv = GLIDE_IMAGE_GET_PRIVATE (self);
 }
 
 ClutterActor*
