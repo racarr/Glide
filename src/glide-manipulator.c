@@ -198,8 +198,9 @@ glide_manipulator_paint (ClutterActor *self)
   
   glide_manipulator_paint_border (&geom);
   glide_manipulator_paint_widgets (manip, &geom);
-  
-  clutter_actor_queue_redraw (manip->priv->target);
+
+  if (manip->priv->target)
+    clutter_actor_queue_redraw (manip->priv->target);
 }
 
 static gboolean
@@ -255,6 +256,7 @@ glide_manipulator_button_release (ClutterActor *actor,
 				  ClutterButtonEvent *bev)
 {
   GlideManipulator *manip = GLIDE_MANIPULATOR (actor);
+  gboolean ret = FALSE;
   
   if (manip->priv->swap_widgets)
     {
@@ -269,9 +271,10 @@ glide_manipulator_button_release (ClutterActor *actor,
 	  manip->priv->mode = WIDGET_MODE_RESIZE;
 	}
 
-      clutter_actor_queue_redraw (actor);
-      clutter_actor_queue_redraw (manip->priv->target);
+      //      clutter_actor_queue_redraw (actor);
       manip->priv->swap_widgets = FALSE;
+      
+      ret = TRUE;
     }
   
   if (manip->priv->transforming)
@@ -290,7 +293,7 @@ glide_manipulator_button_release (ClutterActor *actor,
       
       return TRUE;
     }
-    return FALSE;
+    return ret;
 }
 
 static void
@@ -463,6 +466,34 @@ static void
 glide_manipulator_set_target_real (GlideManipulator *manip,
 				   ClutterActor *target)
 {
+  gfloat x,y, width, height, rx, ry, rz, za;
+  
+  if (!target)
+    {
+      clutter_actor_hide (CLUTTER_ACTOR (manip));
+      return ;
+    }
+  
+  clutter_actor_show (CLUTTER_ACTOR (manip));
+  clutter_actor_get_position (target, &x, &y);
+  clutter_actor_get_size (target, &width, &height);
+  clutter_actor_set_position (CLUTTER_ACTOR (manip), x, y);
+  clutter_actor_set_size (CLUTTER_ACTOR (manip), width, height);
+  
+  za = clutter_actor_get_rotation (CLUTTER_ACTOR (target), CLUTTER_Z_AXIS, &rx, &ry, &rz);
+  
+  clutter_actor_set_rotation (CLUTTER_ACTOR (manip),
+			      CLUTTER_Z_AXIS,
+			      za,
+			      rx,
+			      ry,
+			      rz);
+  
+  clutter_actor_raise (CLUTTER_ACTOR (manip), target);
+  
+  if (manip->priv->target)
+    clutter_actor_queue_redraw (manip->priv->target);
+			      
   manip->priv->target = target;
 }
 				   
@@ -478,7 +509,6 @@ glide_manipulator_set_property (GObject *object,
   switch (prop_id)
     {
     case PROP_TARGET:
-      g_return_if_fail (manip->priv->target == NULL);
       glide_manipulator_set_target_real (manip, CLUTTER_ACTOR(g_value_get_object (value)));
       break;
     default: 
@@ -512,7 +542,6 @@ glide_manipulator_class_init (GlideManipulatorClass *klass)
 							"The target of the manipulator object",
 							CLUTTER_TYPE_ACTOR,
 							G_PARAM_READWRITE |
-							G_PARAM_CONSTRUCT_ONLY |
 							G_PARAM_STATIC_STRINGS));
   
   g_type_class_add_private (object_class, sizeof(GlideManipulatorPrivate));
@@ -539,3 +568,12 @@ glide_manipulator_get_target (GlideManipulator *manip)
 {
   return manip->priv->target;
 }
+
+void
+glide_manipulator_set_target (GlideManipulator *manip, ClutterActor *actor)
+{
+  glide_manipulator_set_target_real (manip, actor);
+  g_object_notify (G_OBJECT (manip), "target");
+}
+
+

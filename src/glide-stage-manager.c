@@ -26,7 +26,7 @@
 #include <math.h>
 
 #include "glide-stage-manager-priv.h"
-
+#include "glide-manipulator.h"
 
 G_DEFINE_TYPE(GlideStageManager, glide_stage_manager, G_TYPE_OBJECT)
 
@@ -81,9 +81,26 @@ glide_stage_manager_set_selection_real (GlideStageManager *m,
 					ClutterActor *a)
 {
   ClutterActor *old = m->priv->selection;
+  
+  if (old == a)
+    return;
+
   m->priv->selection = a;
   
+  clutter_actor_raise_top (a);
+  
+  glide_manipulator_set_target(m->priv->manip, a);
+  
   g_signal_emit (m, stage_manager_signals[SELECTION_CHANGED], 0, old);
+}
+
+static void
+glide_stage_manager_add_manipulator (GlideStageManager *manager, ClutterActor *stage)
+{
+  GlideManipulator *manip = glide_manipulator_new(NULL);
+  clutter_container_add_actor (CLUTTER_CONTAINER (stage), CLUTTER_ACTOR (manip));
+  
+  manager->priv->manip = manip;
 }
 
 static void
@@ -99,6 +116,7 @@ glide_stage_manager_set_property (GObject *object,
     case PROP_STAGE:
       g_return_if_fail (manager->priv->stage == NULL);
       manager->priv->stage = CLUTTER_ACTOR (g_value_get_object (value));
+      glide_stage_manager_add_manipulator (manager, manager->priv->stage);
       break;
     case PROP_SELECTION:
       glide_stage_manager_set_selection_real (manager,

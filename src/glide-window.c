@@ -68,16 +68,16 @@ glide_window_new_image (GtkWidget *toolitem, gpointer data)
   clutter_actor_set_position(im, 0, 0);
   clutter_actor_set_size(im, 100, 100);
   
-  g = (ClutterActor *)glide_manipulator_new (im);
-  clutter_actor_set_size(g, 100, 100);
+  //  g = (ClutterActor *)glide_manipulator_new (im);
+  //  clutter_actor_set_size(g, 100, 100);
 
-  clutter_actor_set_position(g, 200, 200);
+  //  clutter_actor_set_position(g, 200, 200);
   clutter_actor_set_position(im, 200, 200);
   
-  clutter_container_add_actor (CLUTTER_CONTAINER(stage), g);
+  //  clutter_container_add_actor (CLUTTER_CONTAINER(stage), g);
   clutter_container_add_actor (CLUTTER_CONTAINER(stage), im);
 
-  clutter_actor_raise (g, im);
+  //  clutter_actor_raise (g, im);
   
   clutter_actor_show_all (stage);
 
@@ -94,18 +94,18 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
   
   im = (ClutterActor *)glide_rectangle_new(manager);
   
-  g = (ClutterActor *)glide_manipulator_new (im);
+  //  g = (ClutterActor *)glide_manipulator_new (im);
 
-  clutter_actor_set_position(g, 400, 200);
+  //  clutter_actor_set_position(g, 400, 200);
   clutter_actor_set_position(im, 400, 200);
   
-  clutter_actor_set_size(g, 100, 100);
+  //  clutter_actor_set_size(g, 100, 100);
   clutter_actor_set_size(im, 100, 100);
   
-  clutter_container_add_actor (CLUTTER_CONTAINER(stage), g);
+  //  clutter_container_add_actor (CLUTTER_CONTAINER(stage), g);
   clutter_container_add_actor (CLUTTER_CONTAINER(stage), im);
   
-  clutter_actor_lower(g, im);
+  //  clutter_actor_lower(g, im);
   
   clutter_actor_show_all (stage);
 

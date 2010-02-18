@@ -72,6 +72,7 @@ GType 		 glide_manipulator_get_type 			(void) G_GNUC_CONST;
 GlideManipulator     *glide_manipulator_new                     (ClutterActor *target);
 
 ClutterActor         *glide_manipulator_get_target                (GlideManipulator *manip);
+void glide_manipulator_set_target (GlideManipulator *manip, ClutterActor *actor);
 
 G_END_DECLS
 

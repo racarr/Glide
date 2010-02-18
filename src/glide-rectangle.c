@@ -61,12 +61,29 @@ glide_rectangle_paint (ClutterActor *self)
 
 }
 
+static gboolean
+glide_rectangle_button_press (ClutterActor *actor,
+			      ClutterButtonEvent *event)
+{
+  GlideStageManager *m;
+  GlideActor *ga = GLIDE_ACTOR (actor);
+  
+  m = glide_actor_get_stage_manager (ga);
+  
+  if (event->button != 1)
+    return FALSE;
+  
+  glide_stage_manager_set_selection (m, actor);
+  return TRUE;
+}
+
 static void
 glide_rectangle_class_init (GlideRectangleClass *klass)
 {
   ClutterActorClass *actor_class = CLUTTER_ACTOR_CLASS (klass);
   
   actor_class->paint = glide_rectangle_paint;
+  actor_class->button_press_event = glide_rectangle_button_press;
 }
 
 static void

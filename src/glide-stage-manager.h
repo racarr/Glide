@@ -25,6 +25,7 @@
 
 #include <glib-object.h>
 #include <clutter/clutter.h>
+#include "glide-manipulator.h"
 
 G_BEGIN_DECLS
 
