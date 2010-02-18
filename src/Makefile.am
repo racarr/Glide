@@ -30,7 +30,7 @@ glide_SOURCES = \
 	glide-stage-manager.c \
 	glide-stage-manager.h \
 	glide-image.c \
-	glide-image.h 
+	glide-image.h
 
 glide_LDFLAGS = \
 	-Wl,--export-dynamic

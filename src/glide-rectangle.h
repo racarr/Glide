@@ -43,8 +43,6 @@ typedef struct _GlideRectangleClass   GlideRectangleClass;
 struct _GlideRectangle
 {
   GlideActor           parent;
-
-  ClutterRectanglePrivate *priv;
 }; 
 
 struct _GlideRectangleClass 
