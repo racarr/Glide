@@ -98,7 +98,7 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
   ClutterActor *stage = 
     (ClutterActor *)glide_stage_manager_get_stage (manager);
   ClutterActor *text;
-  ClutterColor white = {0xff, 0xff, 0xff, 0xff};
+  ClutterColor white = {0x00, 0x00, 0x00, 0xff};
   
   text = glide_text_new (manager);
 
@@ -167,7 +167,7 @@ static void
 glide_window_init (GlideWindow *window)
 {
   ClutterActor *stage;
-  ClutterColor black = {0x00, 0x00, 0x00, 0xff};
+  ClutterColor black = {0xff, 0xff, 0xff, 0xff};
   GtkWidget *vbox, *embed, *toolbar;
   
   GLIDE_NOTE (WINDOW, "Intializing Glide window");

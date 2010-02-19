@@ -64,6 +64,8 @@ struct _GlideManipulatorPrivate
   gulong allocation_notify_id;
   
   gboolean width_only;
+  
+  CoglHandle widget_material;
 };
 
 G_END_DECLS

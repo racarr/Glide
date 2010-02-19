@@ -42,7 +42,7 @@ enum {
 };
 
 #define GLIDE_MANIPULATOR_BORDER_WIDTH 2.5
-#define GLIDE_MANIPULATOR_WIDGET_WIDTH 4
+#define GLIDE_MANIPULATOR_WIDGET_WIDTH 8
 
 
 static void
@@ -160,44 +160,42 @@ glide_manipulator_paint_widget (GlideManipulator *manip,
 
   if (manip->priv->hovered == widg ||
       manip->priv->resize_widget == widg)
-    cogl_set_source_color4ub (hover_color->red, hover_color->green,
-			      hover_color->blue, hover_color->alpha);
+    cogl_set_source (manip->priv->widget_material);
 
   else
-    cogl_set_source_color4ub (widget_color->red, widget_color->green,
-			      widget_color->blue, widget_color->alpha);
+    cogl_set_source (manip->priv->widget_material);
   
   switch (widg)
     {
     case WIDGET_TOP_LEFT:
-      center_x = center_y = 0;
+      center_x = center_y = -GLIDE_MANIPULATOR_WIDGET_WIDTH;
       break;
     case WIDGET_TOP_RIGHT:
-      center_x = geom->width; 
-      center_y = 0;
+      center_x = geom->width + GLIDE_MANIPULATOR_WIDGET_WIDTH; 
+      center_y = 0 - GLIDE_MANIPULATOR_WIDGET_WIDTH; 
       break;
     case WIDGET_BOTTOM_LEFT:
-      center_x = 0;
-      center_y = geom->height;
+      center_x = 0-GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      center_y = geom->height+GLIDE_MANIPULATOR_WIDGET_WIDTH;
       break;
     case WIDGET_BOTTOM_RIGHT:
-      center_x = geom->width;
-      center_y = geom->height;
+      center_x = geom->width + GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      center_y = geom->height + GLIDE_MANIPULATOR_WIDGET_WIDTH;
       break;
     case WIDGET_TOP:
       center_x = geom->width / 2.0;
-      center_y = 0;
+      center_y = -GLIDE_MANIPULATOR_WIDGET_WIDTH;
       break;
     case WIDGET_BOTTOM:
       center_x = geom->width/2.0;
-      center_y = geom->height;
+      center_y = geom->height + GLIDE_MANIPULATOR_WIDGET_WIDTH;
       break;
     case WIDGET_LEFT:
-      center_x = 0;
+      center_x = -GLIDE_MANIPULATOR_WIDGET_WIDTH;
       center_y = geom->height/2.0;
       break;
     case WIDGET_RIGHT:
-      center_x = geom->width;
+      center_x = geom->width + GLIDE_MANIPULATOR_WIDGET_WIDTH;
       center_y = geom->height/2.0;
       break;
     default:
@@ -206,10 +204,12 @@ glide_manipulator_paint_widget (GlideManipulator *manip,
   
   if (manip->priv->mode == WIDGET_MODE_RESIZE)
     {
-      cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH + center_x,
-		      -GLIDE_MANIPULATOR_WIDGET_WIDTH + center_y,
-		      GLIDE_MANIPULATOR_WIDGET_WIDTH + center_x,
-		      GLIDE_MANIPULATOR_WIDGET_WIDTH + center_y);
+      cogl_rectangle_with_texture_coords  
+	(-GLIDE_MANIPULATOR_WIDGET_WIDTH + center_x,
+	 -GLIDE_MANIPULATOR_WIDGET_WIDTH + center_y,
+	 GLIDE_MANIPULATOR_WIDGET_WIDTH + center_x,
+	 GLIDE_MANIPULATOR_WIDGET_WIDTH + center_y,
+	 0.0, 0.0, 1.0, 1.0);
     }
   else
     {
@@ -271,7 +271,7 @@ glide_manipulator_paint (ClutterActor *self)
 {
   GlideManipulator *manip = GLIDE_MANIPULATOR (self);
   ClutterGeometry geom;
-  ClutterColor border_color = {0xcc, 0xcc, 0xcc, 0xff};
+  ClutterColor border_color = {0x00, 0x00, 0x00, 0xcc};
   ClutterColor hover_color = {0xff, 0xcc, 0xcc, 0xff};
   ClutterColor widget_color = {0xcc, 0xcc, 0xff, 0xff};
 
@@ -689,9 +689,27 @@ glide_manipulator_class_init (GlideManipulatorClass *klass)
 static void
 glide_manipulator_init (GlideManipulator *manipulator)
 {
+  GError *e = NULL;
+  CoglHandle widget_texture = COGL_INVALID_HANDLE;
+
   manipulator->priv = GLIDE_MANIPULATOR_GET_PRIVATE (manipulator);
+
   
   manipulator->priv->mode = WIDGET_MODE_RESIZE;
+
+  manipulator->priv->widget_material = cogl_material_new ();
+  widget_texture = cogl_texture_new_from_file ("./manipulator-widget.png",
+					       COGL_TEXTURE_NONE,
+					       COGL_PIXEL_FORMAT_ANY,
+					       &e);
+  if (e || widget_texture == COGL_INVALID_HANDLE)
+    {
+      g_warning ("Failed to load glide-manipulator widget handle image.");
+      g_error_free (e);
+    }
+  cogl_material_set_layer (manipulator->priv->widget_material, 0,
+			   widget_texture);
+  cogl_handle_unref (widget_texture);
   
   clutter_actor_set_reactive (CLUTTER_ACTOR (manipulator), TRUE);
 }
