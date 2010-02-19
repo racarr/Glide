@@ -29,6 +29,7 @@
 #include <math.h>
 
 #include "glide-manipulator-priv.h"
+#include "glide-dirs.h"
 
 
 G_DEFINE_TYPE(GlideManipulator, glide_manipulator, CLUTTER_TYPE_RECTANGLE)
@@ -779,6 +780,20 @@ glide_manipulator_material_for_file (const gchar *filename)
 }
 
 static void
+glide_manipulator_load_textures (GlideManipulator *manipulator)
+{
+  gchar *image_dir = glide_dirs_get_glide_image_dir ();
+  gchar *p1 = g_build_filename(image_dir, "manipulator-widget.png", NULL);
+  gchar *p2 = g_build_filename(image_dir, "manipulator-widget-active.png",
+			       NULL);
+
+  manipulator->priv->widget_material = glide_manipulator_material_for_file(p1);
+  manipulator->priv->widget_active_material = glide_manipulator_material_for_file(p2);
+  
+  
+}
+
+static void
 glide_manipulator_init (GlideManipulator *manipulator)
 {
   manipulator->priv = GLIDE_MANIPULATOR_GET_PRIVATE (manipulator);
@@ -786,8 +801,7 @@ glide_manipulator_init (GlideManipulator *manipulator)
   
   manipulator->priv->mode = WIDGET_MODE_RESIZE;
 
-  manipulator->priv->widget_material = glide_manipulator_material_for_file("./manipulator-widget.png");
-  manipulator->priv->widget_active_material = glide_manipulator_material_for_file("./manipulator-widget-active.png");
+  glide_manipulator_load_textures (manipulator);
   
   clutter_actor_set_reactive (CLUTTER_ACTOR (manipulator), TRUE);
 }
