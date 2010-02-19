@@ -279,10 +279,6 @@ glide_manipulator_button_press (ClutterActor *actor,
     }
     
 
-  //Proper point transforms?
-  manip->priv->drag_center_x = event->x - ax;
-  manip->priv->drag_center_y = event->y - ay;
-
   return FALSE;
 }
 
@@ -321,13 +317,6 @@ glide_manipulator_button_release (ClutterActor *actor,
       return TRUE;
     }
   
-  if (manip->priv->dragging);
-    {
-      clutter_ungrab_pointer ();
-      manip->priv->dragging = FALSE;
-      
-      return TRUE;
-    }
     return ret;
 }
 
@@ -457,16 +446,6 @@ glide_manipulator_motion (ClutterActor *actor,
 
     }
 
-  if (manip->priv->dragging)
-    {
-      clutter_actor_set_position (actor, 
-				  mev->x - manip->priv->drag_center_x,
-				  mev->y - manip->priv->drag_center_y);
-      clutter_actor_set_position (manip->priv->target, 
-				  mev->x - manip->priv->drag_center_x
-				  , mev->y - manip->priv->drag_center_y);
-      return TRUE;
-    }
   return FALSE;
 }
 

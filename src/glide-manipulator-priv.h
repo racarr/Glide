@@ -48,10 +48,6 @@ struct _GlideManipulatorPrivate
   
   GlideManipulatorWidgetMode mode;
 
-  gboolean dragging;
-  gfloat drag_center_x;
-  gfloat drag_center_y;
-  
   GlideManipulatorWidget hovered;
   
   gboolean transforming;
