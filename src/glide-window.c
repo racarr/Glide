@@ -109,23 +109,11 @@ static void
 glide_window_new_text (GtkWidget *toolitem, gpointer data)
 {
   GlideWindow *window = (GlideWindow *)data;
-  ClutterColor black = {0x00, 0x00, 0x00, 0xff};
   ClutterActor *text;
   
   text = glide_text_new (window->priv->manager);
 
   GLIDE_NOTE (WINDOW, "Inserting new text, stage manager: %p", window->priv->manager);
-  
-  glide_text_set_color (GLIDE_TEXT (text), &black);
-  glide_text_set_text (GLIDE_TEXT (text), "This is a test of text"
-			 " in Glide.");
-  glide_text_set_font_name (GLIDE_TEXT (text), "Sans 12");
-  
-  glide_text_set_editable (GLIDE_TEXT (text), FALSE);
-  glide_text_set_line_wrap (GLIDE_TEXT (text), TRUE);
-  clutter_actor_set_reactive (CLUTTER_ACTOR (text), TRUE);
-
-  clutter_actor_show (text);
 }
 
 static gboolean

@@ -3243,7 +3243,7 @@ glide_text_init (GlideText *self)
 		      G_CALLBACK (glide_text_width_changed_cb),
 		      NULL);
   
-  glide_text_set_line_wrap (self, TRUE);
+  glide_text_set_text (self, "Lorem ipsum dolor sit amet");
 }
 
 /**
