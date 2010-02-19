@@ -41,8 +41,8 @@ enum {
   PROP_WIDTH_ONLY
 };
 
-#define GLIDE_MANIPULATOR_BORDER_WIDTH 2.5
-#define GLIDE_MANIPULATOR_WIDGET_WIDTH 9.5
+#define GLIDE_MANIPULATOR_BORDER_WIDTH 1.5
+#define GLIDE_MANIPULATOR_WIDGET_WIDTH 7.5
 
 
 static void
@@ -152,9 +152,7 @@ glide_manipulator_paint_border (const ClutterColor *border_color,
 static void
 glide_manipulator_paint_widget (GlideManipulator *manip,
 				ClutterGeometry *geom,
-				GlideManipulatorWidget widg,
-				const ClutterColor *hover_color,
-				const ClutterColor *widget_color)
+				GlideManipulatorWidget widg)
 {
   gfloat center_x = 0, center_y = 0;
 
@@ -222,47 +220,98 @@ glide_manipulator_paint_widget (GlideManipulator *manip,
 }
 
 static void
+glide_manipulator_paint_widget_geom (ClutterGeometry *geom,
+				     GlideManipulatorWidget widg)
+{
+  gfloat center_x = 0, center_y = 0;
+
+  switch (widg)
+    {
+    case WIDGET_TOP_LEFT:
+      center_x = center_y = -GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      break;
+    case WIDGET_TOP_RIGHT:
+      center_x = geom->width + GLIDE_MANIPULATOR_WIDGET_WIDTH; 
+      center_y = 0 - GLIDE_MANIPULATOR_WIDGET_WIDTH; 
+      break;
+    case WIDGET_BOTTOM_LEFT:
+      center_x = 0-GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      center_y = geom->height+GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      break;
+    case WIDGET_BOTTOM_RIGHT:
+      center_x = geom->width + GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      center_y = geom->height + GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      break;
+    case WIDGET_TOP:
+      center_x = geom->width / 2.0;
+      center_y = -GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      break;
+    case WIDGET_BOTTOM:
+      center_x = geom->width/2.0;
+      center_y = geom->height + GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      break;
+    case WIDGET_LEFT:
+      center_x = -GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      center_y = geom->height/2.0;
+      break;
+    case WIDGET_RIGHT:
+      center_x = geom->width + GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      center_y = geom->height/2.0;
+      break;
+    default:
+      break;
+    }
+  
+  cogl_rectangle(-GLIDE_MANIPULATOR_WIDGET_WIDTH + center_x,
+		 -GLIDE_MANIPULATOR_WIDGET_WIDTH + center_y,
+		 GLIDE_MANIPULATOR_WIDGET_WIDTH + center_x,
+		 GLIDE_MANIPULATOR_WIDGET_WIDTH + center_y);
+  
+}
+
+static void
 glide_manipulator_paint_widgets (GlideManipulator *manip,
-				 ClutterGeometry *geom,
-				 const ClutterColor *hover_color,
-				 const ClutterColor *widget_color)
+				 ClutterGeometry *geom)
 {
   if (!manip->priv->width_only)
     {
       glide_manipulator_paint_widget (manip, geom, 
-				      WIDGET_TOP_LEFT,
-				      hover_color,
-				      widget_color);
+				      WIDGET_TOP_LEFT);
       glide_manipulator_paint_widget (manip, geom, 
-				      WIDGET_BOTTOM_LEFT,
-				      hover_color,
-				      widget_color);
+				      WIDGET_BOTTOM_LEFT);
       glide_manipulator_paint_widget (manip, geom, 
-				      WIDGET_TOP_RIGHT,
-				      hover_color,
-				      widget_color);
+				      WIDGET_TOP_RIGHT);
       glide_manipulator_paint_widget (manip, geom, 
-				      WIDGET_BOTTOM_RIGHT,
-				      hover_color,
-				      widget_color);
+				      WIDGET_BOTTOM_RIGHT);
       glide_manipulator_paint_widget (manip, geom, 
-				      WIDGET_TOP,
-				      hover_color,
-				      widget_color);
+				      WIDGET_TOP);
        glide_manipulator_paint_widget (manip, geom, 
-				      WIDGET_BOTTOM,
-				      hover_color,
-				      widget_color);
+				       WIDGET_BOTTOM);
     }
 
   glide_manipulator_paint_widget (manip, geom, 
-				  WIDGET_LEFT,
-				  hover_color,
-				  widget_color);
+				  WIDGET_LEFT);
   glide_manipulator_paint_widget (manip, geom, 
-				  WIDGET_RIGHT,
-				  hover_color,
-				  widget_color);
+				  WIDGET_RIGHT);
+
+}
+
+static void
+glide_manipulator_paint_widgets_geom (GlideManipulator *manip,
+				      ClutterGeometry *geom)
+{
+  if (!manip->priv->width_only)
+    {
+      glide_manipulator_paint_widget_geom (geom, WIDGET_TOP_LEFT);
+      glide_manipulator_paint_widget_geom (geom, WIDGET_BOTTOM_LEFT);
+      glide_manipulator_paint_widget_geom (geom, WIDGET_TOP_RIGHT);
+      glide_manipulator_paint_widget_geom (geom, WIDGET_BOTTOM_RIGHT);
+      glide_manipulator_paint_widget_geom (geom, WIDGET_TOP);
+      glide_manipulator_paint_widget_geom (geom, WIDGET_BOTTOM);
+    }
+
+  glide_manipulator_paint_widget_geom (geom, WIDGET_LEFT);
+  glide_manipulator_paint_widget_geom (geom, WIDGET_RIGHT);
 
 }
   
@@ -272,8 +321,6 @@ glide_manipulator_paint (ClutterActor *self)
   GlideManipulator *manip = GLIDE_MANIPULATOR (self);
   ClutterGeometry geom;
   ClutterColor border_color = {0x00, 0x00, 0x00, 0xcc};
-  ClutterColor hover_color = {0xff, 0xcc, 0xcc, 0xff};
-  ClutterColor widget_color = {0xcc, 0xcc, 0xff, 0xff};
 
   GLIDE_NOTE (PAINT,
 	      "painting manipulator '%s'",
@@ -287,8 +334,7 @@ glide_manipulator_paint (ClutterActor *self)
 	      clutter_actor_get_opacity (self));
   
   glide_manipulator_paint_border (&border_color, &geom);
-  glide_manipulator_paint_widgets (manip, &geom, &hover_color,
-				   &widget_color);
+  glide_manipulator_paint_widgets (manip, &geom);
 
   if (manip->priv->target)
     clutter_actor_queue_redraw (manip->priv->target);
@@ -303,8 +349,8 @@ glide_manipulator_pick (ClutterActor *actor,
   clutter_actor_get_allocation_geometry (actor, &geom);
   
   glide_manipulator_paint_border (color, &geom);
-  glide_manipulator_paint_widgets (GLIDE_MANIPULATOR (actor), &geom,
-				   color, color);
+  glide_manipulator_paint_widgets_geom (GLIDE_MANIPULATOR (actor), &geom);
+
 }
 
 
