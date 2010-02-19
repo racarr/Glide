@@ -81,6 +81,8 @@ glide_window_image_open_response_callback (GtkDialog *dialog,
       clutter_actor_set_position (im, 200, 200);
       clutter_container_add_actor (CLUTTER_CONTAINER (stage), im);
       
+      g_free (filename);
+      
       clutter_actor_show (im);
     }
   
@@ -103,6 +105,8 @@ glide_window_new_image (GtkWidget *toolitem, gpointer data)
   g_signal_connect (d, "response",
 		    G_CALLBACK (glide_window_image_open_response_callback),
 		    manager);
+  
+  // TODO: Make it start on our current font...
   gtk_widget_show (d);
 }
 
