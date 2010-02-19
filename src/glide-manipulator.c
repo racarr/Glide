@@ -788,9 +788,7 @@ glide_manipulator_load_textures (GlideManipulator *manipulator)
 			       NULL);
 
   manipulator->priv->widget_material = glide_manipulator_material_for_file(p1);
-  manipulator->priv->widget_active_material = glide_manipulator_material_for_file(p2);
-  
-  
+  manipulator->priv->widget_active_material = glide_manipulator_material_for_file(p2);  
 }
 
 static void

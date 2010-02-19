@@ -62,33 +62,48 @@ glide_window_class_init (GlideWindowClass *klass)
 }
 
 static void
+glide_window_image_open_response_callback (GtkDialog *dialog,
+					   int response,
+					   gpointer data)
+{
+
+  if (response == GTK_RESPONSE_ACCEPT)
+    {
+      GlideStageManager *manager = (GlideStageManager *)data;
+      ClutterActor *stage = (ClutterActor *)
+	glide_stage_manager_get_stage (manager);
+      ClutterActor *im;
+
+      // Todo: URI
+      gchar *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+      
+      im = (ClutterActor *)glide_image_new_from_file (manager, filename, NULL);
+      clutter_actor_set_position (im, 200, 200);
+      clutter_container_add_actor (CLUTTER_CONTAINER (stage), im);
+      
+      clutter_actor_show (im);
+    }
+  
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
 glide_window_new_image (GtkWidget *toolitem, gpointer data)
 {
+  GtkWidget *d;
   GlideStageManager *manager = (GlideStageManager *)data;
-  ClutterActor *stage = (ClutterActor *)
-    glide_stage_manager_get_stage (manager);
-  ClutterActor *im;
   
   GLIDE_NOTE (WINDOW, "Inserting new image, stage manager: %p", manager);
-  
-  im = (ClutterActor *)glide_image_new_from_file (manager,
-						  "/home/racarr/surprise.jpg",
-						  NULL);
-  //  clutter_actor_set_size(im, 100, 100);
-  
-  //  g = (ClutterActor *)glide_manipulator_new (im);
-  //  clutter_actor_set_size(g, 100, 100);
-
-  //  clutter_actor_set_position(g, 200, 200);
-  clutter_actor_set_position(im, 200, 200);
-  
-  //  clutter_container_add_actor (CLUTTER_CONTAINER(stage), g);
-  clutter_container_add_actor (CLUTTER_CONTAINER(stage), im);
-
-  //  clutter_actor_raise (g, im);
-  
-  clutter_actor_show (im);
-
+  d = gtk_file_chooser_dialog_new ("Open image",
+				   NULL,
+				   GTK_FILE_CHOOSER_ACTION_OPEN,
+				   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				   GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+				   NULL);
+  g_signal_connect (d, "response",
+		    G_CALLBACK (glide_window_image_open_response_callback),
+		    manager);
+  gtk_widget_show (d);
 }
 
 static void
