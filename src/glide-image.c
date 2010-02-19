@@ -77,6 +77,20 @@ glide_image_button_press (ClutterActor *actor,
 }
 
 static void
+glide_image_finalize (GObject *object)
+{
+  GlideImage *image = GLIDE_IMAGE (object);
+  
+  if (image->priv->material != COGL_INVALID_HANDLE)
+    {
+      cogl_handle_unref (image->priv->material);
+      image->priv->material = COGL_INVALID_HANDLE;
+    }
+  
+  G_OBJECT_CLASS (glide_image_parent_class)->finalize (object);
+}
+
+static void
 glide_image_class_init (GlideImageClass *klass)
 {
   ClutterActorClass *actor_class = CLUTTER_ACTOR_CLASS (klass);
@@ -85,6 +99,7 @@ glide_image_class_init (GlideImageClass *klass)
   actor_class->paint = glide_image_paint;
   actor_class->button_press_event = glide_image_button_press;
   
+  object_class->finalize = glide_image_finalize;
   g_type_class_add_private (object_class, sizeof(GlideImagePrivate));
 }
 
@@ -119,7 +134,6 @@ glide_image_set_cogl_texture (GlideImage *image,
   
   cogl_handle_ref (new_texture);
   
-  /* TODO: Free old texture */
   image_free_gl_resources (image);
   
   cogl_material_set_layer (image->priv->material, 0, new_texture);

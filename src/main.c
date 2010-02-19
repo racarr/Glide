@@ -1,4 +1,3 @@
-/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 /*
  * main.c
  * Copyright (C) Robert Carr 2010 <racarr@gnome.org>
@@ -33,45 +32,101 @@
 #include <glib/gi18n.h>
 
 #include "glide-window.h"
+#include "glide-debug.h"
 
-static void
-glide_setup_main_window (GtkBuilder *builder)
+guint glide_debug_flags = 0;
+
+#ifdef GLIDE_ENABLE_DEBUG
+static const GDebugKey glide_debug_keys[] = {
+  {"misc", GLIDE_DEBUG_MISC}
+};
+
+static gboolean
+glide_arg_debug_cb (const char *key, const char *value, gpointer user_data)
 {
-	ClutterActor *stage;
-	ClutterColor black = {0x00, 0x00, 0x00, 0xff};
-	GtkWidget *embed, *window, *vbox;
+  glide_debug_flags |=
+	g_parse_debug_string (value, glide_debug_keys, G_N_ELEMENTS (glide_debug_keys));
+  return TRUE;
+}
 
-	window = GTK_WIDGET (gtk_builder_get_object (builder, "window1"));
-	gtk_window_set_default_size (GTK_WINDOW (window), 600, 500);
+static gboolean
+seed_arg_no_debug_cb (const char *key, const char *value, gpointer user_data)
+{
+  glide_debug_flags &=
+	~g_parse_debug_string (value, glide_debug_keys, G_N_ELEMENTS (glide_debug_keys));
+}
+#endif
 
-	vbox = GTK_WIDGET (gtk_builder_get_object (builder, "vbox1"));
-	
-	embed = gtk_clutter_embed_new ();
-	gtk_container_add (GTK_CONTAINER (vbox), embed);
-	
+static GOptionEntry glide_args[] = {
+#ifdef GLIDE_ENABLE_DEBUG
+  {"glide-debug", 0, 0, G_OPTION_ARG_CALLBACK, glide_arg_debug_cb,
+   "Glide debugging messages to show. Comma seperated list of: all, misc.",
+   "FLAGS"},
+  {"glide-no-debug", 0, 0, G_OPTION_ARG_CALLBACK, glide_arg_no_debug_cb,
+   "Disable glide debugging", "FLAGS"},
+#endif
+  {NULL,},
+};
 
-	stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (embed));
-	clutter_actor_set_size (stage, 500, 500);
+GOptionGroup *
+glide_get_option_group (void)
+{
+  GOptionGroup *group;
 	
-	gtk_widget_set_size_request (embed, 500, 500);
+  group = g_option_group_new ("glide", "Glide Options",
+							  "Show Glide Options", NULL, NULL);
+  g_option_group_add_entries (group, glide_args);
 	
-	clutter_stage_set_color (CLUTTER_STAGE (stage), &black);	
-	clutter_actor_show (stage);
+  return group;
+}
 
-	gtk_widget_show_all (window);
+static gboolean
+glide_parse_args (int *argc, char ***argv)
+{
+  GOptionContext *option_context;
+  GOptionGroup *glide_group;
+  GError *error = NULL;
+  gboolean ret = TRUE;
+  
+  option_context = g_option_context_new (NULL);
+  g_option_context_set_ignore_unknown_options (option_context, TRUE);
+  g_option_context_set_help_enabled (option_context, TRUE);
+  
+  glide_group = glide_get_option_group ();
+  g_option_context_add_group (option_context, glide_group);
+  
+  if (!g_option_context_parse (option_context, argc, argv, &error))
+	{
+	  if (error)
+		{
+		  g_warning ("%s", error->message);
+		  g_error_free (error);
+		}
+	  
+	  ret = FALSE;
+	}
+  g_option_context_free (option_context);
+  
+  return ret;
 }
 
 int
 main (int argc, char *argv[])
 {
-	GlideWindow *window;
+  GlideWindow *window;
 
-	gtk_set_locale ();
-	gtk_init (&argc, &argv);
-	gtk_clutter_init (&argc, &argv);
+  gtk_set_locale ();
+  gtk_init (&argc, &argv);
+  gtk_clutter_init (&argc, &argv);
+  
+  if (glide_parse_args (&argc, &argv) == FALSE)
+	{
+	  g_critical ("Failed to parse arguments");
+	  return 1;
+	}
 
-	window = glide_window_new ();
+  window = glide_window_new ();
 
-	gtk_main ();
-	return 0;
+  gtk_main ();
+  return 0;
 }
