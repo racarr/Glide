@@ -42,7 +42,7 @@ enum {
 };
 
 #define GLIDE_MANIPULATOR_BORDER_WIDTH 2.5
-#define GLIDE_MANIPULATOR_WIDGET_WIDTH 8
+#define GLIDE_MANIPULATOR_WIDGET_WIDTH 9.5
 
 
 static void
@@ -709,6 +709,9 @@ glide_manipulator_init (GlideManipulator *manipulator)
     }
   cogl_material_set_layer (manipulator->priv->widget_material, 0,
 			   widget_texture);
+  cogl_material_set_layer_filters (manipulator->priv->widget_material, 0,
+				   COGL_MATERIAL_FILTER_LINEAR_MIPMAP_LINEAR,
+				   COGL_MATERIAL_FILTER_LINEAR);
   cogl_handle_unref (widget_texture);
   
   clutter_actor_set_reactive (CLUTTER_ACTOR (manipulator), TRUE);
