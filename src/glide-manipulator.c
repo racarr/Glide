@@ -469,6 +469,29 @@ glide_manipulator_get_property (GObject *object,
 }
 
 static void
+glide_manipulator_sync_transforms (ClutterActor *manipulator,
+				   ClutterActor *target)
+{
+  gfloat tx, ty, tw, th;
+  
+  clutter_actor_get_position (target, &tx, &ty);
+  clutter_actor_get_size (target, &tw, &th);
+  
+  clutter_actor_set_position (manipulator, tx, ty);
+  clutter_actor_set_size (manipulator, tw, th);
+}
+
+static void
+glide_manipulator_target_allocation_changed_cb (GObject *object,
+						GParamSpec *pspec,
+						gpointer user_data)
+{
+  GlideManipulator *manipulator = (GlideManipulator *)user_data;
+
+  glide_manipulator_sync_transforms ((ClutterActor *)manipulator, manipulator->priv->target);
+}
+
+static void
 glide_manipulator_set_target_real (GlideManipulator *manip,
 				   ClutterActor *target)
 {
@@ -498,9 +521,16 @@ glide_manipulator_set_target_real (GlideManipulator *manip,
   clutter_actor_raise (CLUTTER_ACTOR (manip), target);
   
   if (manip->priv->target)
-    clutter_actor_queue_redraw (manip->priv->target);
-			      
+    {
+      clutter_actor_queue_redraw (manip->priv->target);
+      if (manip->priv->allocation_notify_id)
+	g_signal_handler_disconnect (manip->priv->target, manip->priv->allocation_notify_id);
+    }
+
   manip->priv->target = target;
+  manip->priv->allocation_notify_id = g_signal_connect (manip->priv->target, "notify::allocation",
+							G_CALLBACK (glide_manipulator_target_allocation_changed_cb),
+							manip);
 }
 				   
 

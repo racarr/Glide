@@ -56,6 +56,8 @@ struct _GlideManipulatorPrivate
   gboolean swap_widgets;
   
   gfloat rot_angle;
+  
+  gulong allocation_notify_id;
 };
 
 G_END_DECLS
