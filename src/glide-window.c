@@ -32,6 +32,8 @@
 #include "glide-window-private.h"
 #include "glide-image.h"
 
+#include "glide-debug.h"
+
 #define GLIDE_WINDOW_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object),	\
 								      GLIDE_TYPE_WINDOW, \
 								      GlideWindowPrivate))
@@ -42,7 +44,8 @@ G_DEFINE_TYPE(GlideWindow, glide_window, GTK_TYPE_WINDOW)
 static void
 glide_window_finalize (GObject *object)
 {
-  /* Debug? */
+  GLIDE_NOTE (WINDOW, "Finalizing GlideWindow: %p",
+	       object);
 
   G_OBJECT_CLASS (glide_window_parent_class)->finalize (object);
 }
@@ -63,7 +66,9 @@ glide_window_new_image (GtkWidget *toolitem, gpointer data)
   GlideStageManager *manager = (GlideStageManager *)data;
   ClutterActor *stage = (ClutterActor *)
     glide_stage_manager_get_stage (manager);
-  ClutterActor *im, *g;
+  ClutterActor *im;
+  
+  GLIDE_NOTE (WINDOW, "Inserting new image, stage manager: %p", manager);
   
   im = (ClutterActor *)glide_image_new_from_file (manager,
 						  "/home/racarr/surprise.jpg",
@@ -93,9 +98,11 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
   GlideStageManager *manager = (GlideStageManager *)data;
   ClutterActor *stage = 
     (ClutterActor *)glide_stage_manager_get_stage (manager);
-  ClutterActor *im, *g;
+  ClutterActor *im;
   
   im = (ClutterActor *)glide_rectangle_new(manager);
+
+  GLIDE_NOTE (WINDOW, "Inserting new text, stage manager: %p", manager);
   
   //  g = (ClutterActor *)glide_manipulator_new (im);
 
@@ -148,6 +155,8 @@ glide_window_init (GlideWindow *window)
   ClutterActor *stage;
   ClutterColor black = {0x00, 0x00, 0x00, 0xff};
   GtkWidget *vbox, *embed, *toolbar;
+  
+  GLIDE_NOTE (WINDOW, "Intializing Glide window");
   
   window->priv = GLIDE_WINDOW_GET_PRIVATE (window);
   

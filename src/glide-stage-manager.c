@@ -27,6 +27,9 @@
 
 #include "glide-stage-manager-priv.h"
 #include "glide-manipulator.h"
+#include "glide-actor.h"
+
+#include "glide-debug.h"
 
 G_DEFINE_TYPE(GlideStageManager, glide_stage_manager, G_TYPE_OBJECT)
 
@@ -48,7 +51,8 @@ static guint stage_manager_signals[LAST_SIGNAL] = { 0, };
 static void
 glide_stage_manager_finalize (GObject *object)
 {
-  /* Debug? */
+  GLIDE_NOTE (STAGE_MANAGER, "Finalizing stage manager: %s",
+	      GLIDE_ACTOR_DISPLAY_NAME (CLUTTER_ACTOR (object)));
 
   G_OBJECT_CLASS (glide_stage_manager_parent_class)->finalize (object);
 }
@@ -84,6 +88,10 @@ glide_stage_manager_set_selection_real (GlideStageManager *m,
   
   if (old == a)
     return;
+  
+  GLIDE_NOTE (STAGE_MANAGER, "Selection changed from: %s (%p) to %s (%p)",
+	      old ? GLIDE_ACTOR_DISPLAY_NAME (old) : "unknown", old,
+	      a ? GLIDE_ACTOR_DISPLAY_NAME (a) : "unknown", a);
 
   m->priv->selection = a;
   

@@ -23,6 +23,9 @@
 #include <glib/gi18n.h>
 #include "glide-manipulator.h"
 
+#include "glide-debug.h"
+#include "glide-actor.h"
+
 #include <math.h>
 
 #include "glide-manipulator-priv.h"
@@ -44,7 +47,9 @@ enum {
 static void
 glide_manipulator_finalize (GObject *object)
 {
-  /* Debug? */
+  GLIDE_NOTE (MANIPULATOR,
+	      "finalizing manipulator '%s'",
+	      GLIDE_ACTOR_DISPLAY_NAME (CLUTTER_ACTOR (object)));
 
   G_OBJECT_CLASS (glide_manipulator_parent_class)->finalize (object);
 }
@@ -194,7 +199,16 @@ glide_manipulator_paint (ClutterActor *self)
   GlideManipulator *manip = GLIDE_MANIPULATOR (self);
   ClutterGeometry geom;
 
+  GLIDE_NOTE (PAINT,
+	      "painting manipulator '%s'",
+	      GLIDE_ACTOR_DISPLAY_NAME (self));
   clutter_actor_get_allocation_geometry (self, &geom);
+  
+  GLIDE_NOTE (PAINT, 
+	      "paint to x: %d, y: %d, w: %d, h: %d "
+	      "opacity: %i",
+	      geom.x, geom.y, geom.width, geom.height,
+	      clutter_actor_get_opacity (self));
   
   glide_manipulator_paint_border (&geom);
   glide_manipulator_paint_widgets (manip, &geom);
@@ -335,14 +349,6 @@ glide_manipulator_process_resize (GlideManipulator *manip,
     default:
       break;
     }
-}
-
-static gdouble
-glide_manipulator_get_zrot (GlideManipulator *manip)
-{
-  gfloat rx, ry, rz;
-  
-  return clutter_actor_get_rotation (CLUTTER_ACTOR (manip), CLUTTER_Z_AXIS, &rx, &ry, &rz);
 }
 
 static void

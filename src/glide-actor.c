@@ -81,14 +81,11 @@ glide_actor_selection_changed_callback (GlideStageManager *manager,
     {
       this->priv->selected = FALSE;
       g_object_notify (G_OBJECT (this), "selected");
-      g_message("Deselected actor: %p", this);
     }
   if ((GlideActor *)glide_stage_manager_get_selection (manager) == this)
     {
       this->priv->selected = TRUE;
       g_object_notify (G_OBJECT (this), "selected");
-
-      g_message("Selected actor: %p", this);
     }
 }
 

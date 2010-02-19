@@ -13,7 +13,8 @@ AM_CPPFLAGS = \
 	$(GLIDE_DEBUG_CFLAGS)
 
 AM_CFLAGS =\
-	 -Wall
+	 -Wall \
+	 -Werror 	
 
 bin_PROGRAMS = glide
 

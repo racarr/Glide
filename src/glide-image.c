@@ -23,6 +23,8 @@
 #include "glide-image.h"
 #include "glide-image-priv.h"
 
+#include "glide-debug.h"
+
 G_DEFINE_TYPE (GlideImage, glide_image, GLIDE_TYPE_ACTOR);
 
 #define GLIDE_IMAGE_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GLIDE_TYPE_IMAGE, GlideImagePrivate))
@@ -35,14 +37,23 @@ glide_image_paint (ClutterActor *self)
   ClutterActorBox box = {0, };
   gfloat t_w, t_h;
   guint8 paint_opacity = clutter_actor_get_paint_opacity (self);
-  
+
   if (paint_opacity == 0)
     {
       return;
     }
   
+  GLIDE_NOTE (PAINT,
+	      "painting image '%s'",
+	      GLIDE_ACTOR_DISPLAY_NAME (self));
+  
   cogl_material_set_color4ub (priv->material, paint_opacity, paint_opacity, paint_opacity, paint_opacity);
   clutter_actor_get_allocation_box (self, &box);
+  
+  GLIDE_NOTE (PAINT, "paint to x1: %f, y1: %f x2: %f, y2: %f "
+	      "opacity: %i",
+	      box.x1, box.y1, box.x2, box.y2,
+	      clutter_actor_get_opacity (self));
   
   t_w = 1.0;
   t_h = 1.0;
@@ -80,6 +91,10 @@ static void
 glide_image_finalize (GObject *object)
 {
   GlideImage *image = GLIDE_IMAGE (object);
+
+  GLIDE_NOTE (IMAGE,
+	      "finalizing image '%s'",
+	      GLIDE_ACTOR_DISPLAY_NAME (CLUTTER_ACTOR (object)));
   
   if (image->priv->material != COGL_INVALID_HANDLE)
     {

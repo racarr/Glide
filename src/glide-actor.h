@@ -63,6 +63,9 @@ struct _GlideActorClass
 	ClutterActorClass parent_class;
 };
 
+#define GLIDE_ACTOR_DISPLAY_NAME(actor) \
+  (clutter_actor_get_name (actor) ? clutter_actor_get_name (actor) : "unknown")
+
 /*
  * Public methods
  */
