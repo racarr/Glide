@@ -75,8 +75,6 @@ glide_window_image_open_response_callback (GtkDialog *dialog,
       gchar *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
       
       im =  glide_image_new_from_file (window->priv->manager, filename, NULL);
-      clutter_actor_set_position (im, 200, 200);
-      clutter_container_add_actor (CLUTTER_CONTAINER (window->priv->stage), im);
       
       g_free (filename);
       
@@ -111,9 +109,8 @@ static void
 glide_window_new_text (GtkWidget *toolitem, gpointer data)
 {
   GlideWindow *window = (GlideWindow *)data;
-  ClutterActor *stage = window->priv->stage;
-  ClutterActor *text;
   ClutterColor black = {0x00, 0x00, 0x00, 0xff};
+  ClutterActor *text;
   
   text = glide_text_new (window->priv->manager);
 
@@ -128,10 +125,6 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
   glide_text_set_line_wrap (GLIDE_TEXT (text), TRUE);
   clutter_actor_set_reactive (CLUTTER_ACTOR (text), TRUE);
 
-  clutter_actor_set_position(text, 400, 200);
-  
-  clutter_container_add_actor (CLUTTER_CONTAINER(stage), text);
-  
   clutter_actor_show (text);
 }
 

@@ -25,6 +25,7 @@
 
 #include <glib-object.h>
 #include <clutter/clutter.h>
+
 #include "glide-manipulator.h"
 #include "glide-document.h"
 
@@ -80,6 +81,9 @@ void glide_stage_manager_set_selection (GlideStageManager *manager,
 					ClutterActor *actor);
 
 GlideManipulator *glide_stage_manager_get_manipulator (GlideStageManager *manager);
+
+void glide_stage_manager_add_actor (GlideStageManager *manager,
+				    ClutterActor *actor);
 
 
 G_END_DECLS

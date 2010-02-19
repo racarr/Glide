@@ -103,6 +103,20 @@ glide_actor_selection_changed_callback (GlideStageManager *manager,
 }
 
 static void
+glide_actor_set_stage_manager_real (GlideActor *actor,
+				    GlideStageManager *manager)
+{
+  g_return_if_fail (actor->priv->manager == NULL);
+  actor->priv->manager = manager;
+
+  g_signal_connect (actor->priv->manager, "selection-changed",
+		    G_CALLBACK (glide_actor_selection_changed_callback),
+		    actor);
+
+  glide_stage_manager_add_actor (manager, (ClutterActor *)actor);
+}
+
+static void
 glide_actor_set_property (GObject *object,
 			  guint prop_id,
 			  const GValue *value,
@@ -113,11 +127,7 @@ glide_actor_set_property (GObject *object,
   switch (prop_id)
     {
     case PROP_STAGE_MANAGER:
-      g_return_if_fail (actor->priv->manager == NULL);
-      actor->priv->manager = (GlideStageManager *)g_value_get_object (value);
-      g_signal_connect (actor->priv->manager, "selection-changed",
-			G_CALLBACK (glide_actor_selection_changed_callback),
-			actor);
+      glide_actor_set_stage_manager_real (actor, g_value_get_object (value));
       break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

@@ -288,5 +288,8 @@ glide_image_new_from_file (GlideStageManager *m,
       return NULL;
     }
   else
-    return image;
+    {
+      clutter_actor_queue_relayout (image);
+      return image;
+    }
 }
