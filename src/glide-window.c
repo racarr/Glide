@@ -31,6 +31,7 @@
 #include "glide-stage-manager.h"
 #include "glide-window-private.h"
 #include "glide-image.h"
+#include "glide-text.h"
 
 #include "glide-debug.h"
 
@@ -88,7 +89,6 @@ glide_window_new_image (GtkWidget *toolitem, gpointer data)
   
   clutter_actor_show_all (stage);
 
-  g_message("New image!");
 }
 
 static void
@@ -97,28 +97,34 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
   GlideStageManager *manager = (GlideStageManager *)data;
   ClutterActor *stage = 
     (ClutterActor *)glide_stage_manager_get_stage (manager);
-  ClutterActor *im;
+  ClutterActor *text;
+  ClutterColor white = {0xff, 0xff, 0xff, 0xff};
   
-  im = (ClutterActor *)glide_rectangle_new(manager);
+  text = glide_text_new (manager);
 
   GLIDE_NOTE (WINDOW, "Inserting new text, stage manager: %p", manager);
   
-  //  g = (ClutterActor *)glide_manipulator_new (im);
+  glide_text_set_color (GLIDE_TEXT (text), &white);
+  glide_text_set_text (GLIDE_TEXT (text), "This is a test of text"
+			 " in Glide.");
+  glide_text_set_font_name (GLIDE_TEXT (text), "Sans 12");
+  
+  glide_text_set_editable (GLIDE_TEXT (text), FALSE);
+  glide_text_set_line_wrap (GLIDE_TEXT (text), FALSE);
 
   //  clutter_actor_set_position(g, 400, 200);
-  clutter_actor_set_position(im, 400, 200);
+  clutter_actor_set_position(text, 400, 200);
   
   //  clutter_actor_set_size(g, 100, 100);
-  clutter_actor_set_size(im, 100, 100);
+  clutter_actor_set_size(text, 100, 100);
   
   //  clutter_container_add_actor (CLUTTER_CONTAINER(stage), g);
-  clutter_container_add_actor (CLUTTER_CONTAINER(stage), im);
+  clutter_container_add_actor (CLUTTER_CONTAINER(stage), text);
   
   //  clutter_actor_lower(g, im);
   
   clutter_actor_show_all (stage);
 
-  g_message("New text!");
 }
 
 static GtkWidget *

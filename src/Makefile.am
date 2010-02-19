@@ -10,7 +10,8 @@ AM_CPPFLAGS = \
 	$(GTK_CFLAGS) \
 	$(CLUTTER_CFLAGS) \
 	$(CLUTTER_GTK_CFLAGS) \
-	$(GLIDE_DEBUG_CFLAGS)
+	$(GLIDE_DEBUG_CFLAGS) \
+	$(GOBJECT_INTROSPECTION_CFLAGS)
 
 AM_CFLAGS =\
 	 -Wall \
@@ -31,12 +32,14 @@ glide_SOURCES = \
 	glide-stage-manager.c \
 	glide-stage-manager.h \
 	glide-image.c \
-	glide-image.h
+	glide-image.h \
+	glide-text.c \
+	glide-text.h
 
 glide_LDFLAGS = \
 	-Wl,--export-dynamic
 
-glide_LDADD = $(GTK_LIBS) $(CLUTTER_LIBS) $(CLUTTER_GTK_LIBS)
+glide_LDADD = $(GTK_LIBS) $(CLUTTER_LIBS) $(CLUTTER_GTK_LIBS) $(GOBJECT_INTROSPECTION_LIBS)
 
 EXTRA_DIST = $(ui_DATA)
 
