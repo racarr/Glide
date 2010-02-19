@@ -116,7 +116,7 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
   clutter_actor_set_position(text, 400, 200);
   
   //  clutter_actor_set_size(g, 100, 100);
-  clutter_actor_set_size(text, 100, 100);
+  //clutter_actor_set_size(text, 100, 100);
   
   //  clutter_container_add_actor (CLUTTER_CONTAINER(stage), g);
   clutter_container_add_actor (CLUTTER_CONTAINER(stage), text);
