@@ -128,12 +128,27 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
 
 }
 
+static gboolean
+glide_window_stage_button_press_cb (ClutterActor *actor,
+				    ClutterEvent *event,
+				    gpointer user_data)
+{
+  GlideStageManager *m = (GlideStageManager *)user_data;
+  glide_stage_manager_set_selection (m, NULL);
+  
+  return TRUE;
+}
+
+
 static GtkWidget *
 glide_window_make_toolbar (GlideWindow *w)
 {
   GtkWidget *toolbar, *image, *image2;
   GlideStageManager *manager = 
     glide_stage_manager_new (CLUTTER_STAGE(w->priv->stage));
+
+  g_signal_connect (w->priv->stage, "button-press-event", G_CALLBACK (glide_window_stage_button_press_cb), manager);
+
 
   toolbar = gtk_toolbar_new ();
   
@@ -163,6 +178,7 @@ glide_window_stage_enter_notify (GtkWidget *widget,
   gtk_widget_grab_focus (widget);
 }
 
+
 static void
 glide_window_init (GlideWindow *window)
 {
@@ -179,6 +195,7 @@ glide_window_init (GlideWindow *window)
   
   embed = gtk_clutter_embed_new ();
   stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (embed));
+  
   
   g_signal_connect (embed, "enter-notify-event", G_CALLBACK (glide_window_stage_enter_notify),
 		    NULL);

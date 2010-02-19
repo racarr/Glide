@@ -94,8 +94,9 @@ glide_stage_manager_set_selection_real (GlideStageManager *m,
 	      a ? GLIDE_ACTOR_DISPLAY_NAME (a) : "unknown", a);
 
   m->priv->selection = a;
-  
-  clutter_actor_raise_top (a);
+
+  if (a)
+    clutter_actor_raise_top (a);
   
   glide_manipulator_set_target(m->priv->manip, a);
   glide_manipulator_set_width_only(m->priv->manip, FALSE);
