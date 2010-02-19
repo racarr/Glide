@@ -1723,8 +1723,6 @@ glide_text_key_press (ClutterActor    *actor,
   ClutterBindingPool *pool;
   gboolean res;
 
-  if (!priv->editable)
-    return FALSE;
 
   /* we need to use the GlideText type name to find our own
    * key bindings; subclasses will override or chain up this
@@ -1742,6 +1740,9 @@ glide_text_key_press (ClutterActor    *actor,
     res = clutter_binding_pool_activate (pool, event->keyval,
                                          event->modifier_state,
                                          G_OBJECT (actor));
+
+  if (!priv->editable)
+    return FALSE;
 
   /* if the key binding has handled the event we bail out
    * as fast as we can; otherwise, we try to insert the

@@ -31,7 +31,8 @@ typedef enum
   GLIDE_DEBUG_STAGE_MANAGER = 1 << 4,
   GLIDE_DEBUG_WINDOW = 1 << 5,
   GLIDE_DEBUG_PAINT = 1 << 6,
-  GLIDE_DEBUG_TEXT = 1 << 7
+  GLIDE_DEBUG_TEXT = 1 << 7,
+  GLIDE_DEBUG_DOCUMENT = 1 << 8
 } GlideDebugFlag;
 
 #ifdef GLIDE_ENABLE_DEBUG

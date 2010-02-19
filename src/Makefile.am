@@ -36,7 +36,9 @@ glide_SOURCES = \
 	glide-text.c \
 	glide-text.h \
 	glide-dirs.c \
-	glide-dirs.h
+	glide-dirs.h \
+	glide-document.c \
+	glide-document.h 
 
 glide_LDFLAGS = \
 	-Wl,--export-dynamic

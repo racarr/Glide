@@ -27,11 +27,11 @@
 #include "glide-manipulator.h"
 
 
-#include "glide-rectangle.h"
 #include "glide-stage-manager.h"
 #include "glide-window-private.h"
 #include "glide-image.h"
 #include "glide-text.h"
+#include "glide-document.h"
 
 #include "glide-debug.h"
 
@@ -64,22 +64,19 @@ glide_window_class_init (GlideWindowClass *klass)
 static void
 glide_window_image_open_response_callback (GtkDialog *dialog,
 					   int response,
-					   gpointer data)
+					   gpointer user_data)
 {
+  GlideWindow *window = (GlideWindow *)user_data;
 
   if (response == GTK_RESPONSE_ACCEPT)
     {
-      GlideStageManager *manager = (GlideStageManager *)data;
-      ClutterActor *stage = (ClutterActor *)
-	glide_stage_manager_get_stage (manager);
       ClutterActor *im;
-
       // Todo: URI
       gchar *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
       
-      im = (ClutterActor *)glide_image_new_from_file (manager, filename, NULL);
+      im =  glide_image_new_from_file (window->priv->manager, filename, NULL);
       clutter_actor_set_position (im, 200, 200);
-      clutter_container_add_actor (CLUTTER_CONTAINER (stage), im);
+      clutter_container_add_actor (CLUTTER_CONTAINER (window->priv->stage), im);
       
       g_free (filename);
       
@@ -90,12 +87,12 @@ glide_window_image_open_response_callback (GtkDialog *dialog,
 }
 
 static void
-glide_window_new_image (GtkWidget *toolitem, gpointer data)
+glide_window_new_image (GtkWidget *toolitem, gpointer user_data)
 {
   GtkWidget *d;
-  GlideStageManager *manager = (GlideStageManager *)data;
+  GlideWindow *w = (GlideWindow *)user_data;
   
-  GLIDE_NOTE (WINDOW, "Inserting new image, stage manager: %p", manager);
+  GLIDE_NOTE (WINDOW, "Inserting new image.");
   d = gtk_file_chooser_dialog_new ("Open image",
 				   NULL,
 				   GTK_FILE_CHOOSER_ACTION_OPEN,
@@ -104,7 +101,7 @@ glide_window_new_image (GtkWidget *toolitem, gpointer data)
 				   NULL);
   g_signal_connect (d, "response",
 		    G_CALLBACK (glide_window_image_open_response_callback),
-		    manager);
+		    w);
   
   // TODO: Make it start on our current font...
   gtk_widget_show (d);
@@ -113,38 +110,29 @@ glide_window_new_image (GtkWidget *toolitem, gpointer data)
 static void
 glide_window_new_text (GtkWidget *toolitem, gpointer data)
 {
-  GlideStageManager *manager = (GlideStageManager *)data;
-  ClutterActor *stage = 
-    (ClutterActor *)glide_stage_manager_get_stage (manager);
+  GlideWindow *window = (GlideWindow *)data;
+  ClutterActor *stage = window->priv->stage;
   ClutterActor *text;
-  ClutterColor white = {0x00, 0x00, 0x00, 0xff};
+  ClutterColor black = {0x00, 0x00, 0x00, 0xff};
   
-  text = glide_text_new (manager);
+  text = glide_text_new (window->priv->manager);
 
-  GLIDE_NOTE (WINDOW, "Inserting new text, stage manager: %p", manager);
+  GLIDE_NOTE (WINDOW, "Inserting new text, stage manager: %p", window->priv->manager);
   
-  glide_text_set_color (GLIDE_TEXT (text), &white);
+  glide_text_set_color (GLIDE_TEXT (text), &black);
   glide_text_set_text (GLIDE_TEXT (text), "This is a test of text"
 			 " in Glide.");
   glide_text_set_font_name (GLIDE_TEXT (text), "Sans 12");
   
   glide_text_set_editable (GLIDE_TEXT (text), FALSE);
-  glide_text_set_line_wrap (GLIDE_TEXT (text), FALSE);
+  glide_text_set_line_wrap (GLIDE_TEXT (text), TRUE);
   clutter_actor_set_reactive (CLUTTER_ACTOR (text), TRUE);
 
-  //  clutter_actor_set_position(g, 400, 200);
   clutter_actor_set_position(text, 400, 200);
   
-  //  clutter_actor_set_size(g, 100, 100);
-  //clutter_actor_set_size(text, 100, 100);
-  
-  //  clutter_container_add_actor (CLUTTER_CONTAINER(stage), g);
   clutter_container_add_actor (CLUTTER_CONTAINER(stage), text);
   
-  //  clutter_actor_lower(g, im);
-  
   clutter_actor_show (text);
-
 }
 
 static gboolean
@@ -152,22 +140,25 @@ glide_window_stage_button_press_cb (ClutterActor *actor,
 				    ClutterEvent *event,
 				    gpointer user_data)
 {
-  GlideStageManager *m = (GlideStageManager *)user_data;
-  glide_stage_manager_set_selection (m, NULL);
+  GlideWindow *w = (GlideWindow *) user_data;
+  
+  glide_stage_manager_set_selection (w->priv->manager, NULL);
   
   return TRUE;
 }
 
+static void
+glide_window_stage_enter_notify (GtkWidget *widget,
+				 GdkEventCrossing *event,
+				 gpointer user_data)
+{
+  gtk_widget_grab_focus (widget);
+}
 
 static GtkWidget *
 glide_window_make_toolbar (GlideWindow *w)
 {
   GtkWidget *toolbar, *image, *image2;
-  GlideStageManager *manager = 
-    glide_stage_manager_new (CLUTTER_STAGE(w->priv->stage));
-
-  g_signal_connect (w->priv->stage, "button-press-event", G_CALLBACK (glide_window_stage_button_press_cb), manager);
-
 
   toolbar = gtk_toolbar_new ();
   
@@ -179,59 +170,79 @@ glide_window_make_toolbar (GlideWindow *w)
   gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New image", 
 			   "Insert a new image in to the document", 
 			   NULL, image, G_CALLBACK(glide_window_new_image), 
-			   manager);  
+			   w);  
   gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New text", 
 			   "Insert a new text object in to the document", 
 			   NULL, image2, G_CALLBACK(glide_window_new_text), 
-			   manager);  
+			   w);  
   
   
   return toolbar;
 }
 
-static void
-glide_window_stage_enter_notify (GtkWidget *widget,
-				 GdkEventCrossing *event,
-				 gpointer user_data)
+
+static GtkWidget *
+glide_window_make_embed (GlideWindow *window)
 {
-  gtk_widget_grab_focus (widget);
+  GtkWidget *embed = gtk_clutter_embed_new ();
+  window->priv->stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (embed));
+  
+  g_signal_connect (embed, "enter-notify-event",
+		    G_CALLBACK (glide_window_stage_enter_notify),
+		    NULL);
+  gtk_widget_set_can_focus (GTK_WIDGET (embed), TRUE);
+  
+  return embed;
+}
+
+static void
+glide_window_setup_chrome (GlideWindow *window)
+{
+  GtkWidget *vbox, *embed, *toolbar;
+  
+  vbox = gtk_vbox_new (FALSE, 0);
+  
+  embed = glide_window_make_embed (window);
+  toolbar = glide_window_make_toolbar (window);
+
+  gtk_container_add (GTK_CONTAINER (vbox), toolbar);
+  gtk_container_add (GTK_CONTAINER (vbox), embed);
+  
+  gtk_widget_set_size_request (embed, 800, 600);
+  
+  gtk_container_add (GTK_CONTAINER (window), vbox);
+
+}
+
+static void
+glide_window_setup_stage (GlideWindow *window)
+{
+  ClutterColor white = {0xff, 0xff, 0xff, 0xff};
+  ClutterActor *stage = window->priv->stage;
+
+  clutter_actor_set_size (stage, 800, 600);
+  clutter_stage_set_color (CLUTTER_STAGE (stage), &white);
+  
+  window->priv->manager = glide_stage_manager_new (CLUTTER_STAGE (stage));
+
+  clutter_actor_show (stage);
+
+  // Used for null selections.
+  g_signal_connect (window->priv->stage, "button-press-event", 
+		    G_CALLBACK (glide_window_stage_button_press_cb), 
+		    window);
 }
 
 
 static void
 glide_window_init (GlideWindow *window)
 {
-  ClutterActor *stage;
-  ClutterColor black = {0xff, 0xff, 0xff, 0xff};
-  GtkWidget *vbox, *embed, *toolbar;
-  
-  GLIDE_NOTE (WINDOW, "Intializing Glide window");
-  
   window->priv = GLIDE_WINDOW_GET_PRIVATE (window);
-  
-  vbox = gtk_vbox_new (FALSE, 0);
-  gtk_container_add (GTK_CONTAINER (window), vbox);
-  
-  embed = gtk_clutter_embed_new ();
-  stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (embed));
-  
-  
-  g_signal_connect (embed, "enter-notify-event", G_CALLBACK (glide_window_stage_enter_notify),
-		    NULL);
-  
-  gtk_widget_set_can_focus (GTK_WIDGET (embed), TRUE);
-  
-  window->priv->stage = stage;
-  toolbar = glide_window_make_toolbar (window);
 
-  gtk_container_add (GTK_CONTAINER (vbox), toolbar);
-  gtk_container_add (GTK_CONTAINER (vbox), embed);
-  
-  clutter_actor_set_size (stage, 800, 600);
-  gtk_widget_set_size_request (embed, 800, 600);
-  
-  clutter_stage_set_color (CLUTTER_STAGE (stage), &black);
-  clutter_actor_show (stage);
+  GLIDE_NOTE (WINDOW, "Intializing Glide window");
+
+  glide_window_setup_chrome (window);
+  glide_window_setup_stage (window);
 
   gtk_widget_show_all (GTK_WIDGET (window));
 }

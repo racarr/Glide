@@ -44,7 +44,8 @@ static const GDebugKey glide_debug_keys[] = {
   {"stage-manager", GLIDE_DEBUG_STAGE_MANAGER},
   {"window", GLIDE_DEBUG_WINDOW},
   {"paint", GLIDE_DEBUG_PAINT},
-  {"text", GLIDE_DEBUG_TEXT}
+  {"text", GLIDE_DEBUG_TEXT},
+  {"document", GLIDE_DEBUG_DOCUMENT}
 };
 
 static gboolean
@@ -67,7 +68,7 @@ glide_arg_no_debug_cb (const char *key, const char *value, gpointer user_data)
 static GOptionEntry glide_args[] = {
 #ifdef GLIDE_ENABLE_DEBUG
   {"glide-debug", 0, 0, G_OPTION_ARG_CALLBACK, glide_arg_debug_cb,
-   "Glide debugging messages to show. Comma seperated list of: all, misc, image, manipulator, stage-manager, window, text, or paint",
+   "Glide debugging messages to show. Comma seperated list of: all, misc, image, manipulator, stage-manager, window, text, document, or paint",
    "FLAGS"},
   {"glide-no-debug", 0, 0, G_OPTION_ARG_CALLBACK, glide_arg_no_debug_cb,
    "Disable glide debugging", "FLAGS"},
