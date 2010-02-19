@@ -73,8 +73,7 @@ glide_window_new_image (GtkWidget *toolitem, gpointer data)
   im = (ClutterActor *)glide_image_new_from_file (manager,
 						  "/home/racarr/surprise.jpg",
 						  NULL);
-  clutter_actor_set_position(im, 0, 0);
-  clutter_actor_set_size(im, 100, 100);
+  //  clutter_actor_set_size(im, 100, 100);
   
   //  g = (ClutterActor *)glide_manipulator_new (im);
   //  clutter_actor_set_size(g, 100, 100);

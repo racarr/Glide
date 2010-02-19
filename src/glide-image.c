@@ -65,6 +65,34 @@ glide_image_paint (ClutterActor *self)
 }
 
 static void
+glide_image_get_preferred_width (ClutterActor *self,
+				 gfloat for_height,
+				 gfloat *min_width_p,
+				 gfloat *natural_width_p)
+{
+  GlideImage *image = GLIDE_IMAGE (self);
+  
+  if (min_width_p)
+    *min_width_p = 0;
+  
+  *natural_width_p = image->priv->image_width;
+}
+
+static void
+glide_image_get_preferred_height (ClutterActor *self,
+				  gfloat for_width,
+				  gfloat *min_height_p,
+				  gfloat *natural_height_p)
+{
+  GlideImage *image = GLIDE_IMAGE (self);
+  
+  if (min_height_p)
+    *min_height_p = 0;
+  
+  *natural_height_p = image->priv->image_height;
+}
+
+static void
 image_free_gl_resources (GlideImage *image)
 {
   if (image->priv->material != COGL_INVALID_HANDLE)
@@ -113,6 +141,9 @@ glide_image_class_init (GlideImageClass *klass)
   
   actor_class->paint = glide_image_paint;
   actor_class->button_press_event = glide_image_button_press;
+  
+  actor_class->get_preferred_width = glide_image_get_preferred_width;
+  actor_class->get_preferred_height = glide_image_get_preferred_height;
   
   object_class->finalize = glide_image_finalize;
   g_type_class_add_private (object_class, sizeof(GlideImagePrivate));
