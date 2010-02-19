@@ -97,27 +97,14 @@ glide_manipulator_get_widget_at (GlideManipulator *self,
   return WIDGET_NONE;
 }
 
-static void
-glide_manipulator_pick (ClutterActor *actor,
-		    const ClutterColor *color)
-{
-  ClutterGeometry geom;
-
-  clutter_actor_get_allocation_geometry (actor, &geom);
-  
-  CLUTTER_ACTOR_CLASS (glide_manipulator_parent_class)->pick (actor, color);
-  
-  cogl_rectangle (-GLIDE_MANIPULATOR_WIDGET_WIDTH,
-		  -GLIDE_MANIPULATOR_WIDGET_WIDTH,
-		  geom.height + GLIDE_MANIPULATOR_WIDGET_WIDTH,
-		  geom.height + GLIDE_MANIPULATOR_WIDGET_WIDTH);
-}
 
 static void
-glide_manipulator_paint_border (ClutterGeometry *geom)
+glide_manipulator_paint_border (const ClutterColor *border_color, 
+				ClutterGeometry *geom)
 {
 
-  cogl_set_source_color4ub (0xcc, 0xcc, 0xcc, 0xff);
+  cogl_set_source_color4ub (border_color->red, border_color->green, 
+			    border_color->blue, border_color->alpha);
 
   
   cogl_rectangle (GLIDE_MANIPULATOR_BORDER_WIDTH, 0, 
@@ -135,15 +122,20 @@ glide_manipulator_paint_border (ClutterGeometry *geom)
 static void
 glide_manipulator_paint_widget (GlideManipulator *manip,
 				ClutterGeometry *geom,
-				GlideManipulatorWidget widg)
+				GlideManipulatorWidget widg,
+				const ClutterColor *hover_color,
+				const ClutterColor *widget_color)
 {
   gfloat center_x = 0, center_y = 0;
 
   if (manip->priv->hovered == widg ||
       manip->priv->resize_widget == widg)
-    cogl_set_source_color4ub (0xff, 0xcc, 0xcc, 0xff);
+    cogl_set_source_color4ub (hover_color->red, hover_color->green,
+			      hover_color->blue, hover_color->alpha);
+
   else
-    cogl_set_source_color4ub (0xcc, 0xcc, 0xff, 0xff);
+    cogl_set_source_color4ub (widget_color->red, widget_color->green,
+			      widget_color->blue, widget_color->alpha);
   
   switch (widg)
     {
@@ -185,12 +177,26 @@ glide_manipulator_paint_widget (GlideManipulator *manip,
 
 static void
 glide_manipulator_paint_widgets (GlideManipulator *manip,
-				 ClutterGeometry *geom)
+				 ClutterGeometry *geom,
+				 const ClutterColor *hover_color,
+				 const ClutterColor *widget_color)
 {
-  glide_manipulator_paint_widget (manip, geom, WIDGET_TOP_LEFT);
-  glide_manipulator_paint_widget (manip, geom, WIDGET_BOTTOM_LEFT);
-  glide_manipulator_paint_widget (manip, geom, WIDGET_TOP_RIGHT);
-  glide_manipulator_paint_widget (manip, geom, WIDGET_BOTTOM_RIGHT);
+  glide_manipulator_paint_widget (manip, geom, 
+				  WIDGET_TOP_LEFT,
+				  hover_color,
+				  widget_color);
+  glide_manipulator_paint_widget (manip, geom, 
+				  WIDGET_BOTTOM_LEFT,
+				  hover_color,
+				  widget_color);
+  glide_manipulator_paint_widget (manip, geom, 
+				  WIDGET_TOP_RIGHT,
+				  hover_color,
+				  widget_color);
+  glide_manipulator_paint_widget (manip, geom, 
+				  WIDGET_BOTTOM_RIGHT,
+				  hover_color,
+				  widget_color);
 }
 
 static void
@@ -198,6 +204,9 @@ glide_manipulator_paint (ClutterActor *self)
 {
   GlideManipulator *manip = GLIDE_MANIPULATOR (self);
   ClutterGeometry geom;
+  ClutterColor border_color = {0xcc, 0xcc, 0xcc, 0xff};
+  ClutterColor hover_color = {0xff, 0xcc, 0xcc, 0xff};
+  ClutterColor widget_color = {0xcc, 0xcc, 0xff, 0xff};
 
   GLIDE_NOTE (PAINT,
 	      "painting manipulator '%s'",
@@ -210,12 +219,27 @@ glide_manipulator_paint (ClutterActor *self)
 	      geom.x, geom.y, geom.width, geom.height,
 	      clutter_actor_get_opacity (self));
   
-  glide_manipulator_paint_border (&geom);
-  glide_manipulator_paint_widgets (manip, &geom);
+  glide_manipulator_paint_border (&border_color, &geom);
+  glide_manipulator_paint_widgets (manip, &geom, &hover_color,
+				   &widget_color);
 
   if (manip->priv->target)
     clutter_actor_queue_redraw (manip->priv->target);
 }
+
+static void
+glide_manipulator_pick (ClutterActor *actor,
+		    const ClutterColor *color)
+{
+  ClutterGeometry geom;
+
+  clutter_actor_get_allocation_geometry (actor, &geom);
+  
+   glide_manipulator_paint_border (color, &geom);
+  glide_manipulator_paint_widgets (GLIDE_MANIPULATOR (actor), &geom,
+				   color, color);
+}
+
 
 static gboolean
 glide_manipulator_button_press (ClutterActor *actor,
@@ -254,15 +278,12 @@ glide_manipulator_button_press (ClutterActor *actor,
       return TRUE;
     }
     
-  manip->priv->dragging = TRUE;
 
   //Proper point transforms?
   manip->priv->drag_center_x = event->x - ax;
   manip->priv->drag_center_y = event->y - ay;
 
-  clutter_grab_pointer (actor);
-  
-  return TRUE;
+  return FALSE;
 }
 
 static gboolean

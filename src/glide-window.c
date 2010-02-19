@@ -109,8 +109,9 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
 			 " in Glide.");
   glide_text_set_font_name (GLIDE_TEXT (text), "Sans 12");
   
-  glide_text_set_editable (GLIDE_TEXT (text), FALSE);
+  glide_text_set_editable (GLIDE_TEXT (text), TRUE);
   glide_text_set_line_wrap (GLIDE_TEXT (text), FALSE);
+  clutter_actor_set_reactive (CLUTTER_ACTOR (text), TRUE);
 
   //  clutter_actor_set_position(g, 400, 200);
   clutter_actor_set_position(text, 400, 200);
