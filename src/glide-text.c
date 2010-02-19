@@ -2427,6 +2427,39 @@ glide_text_real_del_word_prev (GlideText         *self,
   return TRUE;
 }
 
+static gboolean
+glide_text_increase_font_size (GlideText         *self,
+			       const gchar         *action,
+			       guint                keyval,
+			       ClutterModifierType  modifiers)
+{
+  gint size = pango_font_description_get_size (self->priv->font_desc);
+  pango_font_description_set_size (self->priv->font_desc, size+1024);
+
+  
+  glide_text_dirty_cache (self);
+  glide_text_update_actor_size (self);
+    
+  return TRUE;
+}
+
+static gboolean
+glide_text_decrease_font_size (GlideText         *self,
+			       const gchar         *action,
+			       guint                keyval,
+			       ClutterModifierType  modifiers)
+{
+  gint size = pango_font_description_get_size (self->priv->font_desc);
+  pango_font_description_set_size (self->priv->font_desc, size-1024);
+
+  
+  glide_text_dirty_cache (self);
+  glide_text_update_actor_size (self);
+    
+  return TRUE;
+}
+
+
 static inline void
 glide_text_add_move_binding (ClutterBindingPool  *pool,
                                const gchar         *action,
@@ -3073,6 +3106,16 @@ glide_text_class_init (GlideTextClass *klass)
                                        CLUTTER_BackSpace, CLUTTER_CONTROL_MASK,
                                        G_CALLBACK (glide_text_real_del_word_prev),
                                        NULL, NULL);
+
+  clutter_binding_pool_install_action (binding_pool, "increase-font-size",
+				       CLUTTER_equal, CLUTTER_CONTROL_MASK,
+				       G_CALLBACK (glide_text_increase_font_size),
+				       NULL, NULL);
+
+  clutter_binding_pool_install_action (binding_pool, "decrease-font-size",
+				       CLUTTER_minus, CLUTTER_CONTROL_MASK,
+				       G_CALLBACK (glide_text_decrease_font_size),
+				       NULL, NULL);
 
 }
 

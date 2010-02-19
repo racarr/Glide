@@ -162,6 +162,7 @@ glide_manipulator_paint_widget (GlideManipulator *manip,
 				GlideManipulatorWidget widg)
 {
   gfloat center_x = 0, center_y = 0;
+  gdouble ra = 0;
 
   if (manip->priv->hovered == widg ||
       manip->priv->resize_widget == widg)
@@ -174,26 +175,32 @@ glide_manipulator_paint_widget (GlideManipulator *manip,
     {
     case WIDGET_TOP_LEFT:
       center_x = center_y = -GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      ra = 45;
       break;
     case WIDGET_TOP_RIGHT:
       center_x = geom->width + GLIDE_MANIPULATOR_WIDGET_WIDTH; 
       center_y = 0 - GLIDE_MANIPULATOR_WIDGET_WIDTH; 
+      ra = 135;
       break;
     case WIDGET_BOTTOM_LEFT:
       center_x = 0-GLIDE_MANIPULATOR_WIDGET_WIDTH;
       center_y = geom->height+GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      ra = 135;
       break;
     case WIDGET_BOTTOM_RIGHT:
       center_x = geom->width + GLIDE_MANIPULATOR_WIDGET_WIDTH;
       center_y = geom->height + GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      ra = 45;
       break;
     case WIDGET_TOP:
       center_x = geom->width / 2.0;
       center_y = -GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      ra = 90;
       break;
     case WIDGET_BOTTOM:
       center_x = geom->width/2.0;
       center_y = geom->height + GLIDE_MANIPULATOR_WIDGET_WIDTH;
+      ra = 90;
       break;
     case WIDGET_LEFT:
       center_x = -GLIDE_MANIPULATOR_WIDGET_WIDTH;
@@ -207,6 +214,12 @@ glide_manipulator_paint_widget (GlideManipulator *manip,
       break;
     }
   
+  cogl_push_matrix();
+
+  cogl_translate(center_x, center_y, 0);
+  cogl_rotate (ra, 0, 0, 1);
+  cogl_translate(-center_x, -center_y, 0);
+  
   if (manip->priv->mode == WIDGET_MODE_RESIZE)
     {
       cogl_rectangle_with_texture_coords  
@@ -214,7 +227,7 @@ glide_manipulator_paint_widget (GlideManipulator *manip,
 	 -GLIDE_MANIPULATOR_WIDGET_WIDTH + center_y,
 	 GLIDE_MANIPULATOR_WIDGET_WIDTH + center_x,
 	 GLIDE_MANIPULATOR_WIDGET_WIDTH + center_y,
-	 0.0, 0.0, 1.0, 1.0);
+	 0, 0, 1, 1);
     }
   else
     {
@@ -224,6 +237,7 @@ glide_manipulator_paint_widget (GlideManipulator *manip,
 			 GLIDE_MANIPULATOR_WIDGET_WIDTH);
       cogl_path_fill ();
     }
+  cogl_pop_matrix ();
 }
 
 static void
