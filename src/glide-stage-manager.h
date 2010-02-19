@@ -26,6 +26,7 @@
 #include <glib-object.h>
 #include <clutter/clutter.h>
 #include "glide-manipulator.h"
+#include "glide-document.h"
 
 G_BEGIN_DECLS
 
@@ -69,14 +70,17 @@ struct _GlideStageManagerClass
  */
 GType 		 glide_stage_manager_get_type 			(void) G_GNUC_CONST;
 
-GlideStageManager *glide_stage_manager_new (ClutterStage *stage);
+GlideStageManager *glide_stage_manager_new (GlideDocument *document, ClutterStage *stage);
 ClutterStage *glide_stage_manager_get_stage (GlideStageManager *manager);
+GlideDocument *glide_stage_manager_get_document (GlideStageManager *manager);
+
 
 ClutterActor *glide_stage_manager_get_selection (GlideStageManager *manager);
 void glide_stage_manager_set_selection (GlideStageManager *manager,
 					ClutterActor *actor);
 
 GlideManipulator *glide_stage_manager_get_manipulator (GlideStageManager *manager);
+
 
 G_END_DECLS
 

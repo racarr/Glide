@@ -223,7 +223,8 @@ glide_window_setup_stage (GlideWindow *window)
   clutter_actor_set_size (stage, 800, 600);
   clutter_stage_set_color (CLUTTER_STAGE (stage), &white);
   
-  window->priv->manager = glide_stage_manager_new (CLUTTER_STAGE (stage));
+  window->priv->manager = glide_stage_manager_new (window->priv->document, 
+						   CLUTTER_STAGE (stage));
 
   clutter_actor_show (stage);
 
@@ -240,6 +241,8 @@ glide_window_init (GlideWindow *window)
   window->priv = GLIDE_WINDOW_GET_PRIVATE (window);
 
   GLIDE_NOTE (WINDOW, "Intializing Glide window");
+  
+  window->priv->document = glide_document_new ("First Document");
 
   glide_window_setup_chrome (window);
   glide_window_setup_stage (window);

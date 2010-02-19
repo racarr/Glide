@@ -33,6 +33,8 @@ struct _GlideStageManagerPrivate
   
   ClutterActor *selection;
   GlideManipulator *manip;
+
+  GlideDocument *document;
 };
 
 G_END_DECLS

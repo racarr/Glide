@@ -38,7 +38,8 @@ G_DEFINE_TYPE(GlideStageManager, glide_stage_manager, G_TYPE_OBJECT)
 enum {
   PROP_0,
   PROP_STAGE,
-  PROP_SELECTION
+  PROP_SELECTION,
+  PROP_DOCUMENT
 };
 
 enum {
@@ -73,6 +74,9 @@ glide_stage_manager_get_property (GObject *object,
       break;
     case PROP_SELECTION:
       g_value_set_object (value, manager->priv->selection);
+      break;
+    case PROP_DOCUMENT:
+      g_value_set_object (value, manager->priv->document);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -130,6 +134,10 @@ glide_stage_manager_set_property (GObject *object,
       manager->priv->stage = CLUTTER_ACTOR (g_value_get_object (value));
       glide_stage_manager_add_manipulator (manager, manager->priv->stage);
       break;
+    case PROP_DOCUMENT:
+      g_return_if_fail (manager->priv->document == NULL);
+      manager->priv->document = GLIDE_DOCUMENT(g_value_get_object (value));
+      break;
     case PROP_SELECTION:
       glide_stage_manager_set_selection_real (manager,
 	      CLUTTER_ACTOR (g_value_get_object (value)));
@@ -168,6 +176,16 @@ glide_stage_manager_class_init (GlideStageManagerClass *klass)
 							G_PARAM_READWRITE |
 							G_PARAM_CONSTRUCT_ONLY |
 							G_PARAM_STATIC_STRINGS));
+
+  g_object_class_install_property (object_class,
+				   PROP_DOCUMENT,
+				   g_param_spec_object ("document",
+							"Document",
+							"The document rendered by the stage manager",
+							GLIDE_TYPE_DOCUMENT,
+							G_PARAM_READWRITE |
+							G_PARAM_CONSTRUCT_ONLY |
+							G_PARAM_STATIC_STRINGS));
   
   // Argument is old selection
   stage_manager_signals[SELECTION_CHANGED] = 
@@ -191,9 +209,10 @@ glide_stage_manager_init (GlideStageManager *manager)
 }
 
 GlideStageManager *
-glide_stage_manager_new (ClutterStage *stage)
+glide_stage_manager_new (GlideDocument *document, ClutterStage *stage)
 {
   return g_object_new (GLIDE_TYPE_STAGE_MANAGER,
+		       "document", document,
 		       "stage", stage,
 		       NULL);
 }
