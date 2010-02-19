@@ -87,7 +87,7 @@ glide_window_new_image (GtkWidget *toolitem, gpointer data)
 
   //  clutter_actor_raise (g, im);
   
-  clutter_actor_show_all (stage);
+  clutter_actor_show (im);
 
 }
 
@@ -124,7 +124,7 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
   
   //  clutter_actor_lower(g, im);
   
-  clutter_actor_show_all (stage);
+  clutter_actor_show (text);
 
 }
 

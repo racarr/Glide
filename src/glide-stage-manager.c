@@ -109,6 +109,8 @@ glide_stage_manager_add_manipulator (GlideStageManager *manager, ClutterActor *s
   GlideManipulator *manip = glide_manipulator_new(NULL);
   clutter_container_add_actor (CLUTTER_CONTAINER (stage), CLUTTER_ACTOR (manip));
   
+  clutter_actor_hide_all (CLUTTER_ACTOR (manip));
+  
   manager->priv->manip = manip;
 }
 
