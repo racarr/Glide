@@ -56,6 +56,9 @@ glide_manipulator_finalize (GObject *object)
   cogl_handle_unref (m->priv->widget_material);
   m->priv->widget_material = COGL_INVALID_HANDLE;
 
+  cogl_handle_unref (m->priv->widget_active_material);
+  m->priv->widget_active_material = COGL_INVALID_HANDLE;
+
   G_OBJECT_CLASS (glide_manipulator_parent_class)->finalize (object);
 }
 
@@ -71,17 +74,17 @@ glide_manipulator_get_widget_at (GlideManipulator *self,
   
   clutter_actor_get_allocation_geometry (CLUTTER_ACTOR (self), &geom);
   
-  if ((ax > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
-      (ax < GLIDE_MANIPULATOR_WIDGET_WIDTH))
+  if ((ax > -2*GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
+      (ax < 0))
     {
-      if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
-	  (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
+      if ((ay > -2 * GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
+	  (ay < 0) &&
 	  (!self->priv->width_only))
 	{
 	  return WIDGET_TOP_LEFT;
 	}
-      else if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
-	       (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
+      else if ((ay > geom.height) &&
+	       (ay < 2*GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
 	       (!self->priv->width_only))
 	{
 	  return WIDGET_BOTTOM_LEFT;
@@ -92,17 +95,17 @@ glide_manipulator_get_widget_at (GlideManipulator *self,
 	  return WIDGET_LEFT;
 	}
     }
-  else if ((ax > -GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width) &&
-      (ax < GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width))
+  else if ((ax > geom.width) &&
+      (ax < 2*GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width))
     {
-      if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
-	  (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
+      if ((ay > - 2 *GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
+	  (ay < 0) &&
 	  (!self->priv->width_only))
 	{
 	  return WIDGET_TOP_RIGHT;
 	}
-      else if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
-	       (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
+      else if ((ay > geom.height) &&
+	       (ay < 2*GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
 	       (!self->priv->width_only))
 	{
 	  return WIDGET_BOTTOM_RIGHT;
@@ -117,13 +120,13 @@ glide_manipulator_get_widget_at (GlideManipulator *self,
 	   (ax < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.width/2.0) &&
 	   (!self->priv->width_only))
     {
-      if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
-	  (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH))
+      if ((ay > -2*GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
+	  (ay < 0))
 	{
 	  return WIDGET_TOP;
 	}
-      else if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
-	       (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height))
+      else if ((ay > geom.height) &&
+	       (ay < 2*GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height))
 	{
 	  return WIDGET_BOTTOM;
 	}
@@ -162,7 +165,7 @@ glide_manipulator_paint_widget (GlideManipulator *manip,
 
   if (manip->priv->hovered == widg ||
       manip->priv->resize_widget == widg)
-    cogl_set_source (manip->priv->widget_material);
+    cogl_set_source (manip->priv->widget_active_material);
 
   else
     cogl_set_source (manip->priv->widget_material);
@@ -736,33 +739,41 @@ glide_manipulator_class_init (GlideManipulatorClass *klass)
   g_type_class_add_private (object_class, sizeof(GlideManipulatorPrivate));
 }
 
+static CoglHandle
+glide_manipulator_material_for_file (const gchar *filename)
+{
+  GError *e = NULL;
+  CoglHandle m, t;
+  
+  m = cogl_material_new ();
+  t = cogl_texture_new_from_file(filename,
+				 COGL_TEXTURE_NONE,
+				 COGL_PIXEL_FORMAT_ANY,
+				 &e);
+  if (e || t == COGL_INVALID_HANDLE)
+    {
+      g_warning ("glide-manipulator.c failed to load widget image: %s", filename);
+      g_error_free (e);
+    }
+  cogl_material_set_layer (m, 0, t);
+  cogl_material_set_layer_filters (m, 0,
+				   COGL_MATERIAL_FILTER_LINEAR_MIPMAP_LINEAR,
+				   COGL_MATERIAL_FILTER_LINEAR);
+  cogl_handle_unref (t);
+  
+  return m;
+}
+
 static void
 glide_manipulator_init (GlideManipulator *manipulator)
 {
-  GError *e = NULL;
-  CoglHandle widget_texture = COGL_INVALID_HANDLE;
-
   manipulator->priv = GLIDE_MANIPULATOR_GET_PRIVATE (manipulator);
 
   
   manipulator->priv->mode = WIDGET_MODE_RESIZE;
 
-  manipulator->priv->widget_material = cogl_material_new ();
-  widget_texture = cogl_texture_new_from_file ("./manipulator-widget.png",
-					       COGL_TEXTURE_NONE,
-					       COGL_PIXEL_FORMAT_ANY,
-					       &e);
-  if (e || widget_texture == COGL_INVALID_HANDLE)
-    {
-      g_warning ("Failed to load glide-manipulator widget handle image.");
-      g_error_free (e);
-    }
-  cogl_material_set_layer (manipulator->priv->widget_material, 0,
-			   widget_texture);
-  cogl_material_set_layer_filters (manipulator->priv->widget_material, 0,
-				   COGL_MATERIAL_FILTER_LINEAR_MIPMAP_LINEAR,
-				   COGL_MATERIAL_FILTER_LINEAR);
-  cogl_handle_unref (widget_texture);
+  manipulator->priv->widget_material = glide_manipulator_material_for_file("./manipulator-widget.png");
+  manipulator->priv->widget_active_material = glide_manipulator_material_for_file("./manipulator-widget-active.png");
   
   clutter_actor_set_reactive (CLUTTER_ACTOR (manipulator), TRUE);
 }
