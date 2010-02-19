@@ -79,6 +79,11 @@ glide_manipulator_get_widget_at (GlideManipulator *self,
 	{
 	  return WIDGET_BOTTOM_LEFT;
 	}
+      else if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height/2.0) &&
+	       (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height/2.0))
+	{
+	  return WIDGET_LEFT;
+	}
     }
   else if ((ax > -GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width) &&
       (ax < GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width))
@@ -92,6 +97,25 @@ glide_manipulator_get_widget_at (GlideManipulator *self,
 	       (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height))
 	{
 	  return WIDGET_BOTTOM_RIGHT;
+	}
+      else if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height/2.0) &&
+	       (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height/2.0))
+	{
+	  return WIDGET_RIGHT;
+	}
+    }
+  else if ((ax > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.width/2.0) &&
+	   (ax < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.width/2.0))
+    {
+      if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
+	  (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH))
+	{
+	  return WIDGET_TOP;
+	}
+      else if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
+	       (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height))
+	{
+	  return WIDGET_BOTTOM;
 	}
     }
   return WIDGET_NONE;
@@ -154,6 +178,22 @@ glide_manipulator_paint_widget (GlideManipulator *manip,
       center_x = geom->width;
       center_y = geom->height;
       break;
+    case WIDGET_TOP:
+      center_x = geom->width / 2.0;
+      center_y = 0;
+      break;
+    case WIDGET_BOTTOM:
+      center_x = geom->width/2.0;
+      center_y = geom->height;
+      break;
+    case WIDGET_LEFT:
+      center_x = 0;
+      center_y = geom->height/2.0;
+      break;
+    case WIDGET_RIGHT:
+      center_x = geom->width;
+      center_y = geom->height/2.0;
+      break;
     default:
       break;
     }
@@ -195,6 +235,22 @@ glide_manipulator_paint_widgets (GlideManipulator *manip,
 				  widget_color);
   glide_manipulator_paint_widget (manip, geom, 
 				  WIDGET_BOTTOM_RIGHT,
+				  hover_color,
+				  widget_color);
+  glide_manipulator_paint_widget (manip, geom, 
+				  WIDGET_TOP,
+				  hover_color,
+				  widget_color);
+  glide_manipulator_paint_widget (manip, geom, 
+				  WIDGET_LEFT,
+				  hover_color,
+				  widget_color);
+  glide_manipulator_paint_widget (manip, geom, 
+				  WIDGET_RIGHT,
+				  hover_color,
+				  widget_color);
+  glide_manipulator_paint_widget (manip, geom, 
+				  WIDGET_BOTTOM,
 				  hover_color,
 				  widget_color);
 }
@@ -355,6 +411,26 @@ glide_manipulator_process_resize (GlideManipulator *manip,
       clutter_actor_set_size (CLUTTER_ACTOR (manip),
 			      (geom->width+geom->x)-mev->x,
 			      (geom->height+geom->y)-mev->y);
+      break;
+    case WIDGET_TOP:
+      clutter_actor_set_position (manip->priv->target, geom->x, mev->y);
+      clutter_actor_set_size (manip->priv->target,
+			      geom->width,
+			      (geom->height+geom->y)-mev->y);
+      break;
+    case WIDGET_BOTTOM:
+      clutter_actor_set_size (manip->priv->target, geom->width,
+			      mev->y-geom->y);
+      break;
+    case WIDGET_RIGHT:
+      clutter_actor_set_size (manip->priv->target, mev->x-geom->x,
+			      geom->height);
+      break;
+    case WIDGET_LEFT:
+      clutter_actor_set_position (manip->priv->target, mev->x, geom->y);
+      clutter_actor_set_size (manip->priv->target,
+			      (geom->width+geom->x)-mev->x,
+			      geom->height);
       break;
     default:
       break;
