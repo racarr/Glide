@@ -73,6 +73,7 @@
 #include <cogl/cogl-pango.h>
 
 #include "glide-text.h"
+#include "glide-manipulator.h"
 
 #include "glide-debug.h"
 
@@ -1723,6 +1724,20 @@ glide_text_key_press (ClutterActor    *actor,
       gunichar key_unichar;
 
       key_unichar = clutter_event_get_key_unicode ((ClutterEvent *) event);
+      
+      if (key_unichar == 0)
+	{
+	  switch (event->keyval)
+	    {
+	    case CLUTTER_Return:
+	    case CLUTTER_KP_Enter:
+	    case CLUTTER_ISO_Enter:
+	      key_unichar = '\n';
+	      break;
+	    default:
+	      break;
+	    }
+	}
 
       /* return is reported as CR, but we want LF */
       if (key_unichar == '\r')
@@ -2378,15 +2393,6 @@ glide_text_real_del_word_prev (GlideText         *self,
   return TRUE;
 }
 
-static gboolean
-glide_text_real_activate (GlideText         *self,
-                            const gchar         *action,
-                            guint                keyval,
-                            ClutterModifierType  modifiers)
-{
-  return glide_text_activate (self);
-}
-
 static inline void
 glide_text_add_move_binding (ClutterBindingPool  *pool,
                                const gchar         *action,
@@ -2430,6 +2436,15 @@ glide_text_deselected (GlideActor *actor)
 }
 
 static void
+glide_text_selected (GlideActor *actor)
+{
+  GlideStageManager *manager = glide_actor_get_stage_manager (actor);
+  GlideManipulator *manip = glide_stage_manager_get_manipulator (manager);
+
+  glide_manipulator_set_width_only (manip, TRUE);  
+}
+
+static void
 glide_text_class_init (GlideTextClass *klass)
 {
   GlideActorClass *glide_actor_class = GLIDE_ACTOR_CLASS (klass);
@@ -2456,6 +2471,7 @@ glide_text_class_init (GlideTextClass *klass)
   actor_class->motion_event = glide_text_motion;
 
   glide_actor_class->deselected = glide_text_deselected;
+  glide_actor_class->selected = glide_text_selected;
 
   /**
    * GlideText:font-name:
@@ -2559,7 +2575,7 @@ glide_text_class_init (GlideTextClass *klass)
                                 "Activatable",
                                 "Whether pressing return causes the "
                                 "activate signal to be emitted",
-                                TRUE,
+                                FALSE,
                                 G_PARAM_READWRITE);
   g_object_class_install_property (gobject_class, PROP_ACTIVATABLE, pspec);
 
@@ -2726,7 +2742,7 @@ glide_text_class_init (GlideTextClass *klass)
                                 "Line wrap",
                                 "If set, wrap the lines if the text "
                                 "becomes too wide",
-                                FALSE,
+                                TRUE,
                                 G_PARAM_READWRITE);
   g_object_class_install_property (gobject_class, PROP_LINE_WRAP, pspec);
 
@@ -3024,18 +3040,6 @@ glide_text_class_init (GlideTextClass *klass)
                                        G_CALLBACK (glide_text_real_del_word_prev),
                                        NULL, NULL);
 
-  clutter_binding_pool_install_action (binding_pool, "activate",
-                                       CLUTTER_Return, 0,
-                                       G_CALLBACK (glide_text_real_activate),
-                                       NULL, NULL);
-  clutter_binding_pool_install_action (binding_pool, "activate",
-                                       CLUTTER_KP_Enter, 0,
-                                       G_CALLBACK (glide_text_real_activate),
-                                       NULL, NULL);
-  clutter_binding_pool_install_action (binding_pool, "activate",
-                                       CLUTTER_ISO_Enter, 0,
-                                       G_CALLBACK (glide_text_real_activate),
-                                       NULL, NULL);
 }
 
 static void

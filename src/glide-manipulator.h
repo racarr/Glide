@@ -74,6 +74,12 @@ GlideManipulator     *glide_manipulator_new                     (ClutterActor *t
 ClutterActor         *glide_manipulator_get_target                (GlideManipulator *manip);
 void glide_manipulator_set_target (GlideManipulator *manip, ClutterActor *actor);
 
+void glide_manipulator_set_width_only (GlideManipulator *manip,
+				       gboolean width_only);
+
+gboolean glide_manipulator_get_width_only (GlideManipulator *manip);
+
+
 G_END_DECLS
 
 #endif  /* __GLIDE_MANIPULATOR_H__  */

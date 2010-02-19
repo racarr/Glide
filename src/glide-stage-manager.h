@@ -76,6 +76,8 @@ ClutterActor *glide_stage_manager_get_selection (GlideStageManager *manager);
 void glide_stage_manager_set_selection (GlideStageManager *manager,
 					ClutterActor *actor);
 
+GlideManipulator *glide_stage_manager_get_manipulator (GlideStageManager *manager);
+
 G_END_DECLS
 
 #endif  /* __GLIDE_STAGE_MANAGER_H__  */

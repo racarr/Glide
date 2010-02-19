@@ -37,7 +37,8 @@ G_DEFINE_TYPE(GlideManipulator, glide_manipulator, CLUTTER_TYPE_RECTANGLE)
 
 enum {
   PROP_0,
-  PROP_TARGET
+  PROP_TARGET,
+  PROP_WIDTH_ONLY
 };
 
 #define GLIDE_MANIPULATOR_BORDER_WIDTH 2.5
@@ -70,12 +71,14 @@ glide_manipulator_get_widget_at (GlideManipulator *self,
       (ax < GLIDE_MANIPULATOR_WIDGET_WIDTH))
     {
       if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
-	  (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH))
+	  (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
+	  (!self->priv->width_only))
 	{
 	  return WIDGET_TOP_LEFT;
 	}
       else if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
-	       (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height))
+	       (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
+	       (!self->priv->width_only))
 	{
 	  return WIDGET_BOTTOM_LEFT;
 	}
@@ -89,12 +92,14 @@ glide_manipulator_get_widget_at (GlideManipulator *self,
       (ax < GLIDE_MANIPULATOR_WIDGET_WIDTH+geom.width))
     {
       if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
-	  (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH))
+	  (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
+	  (!self->priv->width_only))
 	{
 	  return WIDGET_TOP_RIGHT;
 	}
       else if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
-	       (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height))
+	       (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.height) &&
+	       (!self->priv->width_only))
 	{
 	  return WIDGET_BOTTOM_RIGHT;
 	}
@@ -105,7 +110,8 @@ glide_manipulator_get_widget_at (GlideManipulator *self,
 	}
     }
   else if ((ax > -GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.width/2.0) &&
-	   (ax < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.width/2.0))
+	   (ax < GLIDE_MANIPULATOR_WIDGET_WIDTH + geom.width/2.0) &&
+	   (!self->priv->width_only))
     {
       if ((ay > -GLIDE_MANIPULATOR_WIDGET_WIDTH) &&
 	  (ay < GLIDE_MANIPULATOR_WIDGET_WIDTH))
@@ -221,26 +227,34 @@ glide_manipulator_paint_widgets (GlideManipulator *manip,
 				 const ClutterColor *hover_color,
 				 const ClutterColor *widget_color)
 {
-  glide_manipulator_paint_widget (manip, geom, 
-				  WIDGET_TOP_LEFT,
-				  hover_color,
-				  widget_color);
-  glide_manipulator_paint_widget (manip, geom, 
-				  WIDGET_BOTTOM_LEFT,
-				  hover_color,
-				  widget_color);
-  glide_manipulator_paint_widget (manip, geom, 
-				  WIDGET_TOP_RIGHT,
-				  hover_color,
-				  widget_color);
-  glide_manipulator_paint_widget (manip, geom, 
-				  WIDGET_BOTTOM_RIGHT,
-				  hover_color,
-				  widget_color);
-  glide_manipulator_paint_widget (manip, geom, 
-				  WIDGET_TOP,
-				  hover_color,
-				  widget_color);
+  if (!manip->priv->width_only)
+    {
+      glide_manipulator_paint_widget (manip, geom, 
+				      WIDGET_TOP_LEFT,
+				      hover_color,
+				      widget_color);
+      glide_manipulator_paint_widget (manip, geom, 
+				      WIDGET_BOTTOM_LEFT,
+				      hover_color,
+				      widget_color);
+      glide_manipulator_paint_widget (manip, geom, 
+				      WIDGET_TOP_RIGHT,
+				      hover_color,
+				      widget_color);
+      glide_manipulator_paint_widget (manip, geom, 
+				      WIDGET_BOTTOM_RIGHT,
+				      hover_color,
+				      widget_color);
+      glide_manipulator_paint_widget (manip, geom, 
+				      WIDGET_TOP,
+				      hover_color,
+				      widget_color);
+       glide_manipulator_paint_widget (manip, geom, 
+				      WIDGET_BOTTOM,
+				      hover_color,
+				      widget_color);
+    }
+
   glide_manipulator_paint_widget (manip, geom, 
 				  WIDGET_LEFT,
 				  hover_color,
@@ -249,12 +263,9 @@ glide_manipulator_paint_widgets (GlideManipulator *manip,
 				  WIDGET_RIGHT,
 				  hover_color,
 				  widget_color);
-  glide_manipulator_paint_widget (manip, geom, 
-				  WIDGET_BOTTOM,
-				  hover_color,
-				  widget_color);
-}
 
+}
+  
 static void
 glide_manipulator_paint (ClutterActor *self)
 {
@@ -538,6 +549,9 @@ glide_manipulator_get_property (GObject *object,
     case PROP_TARGET:
       g_value_set_object (value, manip->priv->target);
       break;
+    case PROP_WIDTH_ONLY:
+      g_value_set_boolean (value, manip->priv->width_only);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -607,6 +621,8 @@ glide_manipulator_set_target_real (GlideManipulator *manip,
   manip->priv->allocation_notify_id = g_signal_connect (manip->priv->target, "notify::allocation",
 							G_CALLBACK (glide_manipulator_target_allocation_changed_cb),
 							manip);
+  
+  clutter_actor_grab_key_focus (manip->priv->target);
 }
 				   
 
@@ -622,6 +638,9 @@ glide_manipulator_set_property (GObject *object,
     {
     case PROP_TARGET:
       glide_manipulator_set_target_real (manip, CLUTTER_ACTOR(g_value_get_object (value)));
+      break;
+    case PROP_WIDTH_ONLY:
+      glide_manipulator_set_width_only (manip, g_value_get_boolean (value));
       break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -655,6 +674,14 @@ glide_manipulator_class_init (GlideManipulatorClass *klass)
 							CLUTTER_TYPE_ACTOR,
 							G_PARAM_READWRITE |
 							G_PARAM_STATIC_STRINGS));
+  g_object_class_install_property (object_class,
+				   PROP_WIDTH_ONLY,
+				   g_param_spec_boolean ("width-only",
+							 "Manipulate width only",
+							 "Whether to only expose manipulators "
+							 "for width",
+							 FALSE,
+							 G_PARAM_READWRITE));
   
   g_type_class_add_private (object_class, sizeof(GlideManipulatorPrivate));
 }
@@ -688,4 +715,20 @@ glide_manipulator_set_target (GlideManipulator *manip, ClutterActor *actor)
   g_object_notify (G_OBJECT (manip), "target");
 }
 
+gboolean
+glide_manipulator_get_width_only (GlideManipulator *manip)
+{
+  return manip->priv->width_only;
+}
 
+void
+glide_manipulator_set_width_only (GlideManipulator *manip,
+				  gboolean width_only)
+{
+  if (width_only == manip->priv->width_only)
+    return;
+  manip->priv->width_only = width_only;
+  clutter_actor_queue_redraw (CLUTTER_ACTOR (manip));
+  
+  g_object_notify (G_OBJECT (manip), "width-only");
+}

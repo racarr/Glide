@@ -98,6 +98,7 @@ glide_stage_manager_set_selection_real (GlideStageManager *m,
   clutter_actor_raise_top (a);
   
   glide_manipulator_set_target(m->priv->manip, a);
+  glide_manipulator_set_width_only(m->priv->manip, FALSE);
   
   g_signal_emit (m, stage_manager_signals[SELECTION_CHANGED], 0, old);
 }
@@ -213,3 +214,8 @@ glide_stage_manager_set_selection (GlideStageManager *m,
   glide_stage_manager_set_selection_real (m, a);
 }
 
+GlideManipulator *
+glide_stage_manager_get_manipulator (GlideStageManager *m)
+{
+  return m->priv->manip;
+}
