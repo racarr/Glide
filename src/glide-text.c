@@ -202,7 +202,7 @@ struct _GlideTextPrivate
 
   /* Signal handler for when the backend changes its font settings */
   guint font_changed_id;
-
+  
   /* Signal handler for when the :text-direction changes */
   guint direction_changed_id;
 
@@ -214,6 +214,9 @@ struct _GlideTextPrivate
   
   gfloat drag_center_x;
   gfloat drag_center_y;
+  
+  /* Signal handler for width changes */
+  guint width_changed_id;
 };
 
 enum
@@ -527,6 +530,7 @@ glide_text_font_changed_cb (GlideText *text)
   glide_text_dirty_cache (text);
   clutter_actor_queue_relayout (CLUTTER_ACTOR (text));
 }
+
 
 static void
 glide_text_direction_changed_cb (GObject    *gobject,
@@ -854,6 +858,32 @@ glide_text_set_positions (GlideText *self,
   g_object_thaw_notify (G_OBJECT (self));
 }
 
+static void
+glide_text_update_actor_size (GlideText *self)
+{
+  ClutterActorBox alloc = { 0, };
+  PangoLayout *layout;
+  PangoRectangle logical_rect = { 0, };
+  
+  clutter_actor_get_allocation_box (CLUTTER_ACTOR (self), &alloc);
+  layout = glide_text_create_layout (self,
+				     alloc.x2 - alloc.x1,
+				     alloc.y2 - alloc.y1);
+  
+  pango_layout_get_extents (layout, NULL, &logical_rect);
+  
+  if (fabs((logical_rect.height/1024.0f) - (alloc.y2-alloc.y1)) > .1)
+    clutter_actor_set_height (CLUTTER_ACTOR (self), logical_rect.height / 1024.0f );
+}
+
+static void
+glide_text_width_changed_cb (GObject    *gobject,
+			     GParamSpec *pspec)
+{
+  glide_text_update_actor_size (GLIDE_TEXT (gobject));
+}
+
+
 static inline void
 glide_text_set_text_internal (GlideText *self,
                                 const gchar *text)
@@ -906,6 +936,9 @@ glide_text_set_text_internal (GlideText *self,
 
   g_signal_emit (self, text_signals[TEXT_CHANGED], 0);
   g_object_notify (G_OBJECT (self), "text");
+  glide_text_update_actor_size (self);
+  
+  //  clutter_actor_queue_relayout (CLUTTER_ACTOR (self));
 
   g_object_thaw_notify (G_OBJECT (self));
 }
@@ -1210,6 +1243,11 @@ glide_text_dispose (GObject *gobject)
       g_signal_handler_disconnect (clutter_get_default_backend (),
                                    priv->font_changed_id);
       priv->font_changed_id = 0;
+    }
+  if (priv->width_changed_id)
+    {
+      g_signal_handler_disconnect (self, priv->width_changed_id);
+      priv->width_changed_id = 0;
     }
 
   G_OBJECT_CLASS (glide_text_parent_class)->dispose (gobject);
@@ -1532,12 +1570,7 @@ glide_text_button_press (ClutterActor       *actor,
   gfloat x, y;
   gint index_;
 
-  {
-    gfloat x, y;
-    clutter_actor_get_position (actor, &x, &y);
-    g_message ("Button press at: %f %f", x, y);
-  }
-  
+  clutter_actor_grab_key_focus (actor);
   m = glide_actor_get_stage_manager (GLIDE_ACTOR (actor));
   
   glide_stage_manager_set_selection (m, actor);
@@ -1550,7 +1583,6 @@ glide_text_button_press (ClutterActor       *actor,
       clutter_actor_get_position (actor, &ax, &ay);
       
       priv->dragging = TRUE;
-      g_message ("dragging true");
       priv->drag_center_x = event->x - ax;
       priv->drag_center_y = event->y - ay;      
       
@@ -2000,16 +2032,24 @@ glide_text_allocate (ClutterActor           *self,
 {
   GlideText *text = GLIDE_TEXT (self);
   ClutterActorClass *parent_class;
+  PangoRectangle logical_rect;
+  PangoLayout *layout;
 
   /* Ensure that there is a cached layout with the right width so
    * that we don't need to create the text during the paint run
    */
-  glide_text_create_layout (text,
-                              box->x2 - box->x1,
-                              box->y2 - box->y1);
-
+  layout = glide_text_create_layout (text,
+				     box->x2 - box->x1,
+				     box->y2 - box->y1);
+  pango_layout_get_extents (layout, NULL, &logical_rect);
+  
   parent_class = CLUTTER_ACTOR_CLASS (glide_text_parent_class);
   parent_class->allocate (self, box, flags);
+
+  g_message("allocate %f %f", clutter_actor_get_width (self),
+	    clutter_actor_get_height (self));
+
+  //  g_idle_add (glide_text_update_actor_size_idle, self);
 }
 
 static gboolean
@@ -3109,6 +3149,11 @@ glide_text_init (GlideText *self)
     g_signal_connect (self, "notify::text-direction",
                       G_CALLBACK (glide_text_direction_changed_cb),
                       NULL);
+  
+  priv->width_changed_id =
+    g_signal_connect (self, "notify::width",
+		      G_CALLBACK (glide_text_width_changed_cb),
+		      NULL);
 }
 
 /**
