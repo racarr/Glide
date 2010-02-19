@@ -23,6 +23,7 @@
 #include <glib/gi18n.h>
 #include "glide-actor.h"
 
+#include <girepository.h>
 #include <math.h>
 
 #include "glide-actor-priv.h"
@@ -37,6 +38,14 @@ enum {
   PROP_STAGE_MANAGER,
   PROP_SELECTED
   };
+
+enum {
+  SELECTED,
+  DESELECTED,
+  LAST_SIGNAL
+};
+
+static guint actor_signals[LAST_SIGNAL] = { 0, };
 
 static void
 glide_actor_finalize (GObject *object)
@@ -80,12 +89,16 @@ glide_actor_selection_changed_callback (GlideStageManager *manager,
       (this->priv->selected == TRUE))
     {
       this->priv->selected = FALSE;
+      
       g_object_notify (G_OBJECT (this), "selected");
+      g_signal_emit (this, actor_signals[DESELECTED], 0);
     }
   if ((GlideActor *)glide_stage_manager_get_selection (manager) == this)
     {
       this->priv->selected = TRUE;
+
       g_object_notify (G_OBJECT (this), "selected");
+      g_signal_emit (this, actor_signals[SELECTED], 0);
     }
 }
 
@@ -138,6 +151,24 @@ glide_actor_class_init (GlideActorClass *klass)
 							"Whether the glide actor is selected",
 							FALSE,
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS));
+  
+  actor_signals[SELECTED] = 
+    g_signal_new ("selected",
+		  G_TYPE_FROM_CLASS (object_class),
+		  G_SIGNAL_RUN_FIRST,
+		  G_STRUCT_OFFSET (GlideActorClass, selected),
+		  NULL, NULL,
+		  gi_cclosure_marshal_generic,
+		  G_TYPE_NONE, 0);
+  actor_signals[DESELECTED] = 
+    g_signal_new ("deselected",
+		  G_TYPE_FROM_CLASS (object_class),
+		  G_SIGNAL_RUN_FIRST,
+		  G_STRUCT_OFFSET (GlideActorClass, deselected),
+		  NULL, NULL,
+		  gi_cclosure_marshal_generic,
+		  G_TYPE_NONE, 0);
+		  
 
   g_type_class_add_private (object_class, sizeof(GlideActorPrivate));
 }

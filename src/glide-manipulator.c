@@ -229,7 +229,7 @@ glide_manipulator_paint (ClutterActor *self)
 
 static void
 glide_manipulator_pick (ClutterActor *actor,
-		    const ClutterColor *color)
+			const ClutterColor *color)
 {
   ClutterGeometry geom;
 

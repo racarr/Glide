@@ -156,6 +156,14 @@ glide_window_make_toolbar (GlideWindow *w)
 }
 
 static void
+glide_window_stage_enter_notify (GtkWidget *widget,
+				 GdkEventCrossing *event,
+				 gpointer user_data)
+{
+  gtk_widget_grab_focus (widget);
+}
+
+static void
 glide_window_init (GlideWindow *window)
 {
   ClutterActor *stage;
@@ -171,6 +179,11 @@ glide_window_init (GlideWindow *window)
   
   embed = gtk_clutter_embed_new ();
   stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (embed));
+  
+  g_signal_connect (embed, "enter-notify-event", G_CALLBACK (glide_window_stage_enter_notify),
+		    NULL);
+  
+  gtk_widget_set_can_focus (GTK_WIDGET (embed), TRUE);
   
   window->priv->stage = stage;
   toolbar = glide_window_make_toolbar (window);

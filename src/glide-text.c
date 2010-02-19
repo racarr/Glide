@@ -1531,8 +1531,11 @@ glide_text_button_press (ClutterActor       *actor,
   gfloat x, y;
   gint index_;
 
-
-  clutter_actor_grab_key_focus (actor);
+  {
+    gfloat x, y;
+    clutter_actor_get_position (actor, &x, &y);
+    g_message ("Button press at: %f %f", x, y);
+  }
   
   m = glide_actor_get_stage_manager (GLIDE_ACTOR (actor));
   
@@ -1651,8 +1654,17 @@ glide_text_button_release (ClutterActor       *actor,
   GlideText *self = GLIDE_TEXT (actor);
   GlideTextPrivate *priv = self->priv;
 
+  if (priv->in_select_drag)
+    {
+      clutter_ungrab_pointer ();
+      priv->in_select_drag = FALSE;
+    }
   if (priv->dragging)
-    priv->dragging = FALSE;
+    {
+      clutter_ungrab_pointer ();
+      priv->dragging = FALSE;
+    }
+
   if (!priv->motion_since_press)
     {
       GLIDE_NOTE (TEXT, "Tap");
@@ -1663,9 +1675,6 @@ glide_text_button_release (ClutterActor       *actor,
     }
   if (priv->in_select_drag)
     {
-      clutter_ungrab_pointer ();
-      priv->in_select_drag = FALSE;
-
       return TRUE;
     }
 
@@ -1737,6 +1746,29 @@ glide_text_key_press (ClutterActor    *actor,
 }
 
 #define TEXT_PADDING    2
+
+static void
+glide_text_pick (ClutterActor *self,
+		 const ClutterColor *color)
+{
+  if (clutter_actor_should_pick_paint (self))
+    {
+      ClutterActorBox box = { 0, };
+      float width, height;
+
+      clutter_actor_get_allocation_box (self, &box);
+
+      width = box.x2 - box.x1;
+      height = box.y2 - box.y1;
+
+      cogl_set_source_color4ub (color->red,
+                                color->green,
+                                color->blue,
+                                color->alpha);
+
+      cogl_rectangle (0, 0, width, height);
+    }
+}
 
 static void
 glide_text_paint (ClutterActor *self)
@@ -2390,8 +2422,17 @@ glide_text_add_move_binding (ClutterBindingPool  *pool,
 }
 
 static void
+glide_text_deselected (GlideActor *actor)
+{
+  GlideText *text = GLIDE_TEXT (actor);
+
+  glide_text_set_editable (text, FALSE);
+}
+
+static void
 glide_text_class_init (GlideTextClass *klass)
 {
+  GlideActorClass *glide_actor_class = GLIDE_ACTOR_CLASS (klass);
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   ClutterActorClass *actor_class = CLUTTER_ACTOR_CLASS (klass);
   ClutterBindingPool *binding_pool;
@@ -2405,6 +2446,7 @@ glide_text_class_init (GlideTextClass *klass)
   gobject_class->finalize = glide_text_finalize;
 
   actor_class->paint = glide_text_paint;
+  actor_class->pick = glide_text_pick;
   actor_class->get_preferred_width = glide_text_get_preferred_width;
   actor_class->get_preferred_height = glide_text_get_preferred_height;
   actor_class->allocate = glide_text_allocate;
@@ -2412,6 +2454,8 @@ glide_text_class_init (GlideTextClass *klass)
   actor_class->button_press_event = glide_text_button_press;
   actor_class->button_release_event = glide_text_button_release;
   actor_class->motion_event = glide_text_motion;
+
+  glide_actor_class->deselected = glide_text_deselected;
 
   /**
    * GlideText:font-name:

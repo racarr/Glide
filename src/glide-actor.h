@@ -60,7 +60,10 @@ typedef struct _GlideActorClass GlideActorClass;
 
 struct _GlideActorClass 
 {
-	ClutterActorClass parent_class;
+  ClutterActorClass parent_class;
+  
+  void (* selected) (GlideActor *actor);
+  void (* deselected) (GlideActor *actor);
 };
 
 #define GLIDE_ACTOR_DISPLAY_NAME(actor) \
