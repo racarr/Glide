@@ -94,6 +94,10 @@ glide_image_init (GlideImage *self)
   self->priv = GLIDE_IMAGE_GET_PRIVATE (self);
   
   self->priv->material = cogl_material_new();
+  
+  cogl_material_set_layer_filters (self->priv->material, 0,
+				   COGL_MATERIAL_FILTER_LINEAR_MIPMAP_LINEAR,
+				   COGL_MATERIAL_FILTER_LINEAR);
 }
 
 ClutterActor*
