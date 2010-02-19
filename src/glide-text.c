@@ -204,6 +204,15 @@ struct _GlideTextPrivate
 
   /* Signal handler for when the :text-direction changes */
   guint direction_changed_id;
+
+  /* Used to track tap clicks v. drags */
+  gboolean motion_since_press;
+  
+  /* Used to manage dragging */
+  gboolean dragging;
+  
+  gfloat drag_center_x;
+  gfloat drag_center_y;
 };
 
 enum
@@ -565,11 +574,6 @@ glide_text_create_layout (GlideText *text,
           /* If this cached layout is using the same size then we can
 	   * just return that directly
            */
-	  GLIDE_NOTE (TEXT, "GlideText: %p: cache hit for size %.2fx%.2f",
-		      text,
-		      allocation_width,
-		      allocation_height);
-
 	  return priv->cached_layouts[i].layout;
 	}
       else if (!found_free_cache &&
@@ -1527,12 +1531,28 @@ glide_text_button_press (ClutterActor       *actor,
   gfloat x, y;
   gint index_;
 
-  /* we'll steal keyfocus if we do not have it */
+
   clutter_actor_grab_key_focus (actor);
   
   m = glide_actor_get_stage_manager (GLIDE_ACTOR (actor));
   
   glide_stage_manager_set_selection (m, actor);
+
+  priv->motion_since_press = FALSE;
+  if (!priv->editable)
+    {
+      gfloat ax, ay;
+      
+      clutter_actor_get_position (actor, &ax, &ay);
+      
+      priv->dragging = TRUE;
+      g_message ("dragging true");
+      priv->drag_center_x = event->x - ax;
+      priv->drag_center_y = event->y - ay;      
+      
+      clutter_grab_pointer (actor);      
+      return TRUE;
+    }
 
   /* if the actor is empty we just reset everything and not
    * set up the dragging of the selection since there's nothing
@@ -1586,7 +1606,7 @@ glide_text_button_press (ClutterActor       *actor,
 
 static gboolean
 glide_text_motion (ClutterActor       *actor,
-                     ClutterMotionEvent *mev)
+		   ClutterMotionEvent *mev)
 {
   GlideText *self = GLIDE_TEXT (actor);
   GlideTextPrivate *priv = self->priv;
@@ -1594,8 +1614,18 @@ glide_text_motion (ClutterActor       *actor,
   gint index_, offset;
   gboolean res;
 
+  priv->motion_since_press = TRUE;
+
+  if (priv->dragging)
+    {
+      clutter_actor_set_position (actor,
+				  mev->x - priv->drag_center_x,
+				  mev->y - priv->drag_center_y);
+      return TRUE;
+    }
   if (!priv->in_select_drag)
     return FALSE;
+
 
   res = clutter_actor_transform_stage_point (actor,
                                              mev->x, mev->y,
@@ -1621,6 +1651,16 @@ glide_text_button_release (ClutterActor       *actor,
   GlideText *self = GLIDE_TEXT (actor);
   GlideTextPrivate *priv = self->priv;
 
+  if (priv->dragging)
+    priv->dragging = FALSE;
+  if (!priv->motion_since_press)
+    {
+      GLIDE_NOTE (TEXT, "Tap");
+      if (glide_actor_get_selected (GLIDE_ACTOR (actor)))
+	glide_text_set_editable (self, TRUE);
+      
+      return TRUE;
+    }
   if (priv->in_select_drag)
     {
       clutter_ungrab_pointer ();
