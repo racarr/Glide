@@ -25,7 +25,11 @@
 typedef enum
 {
   GLIDE_DEBUG_ALL = 1 << 0,
-  GLIDE_DEBUG_MISC = 1 << 1
+  GLIDE_DEBUG_MISC = 1 << 1,
+  GLIDE_DEBUG_IMAGE = 1 << 2,
+  GLIDE_DEBUG_MANIPULATOR = 1 << 3,
+  GLIDE_DEBUG_STAGE_MANAGER = 1 << 4,
+  GLIDE_DEBUG_WINDOW = 1 << 5
 } GlideDebugFlag;
 
 #ifdef GLIDE_ENABLE_DEBUG
