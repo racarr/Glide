@@ -423,15 +423,15 @@ glide_text_create_layout_no_cache (GlideText *text,
   else
     pango_layout_set_text (layout, contents, contents_len);
 
-  if (!priv->editable)
-    {
-      /* This will merge the markup attributes and the attributes
-         property if needed */
-      glide_text_ensure_effective_attributes (text);
+    if (!priv->editable)
+      {
+	/*       This will merge the markup attributes and the attributes
+		 property if needed */
+        glide_text_ensure_effective_attributes (text);
 
       if (priv->effective_attrs)
         pango_layout_set_attributes (layout, priv->effective_attrs);
-    }
+      }
 
   pango_layout_set_alignment (layout, priv->alignment);
   pango_layout_set_single_paragraph_mode (layout, priv->single_line_mode);
@@ -467,16 +467,14 @@ glide_text_create_layout_no_cache (GlideText *text,
    * actors we only want to set the width if wrapping or ellipsizing
    * is enabled.
    */
-  if (allocation_width > 0 &&
-      (priv->editable ? !priv->single_line_mode
-       : (priv->ellipsize != PANGO_ELLIPSIZE_NONE || priv->wrap)))
+  if (allocation_width > 0)
     {
       gint width;
 
       width = allocation_width > 0
         ? (allocation_width * 1024)
         : -1;
-
+      
       pango_layout_set_width (layout, width);
     }
 
@@ -2046,10 +2044,6 @@ glide_text_allocate (ClutterActor           *self,
   parent_class = CLUTTER_ACTOR_CLASS (glide_text_parent_class);
   parent_class->allocate (self, box, flags);
 
-  g_message("allocate %f %f", clutter_actor_get_width (self),
-	    clutter_actor_get_height (self));
-
-  //  g_idle_add (glide_text_update_actor_size_idle, self);
 }
 
 static gboolean
@@ -2783,7 +2777,7 @@ glide_text_class_init (GlideTextClass *klass)
                                 "If set, wrap the lines if the text "
                                 "becomes too wide",
                                 TRUE,
-                                G_PARAM_READWRITE);
+                                G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
   g_object_class_install_property (gobject_class, PROP_LINE_WRAP, pspec);
 
   /**
@@ -3154,6 +3148,8 @@ glide_text_init (GlideText *self)
     g_signal_connect (self, "notify::width",
 		      G_CALLBACK (glide_text_width_changed_cb),
 		      NULL);
+  
+  glide_text_set_line_wrap (self, TRUE);
 }
 
 /**
