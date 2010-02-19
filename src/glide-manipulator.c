@@ -235,7 +235,7 @@ glide_manipulator_pick (ClutterActor *actor,
 
   clutter_actor_get_allocation_geometry (actor, &geom);
   
-   glide_manipulator_paint_border (color, &geom);
+  glide_manipulator_paint_border (color, &geom);
   glide_manipulator_paint_widgets (GLIDE_MANIPULATOR (actor), &geom,
 				   color, color);
 }

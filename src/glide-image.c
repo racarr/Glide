@@ -105,14 +105,56 @@ glide_image_button_press (ClutterActor *actor,
 {
   GlideStageManager *m;
   GlideActor *ga = GLIDE_ACTOR (actor);
+  GlideImage *image = GLIDE_IMAGE (actor);
+  gfloat ax, ay;
   
   m = glide_actor_get_stage_manager (ga);
   
-  if (event->button != 1)
-    return FALSE;
-  
   glide_stage_manager_set_selection (m, actor);
+
+  clutter_actor_get_position (actor, &ax, &ay);
+
+  image->priv->drag_center_x = event->x - ax;
+  image->priv->drag_center_y = event->y - ay;
+  image->priv->dragging = TRUE;
+  
+  clutter_grab_pointer (actor);
+  
   return TRUE;
+}
+
+static gboolean
+glide_image_button_release (ClutterActor *actor,
+			    ClutterButtonEvent *bev)
+{
+  GlideImage *image = GLIDE_IMAGE (actor);
+  if (image->priv->dragging)
+    {
+      clutter_ungrab_pointer ();
+      image->priv->dragging = FALSE;
+      
+      return TRUE;
+    }
+  
+  return FALSE;
+}
+
+static gboolean
+glide_image_motion (ClutterActor *actor,
+		    ClutterMotionEvent *mev)
+{
+  GlideImage *image = GLIDE_IMAGE (actor);
+  
+  if (image->priv->dragging)
+    {
+      clutter_actor_set_position (actor,
+				  mev->x - image->priv->drag_center_x,
+				  mev->y - image->priv->drag_center_y);
+      
+      return TRUE;
+    }
+  
+  return FALSE;
 }
 
 static void
@@ -141,9 +183,12 @@ glide_image_class_init (GlideImageClass *klass)
   
   actor_class->paint = glide_image_paint;
   actor_class->button_press_event = glide_image_button_press;
+  actor_class->button_release_event = glide_image_button_release;
+  actor_class->motion_event = glide_image_motion;
   
   actor_class->get_preferred_width = glide_image_get_preferred_width;
   actor_class->get_preferred_height = glide_image_get_preferred_height;
+
   
   object_class->finalize = glide_image_finalize;
   g_type_class_add_private (object_class, sizeof(GlideImagePrivate));

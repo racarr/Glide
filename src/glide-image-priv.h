@@ -33,6 +33,11 @@ struct _GlideImagePrivate
   
   guint image_width;
   guint image_height;
+
+  gboolean dragging;
+  
+  gfloat drag_center_x;
+  gfloat drag_center_y;
 };
 
 G_END_DECLS
