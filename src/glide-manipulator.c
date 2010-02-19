@@ -48,9 +48,13 @@ enum {
 static void
 glide_manipulator_finalize (GObject *object)
 {
+  GlideManipulator *m = GLIDE_MANIPULATOR(object);
   GLIDE_NOTE (MANIPULATOR,
 	      "finalizing manipulator '%s'",
 	      GLIDE_ACTOR_DISPLAY_NAME (CLUTTER_ACTOR (object)));
+  
+  cogl_handle_unref (m->priv->widget_material);
+  m->priv->widget_material = COGL_INVALID_HANDLE;
 
   G_OBJECT_CLASS (glide_manipulator_parent_class)->finalize (object);
 }
