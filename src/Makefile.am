@@ -9,11 +9,11 @@ AM_CPPFLAGS = \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
 	$(GTK_CFLAGS) \
 	$(CLUTTER_CFLAGS) \
-	$(CLUTTER_GTK_CFLAGS)
+	$(CLUTTER_GTK_CFLAGS) \
+	$(GLIDE_DEBUG_CFLAGS)
 
 AM_CFLAGS =\
-	 -Wall\
-	 -g
+	 -Wall
 
 bin_PROGRAMS = glide
 
@@ -26,7 +26,7 @@ glide_SOURCES = \
 	glide-actor.c \
 	glide-actor.h \
 	glide-rectangle.c \
-	glide-rectangle.h \	
+	glide-rectangle.h \
 	glide-stage-manager.c \
 	glide-stage-manager.h \
 	glide-image.c \

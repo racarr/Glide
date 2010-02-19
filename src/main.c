@@ -50,10 +50,11 @@ glide_arg_debug_cb (const char *key, const char *value, gpointer user_data)
 }
 
 static gboolean
-seed_arg_no_debug_cb (const char *key, const char *value, gpointer user_data)
+glide_arg_no_debug_cb (const char *key, const char *value, gpointer user_data)
 {
   glide_debug_flags &=
 	~g_parse_debug_string (value, glide_debug_keys, G_N_ELEMENTS (glide_debug_keys));
+  return TRUE;
 }
 #endif
 
@@ -125,6 +126,7 @@ main (int argc, char *argv[])
 	  return 1;
 	}
 
+  GLIDE_NOTE (MISC, "Starting Glide");
   window = glide_window_new ();
 
   gtk_main ();

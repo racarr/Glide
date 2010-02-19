@@ -69,9 +69,33 @@ if test x$enable_gtk_doc = xauto ; then
 fi
 AM_CONDITIONAL(ENABLE_GTK_DOC, test x$enable_gtk_doc = xyes)
 
+AC_ARG_ENABLE(debug,
+	      AC_HELP_STRING([--enable-debug],
+	      [enable verbose debugging. [default=no]]),
+	      [enable_debug="yes"],[enable_debug="no"])
 
-AC_OUTPUT([
+if test "x$enable_debug" = "xyes"; then
+   GLIDE_DEBUG_CFLAGS="-DGLIDE_ENABLE_DEBUG -g -O0"
+else
+   GLIDE_DEBUG_CFLAGS="-DG_DISABLE_ASSERT -DG_DISABLE_CHECKS -DG_DISABLE_CAST_CHECKS"
+fi
+
+AC_SUBST(GLIDE_DEBUG_CFLAGS)
+
+
+AC_CONFIG_FILES([
 Makefile
 src/Makefile
 po/Makefile.in
 ])
+
+AC_OUTPUT
+
+
+echo "
+Build Configuration:
+  Debug........................$enable_debug
+
+Installation:
+  Prefix.......................$prefix
+"
