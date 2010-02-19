@@ -1742,7 +1742,12 @@ glide_text_key_press (ClutterActor    *actor,
                                          G_OBJECT (actor));
 
   if (!priv->editable)
-    return FALSE;
+    {
+      if (glide_actor_get_selected (GLIDE_ACTOR (self)))
+	glide_text_set_editable (self, TRUE);
+      else
+	return FALSE;
+    }
 
   /* if the key binding has handled the event we bail out
    * as fast as we can; otherwise, we try to insert the
