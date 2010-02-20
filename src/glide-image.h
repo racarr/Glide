@@ -64,4 +64,4 @@ void glide_image_set_cogl_texture          (GlideImage *image, CoglHandle new_te
 
 G_END_DECLS
 
-#endif /* __GLIDE_IMAGE_H__ */
+#endif /* __CLUTTER_IMAGE_H__ */

@@ -26,10 +26,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-typedef struct _GlideDocument GlideDocument;
-
-#include "glide-slide.h"
-
 
 G_BEGIN_DECLS
 
@@ -49,7 +45,7 @@ typedef struct _GlideDocumentPrivate GlideDocumentPrivate;
 /*
  * Main object structure
  */
-
+typedef struct _GlideDocument GlideDocument;
 
 struct _GlideDocument 
 {
@@ -76,9 +72,6 @@ GType 		 glide_document_get_type 			(void) G_GNUC_CONST;
 GlideDocument   *glide_document_new (const gchar *name);
 
 const gchar     *glide_document_get_name (GlideDocument *document);
-
-gint             glide_document_get_n_slides (GlideDocument *document);
-GlideSlide      *glide_document_get_nth_slide (GlideDocument *document, gint n);
 
 
 
