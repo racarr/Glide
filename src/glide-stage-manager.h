@@ -26,6 +26,8 @@
 #include <glib-object.h>
 #include <clutter/clutter.h>
 
+typedef struct _GlideStageManager GlideStageManager;
+
 #include "glide-manipulator.h"
 #include "glide-document.h"
 
@@ -47,7 +49,7 @@ typedef struct _GlideStageManagerPrivate GlideStageManagerPrivate;
 /*
  * Main object structure
  */
-typedef struct _GlideStageManager GlideStageManager;
+
 
 struct _GlideStageManager 
 {

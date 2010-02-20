@@ -112,7 +112,11 @@ glide_document_class_init (GlideDocumentClass *klass)
 static void
 glide_document_init (GlideDocument *d)
 {
+  ClutterActor *slide;
   d->priv = GLIDE_DOCUMENT_GET_PRIVATE (d);
+
+  slide = glide_slide_new (d);
+  d->priv->slides = g_list_append (d->priv->slides, slide);
 }
 
 GlideDocument *
@@ -129,3 +133,14 @@ glide_document_get_name (GlideDocument *document)
   return document->priv->name;
 }
 
+gint
+glide_document_get_n_slides (GlideDocument *document)
+{
+  return g_list_length (document->priv->slides);
+}
+
+GlideSlide *
+glide_document_get_nth_slide (GlideDocument *document, gint n)
+{
+  return (GlideSlide *)g_list_nth_data (document->priv->slides, n);
+}
