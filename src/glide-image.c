@@ -207,10 +207,9 @@ glide_image_init (GlideImage *self)
 }
 
 ClutterActor*
-glide_image_new (GlideStageManager *m)
+glide_image_new ()
 {
   return g_object_new (GLIDE_TYPE_IMAGE, 
-		       "stage-manager", m,
 		       NULL);
 }
 
@@ -273,11 +272,10 @@ glide_image_set_from_file (GlideImage *image,
 }
 
 ClutterActor *
-glide_image_new_from_file (GlideStageManager *m, 
-			   const gchar *filename, 
+glide_image_new_from_file (const gchar *filename, 
 			   GError **error)
 {
-  ClutterActor *image = glide_image_new (m);
+  ClutterActor *image = glide_image_new ();
   
   if (!glide_image_set_from_file (GLIDE_IMAGE (image),
 				  filename, error))

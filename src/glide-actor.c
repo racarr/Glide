@@ -112,8 +112,7 @@ glide_actor_set_stage_manager_real (GlideActor *actor,
   g_signal_connect (actor->priv->manager, "selection-changed",
 		    G_CALLBACK (glide_actor_selection_changed_callback),
 		    actor);
-
-  glide_stage_manager_add_actor (manager, actor);
+  g_object_notify (G_OBJECT (actor), "stage-manager");
 }
 
 static void
@@ -151,7 +150,6 @@ glide_actor_class_init (GlideActorClass *klass)
 							"The stage manager responsible for the actor.",
 							GLIDE_TYPE_STAGE_MANAGER,
 							G_PARAM_READWRITE |
-							G_PARAM_CONSTRUCT_ONLY |
 							G_PARAM_STATIC_STRINGS));
   
   g_object_class_install_property (object_class,
@@ -202,4 +200,10 @@ gboolean
 glide_actor_get_selected (GlideActor *actor)
 {
   return actor->priv->selected;
+}
+
+void
+glide_actor_set_stage_manager (GlideActor *actor, GlideStageManager *manager)
+{
+  glide_actor_set_stage_manager_real (actor, manager);
 }

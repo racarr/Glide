@@ -3257,10 +3257,9 @@ glide_text_init (GlideText *self)
  * Since: 1.0
  */
 ClutterActor *
-glide_text_new (GlideStageManager *manager)
+glide_text_new ()
 {
   return g_object_new (GLIDE_TYPE_TEXT, 
-		       "stage-manager", manager,
 		       NULL);
 }
 
@@ -3283,8 +3282,7 @@ glide_text_new (GlideStageManager *manager)
  * Since: 1.0
  */
 ClutterActor *
-glide_text_new_full (GlideStageManager *manager,
-		     const gchar        *font_name,
+glide_text_new_full (const gchar        *font_name,
 		     const gchar        *text,
 		     const ClutterColor *color)
 {
@@ -3292,7 +3290,6 @@ glide_text_new_full (GlideStageManager *manager,
                        "font-name", font_name,
                        "text", text,
                        "color", color,
-		       "stage-manager", manager,
                        NULL);
 }
 
@@ -3312,14 +3309,12 @@ glide_text_new_full (GlideStageManager *manager,
  * Since: 1.0
  */
 ClutterActor *
-glide_text_new_with_text (GlideStageManager *manager,
-			  const gchar *font_name,
+glide_text_new_with_text (const gchar *font_name,
 			  const gchar *text)
 {
   return g_object_new (GLIDE_TYPE_TEXT,
                        "font-name", font_name,
                        "text", text,
-		       "stage-manager", manager,
                        NULL);
 }
 

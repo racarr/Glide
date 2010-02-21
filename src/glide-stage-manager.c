@@ -246,12 +246,13 @@ void
 glide_stage_manager_add_actor (GlideStageManager *manager,
 			       GlideActor *actor)
 {
+  glide_actor_set_stage_manager (actor, manager);
+  
   clutter_actor_set_position (CLUTTER_ACTOR (actor), 200, 200);
   clutter_container_add_actor (CLUTTER_CONTAINER (manager->priv->stage),
 			       CLUTTER_ACTOR (actor));
 
   clutter_actor_show (CLUTTER_ACTOR (actor));
-
   
   glide_stage_manager_set_selection (manager, actor);
 }

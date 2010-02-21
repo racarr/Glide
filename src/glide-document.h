@@ -74,11 +74,6 @@ GlideDocument   *glide_document_new (const gchar *name);
 
 const gchar     *glide_document_get_name (GlideDocument *document);
 
-guint glide_document_get_n_slides (GlideDocument *document);
-GlideSlide *glide_document_get_nth_slide (GlideDocument *document, guint n);
-
-GlideSlide  *glide_document_add_slide (GlideDocument *document);
-
 G_END_DECLS
 
 #endif  /* __GLIDE_DOCUMENT_H__  */

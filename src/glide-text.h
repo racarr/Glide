@@ -108,13 +108,11 @@ struct _GlideTextClass
 
 GType glide_text_get_type (void) G_GNUC_CONST;
 
-ClutterActor *        glide_text_new                  (GlideStageManager *manager);
-ClutterActor *        glide_text_new_full             (GlideStageManager *manager, 
-						       const gchar          *font_name,
+ClutterActor *        glide_text_new                  ();
+ClutterActor *        glide_text_new_full             (const gchar          *font_name,
 						       const gchar          *text,
 						       const ClutterColor   *color);
-ClutterActor *        glide_text_new_with_text        (GlideStageManager *manager,
-						       const gchar          *font_name,
+ClutterActor *        glide_text_new_with_text        (const gchar          *font_name,
 						       const gchar          *text);
 G_CONST_RETURN gchar *glide_text_get_text             (GlideText          *self);
 void                  glide_text_set_text             (GlideText          *self,

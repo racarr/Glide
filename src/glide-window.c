@@ -72,7 +72,8 @@ glide_window_image_open_response_callback (GtkDialog *dialog,
       // Todo: URI
       gchar *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
       
-      im =  glide_image_new_from_file (window->priv->manager, filename, NULL);
+      im =  glide_image_new_from_file (filename, NULL);
+      glide_stage_manager_add_actor (window->priv->manager, GLIDE_ACTOR (im));
       
       g_free (filename);
       
@@ -109,7 +110,8 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
   GlideWindow *window = (GlideWindow *)data;
   ClutterActor *text;
   
-  text = glide_text_new (window->priv->manager);
+  text = glide_text_new ();
+  glide_stage_manager_add_actor (window->priv->manager, GLIDE_ACTOR (text));
 
   GLIDE_NOTE (WINDOW, "Inserting new text, stage manager: %p", window->priv->manager);
 }

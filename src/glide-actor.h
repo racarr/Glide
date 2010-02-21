@@ -76,6 +76,7 @@ struct _GlideActorClass
 GType 		 glide_actor_get_type 			(void) G_GNUC_CONST;
 
 GlideStageManager *glide_actor_get_stage_manager (GlideActor *actor);
+void glide_actor_set_stage_manager (GlideActor *actor, GlideStageManager *manager);
 
 gboolean glide_actor_get_selected (GlideActor *actor);
 
