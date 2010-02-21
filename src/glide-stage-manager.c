@@ -119,6 +119,12 @@ glide_stage_manager_add_manipulator (GlideStageManager *manager, ClutterActor *s
   manager->priv->manip = manip;
 }
 
+void
+glide_stage_manager_set_document (GlideStageManager *manager,
+				  GlideDocument *document)
+{
+}
+
 static void
 glide_stage_manager_set_property (GObject *object,
 				  guint prop_id,
@@ -136,7 +142,7 @@ glide_stage_manager_set_property (GObject *object,
       break;
     case PROP_DOCUMENT:
       g_return_if_fail (manager->priv->document == NULL);
-      manager->priv->document = GLIDE_DOCUMENT(g_value_get_object (value));
+      glide_stage_manager_set_document (manager, GLIDE_DOCUMENT (g_value_get_object (value)));
       break;
     case PROP_SELECTION:
       glide_stage_manager_set_selection_real (manager,

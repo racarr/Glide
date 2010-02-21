@@ -23,6 +23,8 @@
 #include "glide-document.h"
 #include "glide-document-priv.h"
 
+#include <girepository.h>
+
 #include "glide-debug.h"
 
 #include "glide-slide.h"
@@ -35,6 +37,13 @@ enum {
   PROP_0,
   PROP_NAME
 };
+
+enum {
+  SLIDE_ADDED,
+  LAST_SIGNAL
+};
+
+static guint document_signals[LAST_SIGNAL] = { 0, };
 
 static void
 glide_document_finalize (GObject *object)
@@ -106,6 +115,16 @@ glide_document_class_init (GlideDocumentClass *klass)
 							G_PARAM_READWRITE |
 							G_PARAM_STATIC_STRINGS |
 							G_PARAM_CONSTRUCT_ONLY));
+
+  document_signals[SLIDE_ADDED] = 
+    g_signal_new ("slide-added",
+		  G_TYPE_FROM_CLASS (object_class),
+		  G_SIGNAL_RUN_LAST,
+		  0,
+		  NULL, NULL,
+		  gi_cclosure_marshal_generic,
+		  G_TYPE_NONE, 1,
+		  G_TYPE_OBJECT);
 							
   
   g_type_class_add_private (object_class, sizeof(GlideDocumentPrivate));
@@ -129,4 +148,28 @@ const gchar *
 glide_document_get_name (GlideDocument *document)
 {
   return document->priv->name;
+}
+
+guint
+glide_document_get_n_slides (GlideDocument *document)
+{
+  return g_list_length (document->priv->slides);
+}
+
+GlideSlide *
+glide_document_get_nth_slide (GlideDocument *document,
+			      guint n)
+{
+  return GLIDE_SLIDE (g_list_nth_data (document->priv->slides, n));
+}
+
+GlideSlide *
+glide_document_add_slide (GlideDocument *document)
+{
+  GlideSlide *s = glide_slide_new (document);
+  document->priv->slides = g_list_append (document->priv->slides, s);
+  
+  g_signal_emit (document, document_signals[SLIDE_ADDED], 0, s);
+  
+  return s;
 }
