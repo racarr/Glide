@@ -123,6 +123,7 @@ void
 glide_stage_manager_set_document (GlideStageManager *manager,
 				  GlideDocument *document)
 {
+  manager->priv->document = document;
 }
 
 static void
@@ -154,6 +155,37 @@ glide_stage_manager_set_property (GObject *object,
     }
 }
 
+static GObject *
+glide_stage_manager_constructor (GType type,
+				 guint n_properties,
+				 GObjectConstructParam *properties)
+{
+  GObject *obj;
+  guint i, n;
+  GlideStageManager *manager;
+
+  {
+    /* Always chain up to the parent constructor */
+    GObjectClass *parent_class;  
+    parent_class = G_OBJECT_CLASS (glide_stage_manager_parent_class);
+    obj = parent_class->constructor (type, n_properties, properties);
+  }
+  manager = GLIDE_STAGE_MANAGER (obj);
+  n = glide_document_get_n_slides (manager->priv->document);
+  for (i = 0; i < n; i++)
+    {
+      GlideSlide *slide = glide_document_get_nth_slide (manager->priv->document, i);
+      clutter_container_add_actor (CLUTTER_CONTAINER (manager->priv->stage),
+				   CLUTTER_ACTOR (slide));
+      clutter_actor_hide (CLUTTER_ACTOR (slide));
+    }
+  
+  manager->priv->current_slide = 0;
+  clutter_actor_show (CLUTTER_ACTOR (glide_document_get_nth_slide (manager->priv->document, 0)));  
+
+  return obj;
+}
+
 static void
 glide_stage_manager_class_init (GlideStageManagerClass *klass)
 {
@@ -162,6 +194,7 @@ glide_stage_manager_class_init (GlideStageManagerClass *klass)
   object_class->finalize = glide_stage_manager_finalize;
   object_class->set_property = glide_stage_manager_set_property;
   object_class->get_property = glide_stage_manager_get_property;
+  object_class->constructor = glide_stage_manager_constructor;
   
   g_object_class_install_property (object_class,
 				   PROP_STAGE,
@@ -252,10 +285,14 @@ void
 glide_stage_manager_add_actor (GlideStageManager *manager,
 			       GlideActor *actor)
 {
+  GlideSlide *current_slide;
   glide_actor_set_stage_manager (actor, manager);
   
+  current_slide = glide_document_get_nth_slide (manager->priv->document,
+						manager->priv->current_slide);
+  
   clutter_actor_set_position (CLUTTER_ACTOR (actor), 200, 200);
-  clutter_container_add_actor (CLUTTER_CONTAINER (manager->priv->stage),
+  clutter_container_add_actor (CLUTTER_CONTAINER (current_slide),
 			       CLUTTER_ACTOR (actor));
 
   clutter_actor_show (CLUTTER_ACTOR (actor));

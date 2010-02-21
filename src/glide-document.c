@@ -134,6 +134,8 @@ static void
 glide_document_init (GlideDocument *d)
 {
   d->priv = GLIDE_DOCUMENT_GET_PRIVATE (d);
+  
+  glide_document_add_slide (d);
 }
 
 GlideDocument *
