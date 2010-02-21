@@ -25,6 +25,8 @@
 
 #include "glide-debug.h"
 
+#include "glide-slide.h"
+
 G_DEFINE_TYPE(GlideDocument, glide_document, G_TYPE_OBJECT)
 
 #define GLIDE_DOCUMENT_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GLIDE_TYPE_DOCUMENT, GlideDocumentPrivate))
@@ -129,3 +131,14 @@ glide_document_get_name (GlideDocument *document)
   return document->priv->name;
 }
 
+guint
+glide_document_get_n_slides (GlideDocument *document)
+{
+  return g_list_length (document->priv->slides);
+}
+
+GlideSlide *
+glide_document_get_nth_slide (GlideDocument *document, guint n)
+{
+  return g_list_nth_data (document->priv->slides, n);
+}

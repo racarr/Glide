@@ -30,6 +30,8 @@ G_BEGIN_DECLS
 struct _GlideDocumentPrivate
 {
   gchar *name;
+  
+  GList *slides;
 };
 
 G_END_DECLS
