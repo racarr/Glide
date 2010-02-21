@@ -142,3 +142,12 @@ glide_document_get_nth_slide (GlideDocument *document, guint n)
 {
   return g_list_nth_data (document->priv->slides, n);
 }
+
+GlideSlide *
+glide_document_add_slide (GlideDocument *document)
+{
+  GlideSlide *slide = glide_slide_new(document);
+  
+  document->priv->slides = g_list_append (document->priv->slides, slide);
+  return slide;
+}

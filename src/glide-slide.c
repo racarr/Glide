@@ -429,7 +429,7 @@ glide_slide_init (GlideSlide *self)
   CLUTTER_ACTOR_SET_FLAGS (self, CLUTTER_ACTOR_NO_LAYOUT);
 }
 
-ClutterActor*
+GlideSlide*
 glide_slide_new (GlideDocument *d)
 {
   return g_object_new (GLIDE_TYPE_SLIDE, 

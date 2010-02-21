@@ -54,7 +54,7 @@ struct _GlideSlideClass
 
 GType glide_slide_get_type (void) G_GNUC_CONST;
 
-ClutterActor *glide_slide_new  (GlideDocument *document);
+GlideSlide *glide_slide_new  (GlideDocument *document);
 
 G_END_DECLS
 
