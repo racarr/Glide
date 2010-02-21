@@ -112,7 +112,9 @@ static void
 glide_stage_manager_add_manipulator (GlideStageManager *manager, ClutterActor *stage)
 {
   GlideManipulator *manip = glide_manipulator_new(NULL);
-  clutter_container_add_actor (CLUTTER_CONTAINER (stage), CLUTTER_ACTOR (manip));
+  clutter_container_add_actor (CLUTTER_CONTAINER (glide_document_get_nth_slide (manager->priv->document,
+										manager->priv->current_slide)), 
+						  CLUTTER_ACTOR (manip));
   
   clutter_actor_hide_all (CLUTTER_ACTOR (manip));
   
@@ -139,7 +141,6 @@ glide_stage_manager_set_property (GObject *object,
     case PROP_STAGE:
       g_return_if_fail (manager->priv->stage == NULL);
       manager->priv->stage = CLUTTER_ACTOR (g_value_get_object (value));
-      glide_stage_manager_add_manipulator (manager, manager->priv->stage);
       break;
     case PROP_DOCUMENT:
       g_return_if_fail (manager->priv->document == NULL);
@@ -182,6 +183,9 @@ glide_stage_manager_constructor (GType type,
   
   manager->priv->current_slide = 0;
   clutter_actor_show (CLUTTER_ACTOR (glide_document_get_nth_slide (manager->priv->document, 0)));  
+
+  glide_stage_manager_add_manipulator (manager, manager->priv->stage);
+
 
   return obj;
 }

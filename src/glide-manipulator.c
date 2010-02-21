@@ -393,8 +393,6 @@ glide_manipulator_button_press (ClutterActor *actor,
   
   clutter_actor_get_position (actor, &ax, &ay);
   
-  clutter_stage_set_key_focus (CLUTTER_STAGE (clutter_actor_get_parent (actor)), manip->priv->target);
-  
   widg = glide_manipulator_get_widget_at (manip, event->x, event->y);
   if (widg != WIDGET_NONE)
     {
