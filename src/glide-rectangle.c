@@ -73,7 +73,7 @@ glide_rectangle_button_press (ClutterActor *actor,
   if (event->button != 1)
     return FALSE;
   
-  glide_stage_manager_set_selection (m, actor);
+  glide_stage_manager_set_selection (m, ga);
   return TRUE;
 }
 

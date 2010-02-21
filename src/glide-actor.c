@@ -113,7 +113,7 @@ glide_actor_set_stage_manager_real (GlideActor *actor,
 		    G_CALLBACK (glide_actor_selection_changed_callback),
 		    actor);
 
-  glide_stage_manager_add_actor (manager, (ClutterActor *)actor);
+  glide_stage_manager_add_actor (manager, actor);
 }
 
 static void

@@ -86,9 +86,9 @@ glide_stage_manager_get_property (GObject *object,
 
 static void
 glide_stage_manager_set_selection_real (GlideStageManager *m,
-					ClutterActor *a)
+					GlideActor *a)
 {
-  ClutterActor *old = m->priv->selection;
+  GlideActor *old = m->priv->selection;
   
   if (old == a)
     return;
@@ -100,9 +100,9 @@ glide_stage_manager_set_selection_real (GlideStageManager *m,
   m->priv->selection = a;
 
   if (a)
-    clutter_actor_raise_top (a);
+    clutter_actor_raise_top (CLUTTER_ACTOR (a));
   
-  glide_manipulator_set_target(m->priv->manip, a);
+  glide_manipulator_set_target(m->priv->manip, CLUTTER_ACTOR (a));
   glide_manipulator_set_width_only(m->priv->manip, FALSE);
   
   g_signal_emit (m, stage_manager_signals[SELECTION_CHANGED], 0, old);
@@ -140,7 +140,7 @@ glide_stage_manager_set_property (GObject *object,
       break;
     case PROP_SELECTION:
       glide_stage_manager_set_selection_real (manager,
-	      CLUTTER_ACTOR (g_value_get_object (value)));
+	      GLIDE_ACTOR (g_value_get_object (value)));
       break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -172,7 +172,7 @@ glide_stage_manager_class_init (GlideStageManagerClass *klass)
 				   g_param_spec_object ("selection",
 							"Selection",
 							"The GlideActor currently selected",
-							CLUTTER_TYPE_ACTOR,
+							GLIDE_TYPE_ACTOR,
 							G_PARAM_READWRITE |
 							G_PARAM_CONSTRUCT_ONLY |
 							G_PARAM_STATIC_STRINGS));
@@ -223,7 +223,7 @@ glide_stage_manager_get_stage (GlideStageManager *m)
   return (ClutterStage *)m->priv->stage;
 }
 
-ClutterActor *
+GlideActor *
 glide_stage_manager_get_selection (GlideStageManager *m)
 {
   return m->priv->selection;
@@ -231,7 +231,7 @@ glide_stage_manager_get_selection (GlideStageManager *m)
 
 void
 glide_stage_manager_set_selection (GlideStageManager *m,
-				   ClutterActor *a)
+				   GlideActor *a)
 {
   glide_stage_manager_set_selection_real (m, a);
 }
@@ -244,7 +244,7 @@ glide_stage_manager_get_manipulator (GlideStageManager *m)
 
 void 
 glide_stage_manager_add_actor (GlideStageManager *manager,
-			       ClutterActor *actor)
+			       GlideActor *actor)
 {
   clutter_actor_set_position (CLUTTER_ACTOR (actor), 200, 200);
   clutter_container_add_actor (CLUTTER_CONTAINER (manager->priv->stage),

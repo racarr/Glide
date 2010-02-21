@@ -31,7 +31,7 @@ struct _GlideStageManagerPrivate
 {
   ClutterActor *stage;
   
-  ClutterActor *selection;
+  GlideActor *selection;
   GlideManipulator *manip;
 
   GlideDocument *document;

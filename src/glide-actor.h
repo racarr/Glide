@@ -44,7 +44,7 @@ typedef struct _GlideActorPrivate GlideActorPrivate;
 /*
  * Main object structure
  */
-typedef struct _GlideActor GlideActor;
+//typedef struct _GlideActor GlideActor;
 
 struct _GlideActor 
 {
@@ -67,7 +67,8 @@ struct _GlideActorClass
 };
 
 #define GLIDE_ACTOR_DISPLAY_NAME(actor) \
-  (clutter_actor_get_name (actor) ? clutter_actor_get_name (actor) : "unknown")
+  (clutter_actor_get_name ((ClutterActor *)actor) ?  \
+   clutter_actor_get_name ((ClutterActor *)actor) : "unknown")
 
 /*
  * Public methods

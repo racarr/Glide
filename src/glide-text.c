@@ -1573,7 +1573,7 @@ glide_text_button_press (ClutterActor       *actor,
   clutter_actor_grab_key_focus (actor);
   m = glide_actor_get_stage_manager (GLIDE_ACTOR (actor));
   
-  glide_stage_manager_set_selection (m, actor);
+  glide_stage_manager_set_selection (m, GLIDE_ACTOR (actor));
 
   priv->motion_since_press = FALSE;
   if (!priv->editable)

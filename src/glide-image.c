@@ -110,7 +110,7 @@ glide_image_button_press (ClutterActor *actor,
   
   m = glide_actor_get_stage_manager (ga);
   
-  glide_stage_manager_set_selection (m, actor);
+  glide_stage_manager_set_selection (m, ga);
 
   clutter_actor_get_position (actor, &ax, &ay);
 

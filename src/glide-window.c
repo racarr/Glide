@@ -24,14 +24,12 @@
 
 
 #include "glide-window.h"
-#include "glide-manipulator.h"
-
+#include "glide-window-private.h"
 
 #include "glide-stage-manager.h"
-#include "glide-window-private.h"
+
 #include "glide-image.h"
 #include "glide-text.h"
-#include "glide-document.h"
 
 #include "glide-debug.h"
 
