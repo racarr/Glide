@@ -341,3 +341,17 @@ glide_stage_manager_add_actor (GlideStageManager *manager,
   
   glide_stage_manager_set_selection (manager, actor);
 }
+
+void
+glide_stage_manager_set_slide_next (GlideStageManager *manager)
+{
+  if (manager->priv->current_slide + 1 < glide_document_get_n_slides(manager->priv->document))
+    glide_stage_manager_set_slide (manager, manager->priv->current_slide + 1);
+}
+
+void
+glide_stage_manager_set_slide_prev (GlideStageManager *manager)
+{
+  if (manager->priv->current_slide > 0)
+    glide_stage_manager_set_slide (manager, manager->priv->current_slide - 1);
+}

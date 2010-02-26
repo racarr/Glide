@@ -87,6 +87,9 @@ GlideManipulator *glide_stage_manager_get_manipulator (GlideStageManager *manage
 void glide_stage_manager_add_actor (GlideStageManager *manager,
 				    GlideActor *actor);
 
+void glide_stage_manager_set_slide_prev (GlideStageManager *manager);
+void glide_stage_manager_set_slide_next (GlideStageManager *manager);
+
 
 G_END_DECLS
 

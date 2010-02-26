@@ -124,6 +124,20 @@ glide_window_new_slide (GtkWidget *toolitem, gpointer data)
   glide_document_add_slide (window->priv->document);
 }
 
+static void
+glide_window_slide_next (GtkWidget *toolitem, gpointer data)
+{
+  GlideWindow *w = (GlideWindow *) data;
+  glide_stage_manager_set_slide_next (w->priv->manager);
+}
+
+static void
+glide_window_slide_prev (GtkWidget *toolitem, gpointer data)
+{
+  GlideWindow *w = (GlideWindow *) data;
+  glide_stage_manager_set_slide_prev (w->priv->manager);
+}
+
 static gboolean
 glide_window_stage_button_press_cb (ClutterActor *actor,
 				    ClutterEvent *event,
@@ -147,7 +161,7 @@ glide_window_stage_enter_notify (GtkWidget *widget,
 static GtkWidget *
 glide_window_make_toolbar (GlideWindow *w)
 {
-  GtkWidget *toolbar, *image, *image2, *image3;
+  GtkWidget *toolbar, *image, *image2, *image3, *image4, *image5;
 
   toolbar = gtk_toolbar_new ();
   
@@ -157,6 +171,10 @@ glide_window_make_toolbar (GlideWindow *w)
     gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_LARGE_TOOLBAR);
   image3 = 
     gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_LARGE_TOOLBAR);
+  image4 = 
+    gtk_image_new_from_stock (GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_LARGE_TOOLBAR);
+  image5 = 
+    gtk_image_new_from_stock (GTK_STOCK_GO_BACK, GTK_ICON_SIZE_LARGE_TOOLBAR);
   
   gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New image", 
 			   "Insert a new image in to the document", 
@@ -170,6 +188,15 @@ glide_window_make_toolbar (GlideWindow *w)
 			   "Insert a new slide in to the document",
 			   NULL, image3, G_CALLBACK(glide_window_new_slide), 
 			   w);  
+  gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "Previous Slide", 
+			   "Move to the previous slide",
+			   NULL, image5, G_CALLBACK(glide_window_slide_prev), 
+			   w);  
+  gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "Next Slide", 
+			   "Move to the Next slide",
+			   NULL, image4, G_CALLBACK(glide_window_slide_next), 
+			   w);  
+
   
   
   return toolbar;
