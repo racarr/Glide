@@ -39,7 +39,8 @@ enum {
   PROP_0,
   PROP_STAGE,
   PROP_SELECTION,
-  PROP_DOCUMENT
+  PROP_DOCUMENT,
+  PROP_CURRENT_SLIDE
 };
 
 enum {
@@ -77,6 +78,9 @@ glide_stage_manager_get_property (GObject *object,
       break;
     case PROP_DOCUMENT:
       g_value_set_object (value, manager->priv->document);
+      break;
+    case PROP_CURRENT_SLIDE:
+      g_value_set_uint (value, manager->priv->current_slide);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -140,8 +144,9 @@ glide_stage_manager_set_slide (GlideStageManager *manager, guint slide)
   clutter_actor_hide (CLUTTER_ACTOR (glide_document_get_nth_slide (manager->priv->document, manager->priv->current_slide)));
   manager->priv->current_slide = slide;
   clutter_actor_show_all (CLUTTER_ACTOR (glide_document_get_nth_slide (manager->priv->document, slide)));  
-  
   glide_stage_manager_add_manipulator (manager);
+  
+  g_object_notify (G_OBJECT (manager), "current-slide");
 }
 
 void
@@ -187,6 +192,10 @@ glide_stage_manager_set_property (GObject *object,
     case PROP_SELECTION:
       glide_stage_manager_set_selection_real (manager,
 	      GLIDE_ACTOR (g_value_get_object (value)));
+      break;
+    case PROP_CURRENT_SLIDE:
+      glide_stage_manager_set_slide (manager,
+				     g_value_get_uint (value));
       break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -267,6 +276,14 @@ glide_stage_manager_class_init (GlideStageManagerClass *klass)
 							G_PARAM_READWRITE |
 							G_PARAM_CONSTRUCT_ONLY |
 							G_PARAM_STATIC_STRINGS));
+  
+  g_object_class_install_property (object_class,
+				   PROP_CURRENT_SLIDE,
+				   g_param_spec_uint ("current-slide",
+						      "Current Slide",
+						      "The currently displayed slide",
+						      0, G_MAXUINT, G_MAXUINT, 
+						      G_PARAM_READWRITE));
   
   // Argument is old selection
   stage_manager_signals[SELECTION_CHANGED] = 
@@ -354,4 +371,16 @@ glide_stage_manager_set_slide_prev (GlideStageManager *manager)
 {
   if (manager->priv->current_slide > 0)
     glide_stage_manager_set_slide (manager, manager->priv->current_slide - 1);
+}
+
+guint
+glide_stage_manager_get_current_slide (GlideStageManager *manager)
+{
+  return manager->priv->current_slide;
+}
+
+void
+glide_stage_manager_set_current_slide (GlideStageManager *manager, guint slide)
+{
+  glide_stage_manager_set_slide (manager, slide);
 }

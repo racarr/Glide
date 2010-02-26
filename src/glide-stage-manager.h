@@ -90,6 +90,9 @@ void glide_stage_manager_add_actor (GlideStageManager *manager,
 void glide_stage_manager_set_slide_prev (GlideStageManager *manager);
 void glide_stage_manager_set_slide_next (GlideStageManager *manager);
 
+guint glide_stage_manager_get_current_slide (GlideStageManager *manager);
+void glide_stage_manager_set_current_slide (GlideStageManager *manager, guint slide);
+
 
 G_END_DECLS
 
