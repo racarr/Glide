@@ -1848,6 +1848,11 @@ glide_text_paint (ClutterActor *self)
                                        alloc.x2 - alloc.x1,
                                        alloc.y2 - alloc.y1);
 
+  cogl_clip_push_rectangle (0, 0,
+			    (alloc.x2 - alloc.x1),
+			    (alloc.y2 - alloc.y1));
+  clip_set = TRUE;
+
   if (priv->editable && priv->cursor_visible)
     glide_text_ensure_cursor_position (text);
 
@@ -1954,9 +1959,9 @@ glide_text_get_preferred_width (ClutterActor *self,
 
   if (min_width_p)
     {
-      if (priv->wrap || priv->ellipsize || priv->editable)
-        *min_width_p = 1;
-      else
+      //      if (priv->wrap || priv->ellipsize || priv->editable)
+      //*min_width_p = 1;
+      //      else
         *min_width_p = layout_width;
     }
 

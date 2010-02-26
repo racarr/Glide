@@ -458,36 +458,36 @@ glide_manipulator_process_resize (GlideManipulator *manip,
 				  ClutterGeometry *geom,
 				  ClutterMotionEvent *mev)
 {
-  ClutterActor *actor = CLUTTER_ACTOR(manip);
+  //  ClutterActor *actor = CLUTTER_ACTOR(manip);
   switch (manip->priv->resize_widget)
     {
     case WIDGET_BOTTOM_RIGHT:
       clutter_actor_set_size(manip->priv->target, mev->x-geom->x, mev->y-geom->y);
-      clutter_actor_set_size(CLUTTER_ACTOR (manip), mev->x-geom->x, mev->y-geom->y);
+      //      clutter_actor_set_size(CLUTTER_ACTOR (manip), mev->x-geom->x, mev->y-geom->y);
       break;
     case WIDGET_TOP_RIGHT:
-      clutter_actor_set_position (actor, geom->x, mev->y);
+      //      clutter_actor_set_position (actor, geom->x, mev->y);
       clutter_actor_set_position (manip->priv->target, geom->x, mev->y);
       clutter_actor_set_size (manip->priv->target, mev->x-geom->x, (geom->height+geom->y)-(mev->y));
-      clutter_actor_set_size (CLUTTER_ACTOR(manip), mev->x-geom->x, (geom->height+geom->y)-(mev->y));
+      //      clutter_actor_set_size (CLUTTER_ACTOR(manip), mev->x-geom->x, (geom->height+geom->y)-(mev->y));
       break;
     case WIDGET_BOTTOM_LEFT:
-      clutter_actor_set_position (actor, mev->x, geom->y);
+      //      clutter_actor_set_position (actor, mev->x, geom->y);
       clutter_actor_set_position (manip->priv->target, mev->x, geom->y);
       clutter_actor_set_size (manip->priv->target, (geom->width+geom->x)-mev->x,
 			      mev->y-geom->y);
-      clutter_actor_set_size (CLUTTER_ACTOR (manip), (geom->width+geom->x)-mev->x,
-			      mev->y-geom->y);
+      //      clutter_actor_set_size (CLUTTER_ACTOR (manip), (geom->width+geom->x)-mev->x,
+      ///		      mev->y-geom->y);
       break;
     case WIDGET_TOP_LEFT:
-      clutter_actor_set_position (actor, mev->x, mev->y);
+      //      clutter_actor_set_position (actor, mev->x, mev->y);
       clutter_actor_set_position (manip->priv->target, mev->x, mev->y);
       clutter_actor_set_size (manip->priv->target,
 			      (geom->width+geom->x)-mev->x,
 			      (geom->height+geom->y)-mev->y);
-      clutter_actor_set_size (CLUTTER_ACTOR (manip),
-			      (geom->width+geom->x)-mev->x,
-			      (geom->height+geom->y)-mev->y);
+      //      clutter_actor_set_size (CLUTTER_ACTOR (manip),
+      //		      (geom->width+geom->x)-mev->x,
+      //		      (geom->height+geom->y)-mev->y);
       break;
     case WIDGET_TOP:
       clutter_actor_set_position (manip->priv->target, geom->x, mev->y);
@@ -630,8 +630,8 @@ glide_manipulator_sync_transforms (ClutterActor *manipulator,
 {
   gfloat tx, ty, tw, th;
   
-  clutter_actor_get_position (target, &tx, &ty);
   clutter_actor_get_size (target, &tw, &th);
+  clutter_actor_get_position (target, &tx, &ty);
   
   clutter_actor_set_position (manipulator, tx, ty);
   clutter_actor_set_size (manipulator, tw, th);
