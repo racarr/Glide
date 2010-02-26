@@ -116,6 +116,14 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
   GLIDE_NOTE (WINDOW, "Inserting new text, stage manager: %p", window->priv->manager);
 }
 
+static void
+glide_window_new_slide (GtkWidget *toolitem, gpointer data)
+{
+  GlideWindow *window = (GlideWindow *)data;
+  
+  glide_document_add_slide (window->priv->document);
+}
+
 static gboolean
 glide_window_stage_button_press_cb (ClutterActor *actor,
 				    ClutterEvent *event,
@@ -139,13 +147,15 @@ glide_window_stage_enter_notify (GtkWidget *widget,
 static GtkWidget *
 glide_window_make_toolbar (GlideWindow *w)
 {
-  GtkWidget *toolbar, *image, *image2;
+  GtkWidget *toolbar, *image, *image2, *image3;
 
   toolbar = gtk_toolbar_new ();
   
   image = 
     gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_LARGE_TOOLBAR);
   image2 = 
+    gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_LARGE_TOOLBAR);
+  image3 = 
     gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_LARGE_TOOLBAR);
   
   gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New image", 
@@ -155,6 +165,10 @@ glide_window_make_toolbar (GlideWindow *w)
   gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New text", 
 			   "Insert a new text object in to the document", 
 			   NULL, image2, G_CALLBACK(glide_window_new_text), 
+			   w);  
+  gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New slide", 
+			   "Insert a new slide in to the document",
+			   NULL, image3, G_CALLBACK(glide_window_new_slide), 
 			   w);  
   
   

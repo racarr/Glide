@@ -109,9 +109,22 @@ glide_stage_manager_set_selection_real (GlideStageManager *m,
 }
 
 static void
-glide_stage_manager_add_manipulator (GlideStageManager *manager, ClutterActor *stage)
+glide_stage_manager_add_manipulator (GlideStageManager *manager)
 {
-  GlideManipulator *manip = glide_manipulator_new(NULL);
+  GlideManipulator *manip;
+  ClutterActor *parent;
+  
+  if (!manager->priv->manip)
+    manip = glide_manipulator_new (NULL);
+  else
+    manip = manager->priv->manip;
+  
+  if ((parent = clutter_actor_get_parent (CLUTTER_ACTOR (manip))))
+    {
+      clutter_container_remove_actor (CLUTTER_CONTAINER (parent), CLUTTER_ACTOR (manip));
+      manip = glide_manipulator_new (NULL);
+    }
+  
   clutter_container_add_actor (CLUTTER_CONTAINER (glide_document_get_nth_slide (manager->priv->document,
 										manager->priv->current_slide)), 
 						  CLUTTER_ACTOR (manip));
@@ -122,10 +135,35 @@ glide_stage_manager_add_manipulator (GlideStageManager *manager, ClutterActor *s
 }
 
 void
+glide_stage_manager_set_slide (GlideStageManager *manager, guint slide)
+{
+  clutter_actor_hide (CLUTTER_ACTOR (glide_document_get_nth_slide (manager->priv->document, manager->priv->current_slide)));
+  manager->priv->current_slide = slide;
+  clutter_actor_show_all (CLUTTER_ACTOR (glide_document_get_nth_slide (manager->priv->document, slide)));  
+  
+  glide_stage_manager_add_manipulator (manager);
+}
+
+void
+glide_stage_manager_document_slide_added_cb (GlideDocument *document, 
+					     GlideSlide *slide, 
+					     gpointer data)
+{
+  GlideStageManager *manager = (GlideStageManager *)data;
+  
+  clutter_container_add_actor (CLUTTER_CONTAINER (manager->priv->stage), CLUTTER_ACTOR (slide));
+  
+  glide_stage_manager_set_slide (manager, manager->priv->current_slide+1);
+  
+  g_message ("Slide added");
+}
+
+void
 glide_stage_manager_set_document (GlideStageManager *manager,
 				  GlideDocument *document)
 {
   manager->priv->document = document;
+  g_signal_connect (document, "slide-added", G_CALLBACK (glide_stage_manager_document_slide_added_cb), manager);
 }
 
 static void
@@ -184,7 +222,7 @@ glide_stage_manager_constructor (GType type,
   manager->priv->current_slide = 0;
   clutter_actor_show (CLUTTER_ACTOR (glide_document_get_nth_slide (manager->priv->document, 0)));  
 
-  glide_stage_manager_add_manipulator (manager, manager->priv->stage);
+  glide_stage_manager_add_manipulator (manager);
 
 
   return obj;
