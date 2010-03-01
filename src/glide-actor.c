@@ -207,3 +207,15 @@ glide_actor_set_stage_manager (GlideActor *actor, GlideStageManager *manager)
 {
   glide_actor_set_stage_manager_real (actor, manager);
 }
+
+JsonNode *
+glide_actor_serialize (GlideActor *actor)
+{
+  GlideActorClass *klass;
+  
+  klass = GLIDE_ACTOR_GET_CLASS (actor);
+  if (klass->serialize)
+    return klass->serialize (actor);
+  
+  return NULL;
+}

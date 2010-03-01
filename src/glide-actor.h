@@ -24,6 +24,7 @@
 #define __GLIDE_ACTOR_H__
 
 #include <clutter/clutter.h>
+#include <json-glib/json-glib.h>
 #include "glide-stage-manager.h"
 
 G_BEGIN_DECLS
@@ -62,6 +63,8 @@ struct _GlideActorClass
 {
   ClutterActorClass parent_class;
   
+  JsonNode* (* serialize) (GlideActor *actor);
+  
   void (* selected) (GlideActor *actor);
   void (* deselected) (GlideActor *actor);
 };
@@ -79,6 +82,8 @@ GlideStageManager *glide_actor_get_stage_manager (GlideActor *actor);
 void glide_actor_set_stage_manager (GlideActor *actor, GlideStageManager *manager);
 
 gboolean glide_actor_get_selected (GlideActor *actor);
+
+JsonNode *glide_actor_serialize (GlideActor *actor);
 
 G_END_DECLS
 
