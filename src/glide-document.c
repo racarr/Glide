@@ -185,6 +185,27 @@ glide_document_json_obj_set_name (GlideDocument *document, JsonObject *obj)
   json_object_set_member (obj, "name", node);
 }
 
+static void
+glide_document_json_obj_set_slides (GlideDocument *document, JsonObject *obj)
+{
+  JsonNode *node = json_node_new (JSON_NODE_ARRAY);
+  JsonArray *array = json_array_new ();
+  GList *s;
+  
+  for (s = document->priv->slides; s; s = s->next)
+    {
+      JsonNode *n;
+      GlideSlide *slide = (GlideSlide *)(s->data);
+      
+      n = glide_actor_serialize (GLIDE_ACTOR (slide));
+      json_array_add_element (array, n);
+    }
+  json_node_take_array (node, array);
+
+  json_object_set_member (obj, "slides", node);
+  
+}
+
 JsonNode *
 glide_document_serialize(GlideDocument *document)
 {
@@ -195,6 +216,7 @@ glide_document_serialize(GlideDocument *document)
   json_node_set_object (node, obj);
   
   glide_document_json_obj_set_name (document, obj);
+  glide_document_json_obj_set_slides (document, obj);
   
   return node;
 }
