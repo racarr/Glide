@@ -138,6 +138,22 @@ glide_window_slide_prev (GtkWidget *toolitem, gpointer data)
   glide_stage_manager_set_slide_prev (w->priv->manager);
 }
 
+static void
+glide_window_save_document (GtkWidget *toolitem, gpointer data)
+{
+  GlideWindow *w = (GlideWindow *) data;
+  JsonNode *node;
+  JsonGenerator *gen;
+  
+  node = glide_document_serialize (w->priv->document);
+  
+  gen = json_generator_new ();
+  json_generator_set_root (gen, node);
+
+  // Error
+  json_generator_to_file (gen, "/tmp/test.glide", NULL);
+}
+
 static gboolean
 glide_window_stage_button_press_cb (ClutterActor *actor,
 				    ClutterEvent *event,
@@ -161,7 +177,7 @@ glide_window_stage_enter_notify (GtkWidget *widget,
 static GtkWidget *
 glide_window_make_toolbar (GlideWindow *w)
 {
-  GtkWidget *toolbar, *image, *image2, *image3, *image4, *image5;
+  GtkWidget *toolbar, *image, *image2, *image3, *image4, *image5, *image6;
 
   toolbar = gtk_toolbar_new ();
   
@@ -175,6 +191,8 @@ glide_window_make_toolbar (GlideWindow *w)
     gtk_image_new_from_stock (GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_LARGE_TOOLBAR);
   image5 = 
     gtk_image_new_from_stock (GTK_STOCK_GO_BACK, GTK_ICON_SIZE_LARGE_TOOLBAR);
+  image6 =
+    gtk_image_new_from_stock (GTK_STOCK_SAVE, GTK_ICON_SIZE_LARGE_TOOLBAR);
   
   gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New image", 
 			   "Insert a new image in to the document", 
@@ -196,6 +214,10 @@ glide_window_make_toolbar (GlideWindow *w)
 			   "Move to the Next slide",
 			   NULL, image4, G_CALLBACK(glide_window_slide_next), 
 			   w);  
+  gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "Save",
+			   "Save document",
+			   NULL, image6, G_CALLBACK (glide_window_save_document),
+			   w);
 
   
   

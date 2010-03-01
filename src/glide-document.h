@@ -26,6 +26,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <json-glib/json-glib.h>
+
 #include "glide-types.h"
 
 G_BEGIN_DECLS
@@ -78,6 +80,8 @@ guint glide_document_get_n_slides (GlideDocument *document);
 GlideSlide *glide_document_get_nth_slide (GlideDocument *document, guint n);
 
 GlideSlide *glide_document_add_slide (GlideDocument *document);
+
+JsonNode *glide_document_serialize (GlideDocument *document);
 
 G_END_DECLS
 

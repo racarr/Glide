@@ -175,3 +175,26 @@ glide_document_add_slide (GlideDocument *document)
   
   return s;
 }
+
+static void
+glide_document_json_obj_set_name (GlideDocument *document, JsonObject *obj)
+{
+  JsonNode *node = json_node_new (JSON_NODE_VALUE);
+  json_node_set_string (node, document->priv->name);
+  
+  json_object_set_member (obj, "name", node);
+}
+
+JsonNode *
+glide_document_serialize(GlideDocument *document)
+{
+  JsonNode *node = json_node_new (JSON_NODE_OBJECT);
+  JsonObject *obj;
+  
+  obj = json_object_new ();
+  json_node_set_object (node, obj);
+  
+  glide_document_json_obj_set_name (document, obj);
+  
+  return node;
+}
