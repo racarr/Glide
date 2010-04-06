@@ -349,3 +349,9 @@ glide_image_new_from_file (const gchar *filename,
       return image;
     }
 }
+
+const gchar *
+glide_image_get_filename (GlideImage *image)
+{
+  return image->priv->filename;
+}

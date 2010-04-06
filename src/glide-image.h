@@ -62,6 +62,8 @@ ClutterActor *glide_image_new_from_file    (const gchar *filename, GError **erro
 gboolean glide_image_set_from_file         (GlideImage *image, const gchar *filename, GError **error);
 void glide_image_set_cogl_texture          (GlideImage *image, CoglHandle new_texture);
 
+const gchar *glide_image_get_filename (GlideImage *image);
+
 G_END_DECLS
 
 #endif /* __CLUTTER_IMAGE_H__ */
