@@ -388,12 +388,12 @@ glide_slide_json_obj_set_actors (GlideSlide *slide, JsonObject *obj)
   
   for (s = slide->priv->children; s; s = s->next)
     {
-      //      GlideActor *actor = (GlideActor *)(s->data);
+      GlideActor *actor = (GlideActor *)(s->data);
       JsonNode *n;
       
-      n = json_node_new (JSON_NODE_VALUE);
-      json_node_set_string (n, "actor");
-      json_array_add_element (array, n);
+      n = glide_actor_serialize (actor);
+      if (n)
+	json_array_add_element (array, n);
     }
   json_node_take_array (node, array);
   json_object_set_member (obj, "actors", node);			

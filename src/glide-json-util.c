@@ -34,20 +34,34 @@ glide_json_object_set_string (JsonObject *obj, const gchar *prop, const gchar *v
 void
 glide_json_object_set_double (JsonObject *obj, const gchar *prop, gdouble value)
 {
+  gchar *s;
   JsonNode *n = json_node_new (JSON_NODE_VALUE);
   
-  json_node_set_double (n, value);
+  s = g_strdup_printf("%g",value);
+  
+  json_node_set_string(n, s);
+  
+  g_free (s);
+
   json_object_set_member (obj, prop, n);
 }
 
 void
 glide_json_object_add_actor_geometry (JsonObject *obj, ClutterActor *actor)
 {
-  ClutterGeometry geom;
+  JsonNode *n = json_node_new (JSON_NODE_OBJECT);
+  JsonObject *geom_obj = json_object_new ();
+  gfloat width, height, x, y;
   
-  clutter_actor_get_allocation_geometry (actor, &geom);
-  glide_json_object_set_double (obj, "x", geom.x);
-  glide_json_object_set_double (obj, "y", geom.y);
-  glide_json_object_set_double (obj, "width", geom.width);
-  glide_json_object_set_double (obj, "height", geom.height);
+  json_node_set_object (n, geom_obj);
+  
+  clutter_actor_get_position (actor, &x, &y);
+  clutter_actor_get_size (actor, &width, &height);  
+
+  glide_json_object_set_double (geom_obj, "x", x);
+  glide_json_object_set_double (geom_obj, "y", y);
+  glide_json_object_set_double (geom_obj, "width", width);
+  glide_json_object_set_double (geom_obj, "height", height);
+  
+  json_object_set_member (obj, "geometry", n);
 }

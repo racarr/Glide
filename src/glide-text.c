@@ -75,9 +75,13 @@
 #include "glide-text.h"
 #include "glide-manipulator.h"
 
+#include "glide-json-util.h"
+
 #include "glide-debug.h"
 
 #include <gtk/gtk.h>
+
+
 
 /* cursor width in pixels */
 #define DEFAULT_CURSOR_SIZE     2
@@ -2562,6 +2566,21 @@ glide_text_selected (GlideActor *actor)
   glide_manipulator_set_width_only (manip, TRUE);  
 }
 
+static JsonNode *
+glide_text_serialize (GlideActor *self)
+{
+  //  GlideText *text = GLIDE_TEXT (self);
+  JsonNode *node = json_node_new (JSON_NODE_OBJECT);
+  JsonObject *obj = json_object_new ();
+  
+  json_node_set_object (node, obj);
+  
+  glide_json_object_set_string (obj, "type", "text");
+  glide_json_object_add_actor_geometry (obj, CLUTTER_ACTOR (self));
+  
+  return node;
+}
+
 static void
 glide_text_class_init (GlideTextClass *klass)
 {
@@ -2590,6 +2609,7 @@ glide_text_class_init (GlideTextClass *klass)
 
   glide_actor_class->deselected = glide_text_deselected;
   glide_actor_class->selected = glide_text_selected;
+  glide_actor_class->serialize = glide_text_serialize;
 
   /**
    * GlideText:font-name:

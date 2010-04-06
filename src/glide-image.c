@@ -23,9 +23,18 @@
 #include "glide-image.h"
 #include "glide-image-priv.h"
 
+#include "glide-json-util.h"
+
 #include "glide-debug.h"
 
 G_DEFINE_TYPE (GlideImage, glide_image, GLIDE_TYPE_ACTOR);
+
+enum 
+  {
+    PROP_0,
+    
+    PROP_FILENAME
+  };
 
 #define GLIDE_IMAGE_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GLIDE_TYPE_IMAGE, GlideImagePrivate))
 
@@ -175,11 +184,46 @@ glide_image_finalize (GObject *object)
   G_OBJECT_CLASS (glide_image_parent_class)->finalize (object);
 }
 
+static JsonNode *
+glide_image_serialize (GlideActor *self)
+{
+  JsonNode *node = json_node_new (JSON_NODE_OBJECT);
+  JsonObject *obj = json_object_new ();
+  
+  json_node_set_object (node, obj);
+  
+  glide_json_object_set_string (obj, "type", "image");
+  glide_json_object_add_actor_geometry (obj, CLUTTER_ACTOR (self));
+  
+  return node;
+}
+
+static void
+glide_image_get_property (GObject *object,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *pspec)
+{
+  GlideImage *image = GLIDE_IMAGE (object);
+  
+  switch (prop_id)
+    {
+    case PROP_FILENAME:
+      g_value_set_string (value, image->priv->filename);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
+}
+
 static void
 glide_image_class_init (GlideImageClass *klass)
 {
+  GlideActorClass *glide_actor_class = GLIDE_ACTOR_CLASS (klass);
   ClutterActorClass *actor_class = CLUTTER_ACTOR_CLASS (klass);
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  GParamSpec *pspec;
   
   actor_class->paint = glide_image_paint;
   actor_class->button_press_event = glide_image_button_press;
@@ -188,10 +232,21 @@ glide_image_class_init (GlideImageClass *klass)
   
   actor_class->get_preferred_width = glide_image_get_preferred_width;
   actor_class->get_preferred_height = glide_image_get_preferred_height;
+  
+  glide_actor_class->serialize = glide_image_serialize;
 
   
   object_class->finalize = glide_image_finalize;
+  object_class->get_property = glide_image_get_property;
   g_type_class_add_private (object_class, sizeof(GlideImagePrivate));
+  
+  pspec = g_param_spec_string ("filename",
+			       "Filename",
+			       "The filename used by the image",
+			       NULL,
+			       G_PARAM_READABLE);
+  g_object_class_install_property (object_class, PROP_FILENAME, pspec);
+
 }
 
 static void
@@ -245,6 +300,9 @@ glide_image_set_from_file (GlideImage *image,
   CoglTextureFlags flags = COGL_TEXTURE_NONE;
   
   priv = image->priv;
+  if (priv->filename)
+    g_free (priv->filename);
+  priv->filename = priv->filename;
   
   new_texture = cogl_texture_new_from_file (filename,
 					    flags,
