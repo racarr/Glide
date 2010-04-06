@@ -379,14 +379,37 @@ glide_slide_dispose (GObject *object)
   G_OBJECT_CLASS (glide_slide_parent_class)->dispose (object);
 }
 
+static void
+glide_slide_json_obj_set_actors (GlideSlide *slide, JsonObject *obj)
+{
+  JsonNode *node = json_node_new (JSON_NODE_ARRAY);
+  JsonArray *array = json_array_new ();
+  GList *s;
+  
+  for (s = slide->priv->children; s; s = s->next)
+    {
+      //      GlideActor *actor = (GlideActor *)(s->data);
+      JsonNode *n;
+      
+      n = json_node_new (JSON_NODE_VALUE);
+      json_node_set_string (n, "actor");
+      json_array_add_element (array, n);
+    }
+  json_node_take_array (node, array);
+  json_object_set_member (obj, "actors", node);			
+}
+
 static JsonNode *
 glide_slide_serialize (GlideActor *self)
 {
-  JsonNode *node = json_node_new (JSON_NODE_VALUE);
-  //  GlideSlide *slide = GLIDE_SLIDE (self);
+  GlideSlide *slide = GLIDE_SLIDE (self);
+  JsonNode *node = json_node_new (JSON_NODE_OBJECT);
+  JsonObject *obj;
   
-  json_node_set_string (node, "lol");
-  g_message ("Slide serialized");
+  obj = json_object_new ();
+  json_node_set_object (node, obj);
+  
+  glide_slide_json_obj_set_actors(slide, obj);
   
   return node;
 }
