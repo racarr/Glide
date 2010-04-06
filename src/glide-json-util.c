@@ -31,6 +31,14 @@ glide_json_object_set_string (JsonObject *obj, const gchar *prop, const gchar *v
   json_object_set_member (obj, prop, n);
 }
 
+const gchar *
+glide_json_object_get_string (JsonObject *obj, const gchar *prop)
+{
+  JsonNode *n = json_object_get_member (obj, prop);
+  
+  return json_node_get_string (n);
+}
+
 void
 glide_json_object_set_double (JsonObject *obj, const gchar *prop, gdouble value)
 {

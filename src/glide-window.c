@@ -31,6 +31,8 @@
 #include "glide-image.h"
 #include "glide-text.h"
 
+#include "glide-json-util.h"
+
 #include "glide-debug.h"
 
 #define GLIDE_WINDOW_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object),	\
@@ -39,6 +41,7 @@
 
 G_DEFINE_TYPE(GlideWindow, glide_window, GTK_TYPE_WINDOW)
 
+static void glide_window_setup_stage (GlideWindow *window);
 
 static void
 glide_window_finalize (GObject *object)
@@ -139,6 +142,90 @@ glide_window_slide_prev (GtkWidget *toolitem, gpointer data)
 }
 
 static void
+glide_window_new_document (GtkWidget *toolitem, gpointer data)
+{
+  GlideWindow *w = (GlideWindow *) data;
+
+  GLIDE_NOTE (WINDOW, "New document");
+  
+  g_object_unref (w->priv->document);
+  g_object_unref (w->priv->manager);
+
+  w->priv->document = glide_document_new ("New document");
+
+  clutter_group_remove_all (CLUTTER_GROUP (w->priv->stage));
+  glide_window_setup_stage (w);
+}
+
+static void
+glide_window_open_document_real (GlideWindow *window,
+				 const gchar *filename)
+{
+  JsonParser *p = json_parser_new ();
+  GError *e = NULL;
+  JsonNode *root;
+  JsonObject *root_obj;
+
+  json_parser_load_from_file (p, filename, &e);
+  if (e)
+    {
+      g_warning("Error loading file: %s", e->message);
+      g_error_free (e);
+      
+      return;
+    }
+  root = json_parser_get_root (p);
+  root_obj = json_node_get_object (root);
+
+  g_object_unref (window->priv->document);
+  g_object_unref (window->priv->manager);
+  
+  window->priv->document = glide_document_new (glide_json_object_get_string (root_obj, "name"));
+  clutter_group_remove_all (CLUTTER_GROUP (window->priv->stage));
+  glide_window_setup_stage (window);
+  
+  g_object_unref (p);
+}
+
+static void
+glide_window_file_open_response_callback (GtkDialog *dialog,
+					  int response,
+					  gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *) user_data;
+  if (response == GTK_RESPONSE_ACCEPT)
+    {
+      gchar *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+      
+      g_message("Loading file: %s \n", filename);
+      glide_window_open_document_real (w, filename);
+      g_free (filename);
+    }
+  
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
+glide_window_open_document (GtkWidget *toolitem, gpointer data)
+{
+  GtkWidget *d;
+  GlideWindow *w = (GlideWindow *)data;
+  
+  GLIDE_NOTE (WINDOW, "Loading file.");
+  d = gtk_file_chooser_dialog_new ("Load presentation",
+				   NULL,
+				   GTK_FILE_CHOOSER_ACTION_OPEN,
+				   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				   GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+				   NULL);
+  g_signal_connect (d, "response",
+		    G_CALLBACK (glide_window_file_open_response_callback),
+		    w);
+  
+  gtk_widget_show (d);
+}
+
+static void
 glide_window_save_document (GtkWidget *toolitem, gpointer data)
 {
   GlideWindow *w = (GlideWindow *) data;
@@ -177,7 +264,7 @@ glide_window_stage_enter_notify (GtkWidget *widget,
 static GtkWidget *
 glide_window_make_toolbar (GlideWindow *w)
 {
-  GtkWidget *toolbar, *image, *image2, *image3, *image4, *image5, *image6;
+  GtkWidget *toolbar, *image, *image2, *image3, *image4, *image5, *image6, *image7, *image8;
 
   toolbar = gtk_toolbar_new ();
   
@@ -193,6 +280,11 @@ glide_window_make_toolbar (GlideWindow *w)
     gtk_image_new_from_stock (GTK_STOCK_GO_BACK, GTK_ICON_SIZE_LARGE_TOOLBAR);
   image6 =
     gtk_image_new_from_stock (GTK_STOCK_SAVE, GTK_ICON_SIZE_LARGE_TOOLBAR);
+  image7 =
+    gtk_image_new_from_stock (GTK_STOCK_NEW, GTK_ICON_SIZE_LARGE_TOOLBAR);
+  image8 =
+    gtk_image_new_from_stock (GTK_STOCK_OPEN, GTK_ICON_SIZE_LARGE_TOOLBAR);
+
   
   gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New image", 
 			   "Insert a new image in to the document", 
@@ -218,8 +310,14 @@ glide_window_make_toolbar (GlideWindow *w)
 			   "Save document",
 			   NULL, image6, G_CALLBACK (glide_window_save_document),
 			   w);
-
-  
+  gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "New",
+			   "New document",
+			   NULL, image7, G_CALLBACK (glide_window_new_document),
+			   w);
+  gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "Open",
+			   "Open document",
+			   NULL, image8, G_CALLBACK (glide_window_open_document),
+			   w);  
   
   return toolbar;
 }

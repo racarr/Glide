@@ -52,6 +52,8 @@ glide_document_finalize (GObject *object)
 
   GLIDE_NOTE (DOCUMENT, "Finalizing document: %s",
 	      document->priv->name);
+  
+  g_free (document->priv->name);
 
   G_OBJECT_CLASS (glide_document_parent_class)->finalize (object);
 }

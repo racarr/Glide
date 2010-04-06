@@ -53,8 +53,11 @@ static guint stage_manager_signals[LAST_SIGNAL] = { 0, };
 static void
 glide_stage_manager_finalize (GObject *object)
 {
-  GLIDE_NOTE (STAGE_MANAGER, "Finalizing stage manager: %s",
-	      GLIDE_ACTOR_DISPLAY_NAME (CLUTTER_ACTOR (object)));
+  GlideStageManager *manager = GLIDE_STAGE_MANAGER (object);
+  GLIDE_NOTE (STAGE_MANAGER, "Finalizing stage manager: %p",
+	      object);
+  
+  g_object_unref (G_OBJECT (manager->priv->document));
 
   G_OBJECT_CLASS (glide_stage_manager_parent_class)->finalize (object);
 }
@@ -167,7 +170,7 @@ void
 glide_stage_manager_set_document (GlideStageManager *manager,
 				  GlideDocument *document)
 {
-  manager->priv->document = document;
+  manager->priv->document = g_object_ref (document);
   g_signal_connect (document, "slide-added", G_CALLBACK (glide_stage_manager_document_slide_added_cb), manager);
 }
 

@@ -1262,6 +1262,8 @@ glide_text_finalize (GObject *gobject)
 {
   GlideText *self = GLIDE_TEXT (gobject);
   GlideTextPrivate *priv = self->priv;
+  
+  GLIDE_NOTE (TEXT, "Finalizing GlideText *(%p)", gobject);
 
   if (priv->font_desc)
     pango_font_description_free (priv->font_desc);
