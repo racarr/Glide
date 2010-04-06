@@ -180,8 +180,25 @@ glide_image_finalize (GObject *object)
       cogl_handle_unref (image->priv->material);
       image->priv->material = COGL_INVALID_HANDLE;
     }
+  if (image->priv->filename)
+    {
+      g_free (image->priv->filename);
+    }
   
   G_OBJECT_CLASS (glide_image_parent_class)->finalize (object);
+}
+
+static void
+glide_json_object_add_image_properties (JsonObject *obj, GlideImage *image)
+{
+  JsonNode *n = json_node_new (JSON_NODE_OBJECT);
+  JsonObject *img_obj = json_object_new ();
+  
+  json_node_set_object (n, img_obj);
+  
+  glide_json_object_set_string (img_obj, "filename", image->priv->filename);
+  
+  json_object_set_member (obj, "image-properties", n);
 }
 
 static JsonNode *
@@ -194,6 +211,8 @@ glide_image_serialize (GlideActor *self)
   
   glide_json_object_set_string (obj, "type", "image");
   glide_json_object_add_actor_geometry (obj, CLUTTER_ACTOR (self));
+  
+  glide_json_object_add_image_properties (obj, GLIDE_IMAGE (self));
   
   return node;
 }
@@ -302,7 +321,7 @@ glide_image_set_from_file (GlideImage *image,
   priv = image->priv;
   if (priv->filename)
     g_free (priv->filename);
-  priv->filename = priv->filename;
+  priv->filename = g_strdup (filename);
   
   new_texture = cogl_texture_new_from_file (filename,
 					    flags,
