@@ -286,9 +286,31 @@ glide_window_present_document (GtkWidget *toolitem, gpointer data)
 }
 
 static void
+glide_window_slide_background_cb (GtkDialog *dialog,
+				  int response,
+				  gpointer user_data)
+{
+  //  GlideWindow *window = (GlideWindow *)user_data;
+  
+  if (response == GTK_RESPONSE_ACCEPT)
+    {
+      gchar *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+      
+      g_message("Filename: %s", filename);
+      
+      g_free (filename);
+    }
+  
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
 glide_window_set_slide_background (GtkWidget *toolitem, gpointer data)
 {
+  GlideWindow *w = (GlideWindow *)data;
   GLIDE_NOTE (WINDOW, "Setting slide background");
+  
+  glide_gtk_util_show_image_dialog (G_CALLBACK (glide_window_slide_background_cb), w);
 }
 
 static void
