@@ -244,20 +244,35 @@ glide_window_open_document (GtkWidget *toolitem, gpointer data)
 static void
 glide_window_center_stage (GlideWindow *w)
 {
-  GdkScreen *s = gtk_window_get_screen (GTK_WINDOW (w));
-  gint width, height;
+  GtkAllocation a;
+  gtk_widget_get_allocation (w->priv->fixed, &a);
+  gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, (a.width-800)/2.0, (a.height-640)/2.0);
+}
+/* hack */
+static void
+glide_window_center_stage_fullscreen (GlideWindow *w)
+{
+  GtkRequisition a;
   
-  width = gdk_screen_get_width (s);
-  height = gdk_screen_get_height (s);
+  gdk_flush();
   
-  gtk_widget_set_size_request (w->priv->fixed, width, height);
-    
-  gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, (width-800)/2.0, (height-640)/2.0);
+  gtk_widget_size_request (w->priv->fixed, &a);
+  
+  //  gtk_widget_size_request (w->priv->fixed, &r);
+  
+  gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, (a.width-800)/2.0, (a.height-640)/2.0);
 }
 
 static void
 glide_window_fullscreen_stage (GlideWindow *w)
 {
+  GtkAllocation a;
+  GdkScreen *s = gtk_window_get_screen (GTK_WINDOW (w));
+  
+  gtk_widget_get_allocation (w->priv->fixed, &a);
+  w->priv->of_width = a.width;
+  w->priv->of_height = a.height;
+  
   gtk_window_fullscreen (GTK_WINDOW (w));
   
   gtk_widget_hide_all (GTK_WIDGET (w));
@@ -266,7 +281,9 @@ glide_window_fullscreen_stage (GlideWindow *w)
   gtk_widget_show_all (w->priv->fixed);
   gtk_widget_show (gtk_widget_get_parent (w->priv->fixed));
   
-  glide_window_center_stage (w);
+  gtk_widget_set_size_request (w->priv->fixed, gdk_screen_get_width (s), gdk_screen_get_height (s));
+  
+  glide_window_center_stage_fullscreen (w);
 }
 
 static void
@@ -279,6 +296,8 @@ glide_window_unfullscreen_stage (GlideWindow *w)
   gtk_widget_set_size_request (w->priv->embed, 800, 640);
   gtk_widget_set_size_request (w->priv->fixed, 800, 640);
   gtk_window_resize (GTK_WINDOW (w), 1, 1);
+
+  gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, (w->priv->of_width-800)/2.0, (w->priv->of_height-640)/2.0);
 }
 
 static void
@@ -458,8 +477,9 @@ glide_window_setup_chrome (GlideWindow *window)
   
   gtk_fixed_put (GTK_FIXED (fixed), embed, 0, 0);
   
+  gtk_widget_set_size_request (fixed, 800, 640);
   gtk_widget_set_size_request (embed, 800, 640);
-  
+
   gtk_container_add (GTK_CONTAINER (window), vbox);
 
 }
@@ -509,6 +529,7 @@ glide_window_init (GlideWindow *window)
   glide_window_new_document_real (window);
 
   gtk_widget_show_all (GTK_WIDGET (window));
+  glide_window_center_stage (window);
 }
 
 GlideWindow *

@@ -38,6 +38,9 @@ struct _GlideWindowPrivate
   
   GtkWidget *embed;
   GtkWidget *fixed;
+
+  gint of_width;
+  gint of_height;
 };
 
 G_END_DECLS
