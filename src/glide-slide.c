@@ -38,7 +38,8 @@ G_DEFINE_TYPE_WITH_CODE (GlideSlide, glide_slide, GLIDE_TYPE_ACTOR,
 enum {
   PROP_0,
   PROP_DOCUMENT,
-  PROP_BACKGROUND
+  PROP_BACKGROUND,
+  PROP_ANIMATION
 };
 
 static void
@@ -56,6 +57,9 @@ glide_slide_get_property (GObject *object,
       break;
     case PROP_BACKGROUND:
       g_value_set_string (value, slide->priv->background);
+      break;
+    case PROP_ANIMATION:
+      g_value_set_string (value, slide->priv->animation);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -79,6 +83,9 @@ glide_slide_set_property (GObject *object,
       break;
     case PROP_BACKGROUND:
       glide_slide_set_background (slide, g_value_get_string (value));
+      break;
+    case PROP_ANIMATION:
+      glide_slide_set_animation (slide, g_value_get_string (value));
       break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -449,7 +456,11 @@ glide_slide_serialize (GlideActor *self)
   json_node_set_object (node, obj);
   
   glide_slide_json_obj_set_actors (slide, obj);
-  glide_json_object_set_string (obj, "background", slide->priv->background); 
+  
+  if (slide->priv->background)
+    glide_json_object_set_string (obj, "background", slide->priv->background); 
+  if (slide->priv->animation)
+    glide_json_object_set_string (obj, "animation", slide->priv->animation); 
   
   return node;
 }
@@ -494,6 +505,14 @@ glide_slide_class_init (GlideSlideClass *klass)
 							"A file path to the background image for the slide",
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));    
+
+  g_object_class_install_property (object_class,
+				   PROP_ANIMATION,
+				   g_param_spec_string ("animation",
+							"Transition Animation",
+							"The transition animation to be used in moving to the next slide.",
+							NULL,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));    
   
   g_type_class_add_private (object_class, sizeof(GlideSlidePrivate));
 }
@@ -523,7 +542,7 @@ glide_slide_construct_from_json (GlideSlide *slide, JsonObject *slide_obj, Glide
   JsonNode *actors_n;
   JsonArray *actors;
   GList *actors_l, *a;
-  const gchar *background;
+  const gchar *background, *animation;
   
   actors_n = json_object_get_member (slide_obj, "actors");
   actors = json_node_get_array (actors_n);
@@ -531,6 +550,10 @@ glide_slide_construct_from_json (GlideSlide *slide, JsonObject *slide_obj, Glide
   background = glide_json_object_get_string (slide_obj, "background");
   if (background)
     glide_slide_set_background (slide, background);
+
+  animation = glide_json_object_get_string (slide_obj, "animation");
+  if (animation)
+    glide_slide_set_animation (slide, animation);
   
   actors_l = json_array_get_elements (actors);
   for (a = actors_l; a; a = a->next)
@@ -595,4 +618,20 @@ const gchar *
 glide_slide_get_background (GlideSlide *slide)
 {
   return slide->priv->background;
+}
+
+void 
+glide_slide_set_animation (GlideSlide *slide, const gchar *animation)
+{
+  if (slide->priv->animation)
+    g_free (slide->priv->animation);
+  
+  slide->priv->animation = g_strdup (animation);
+  g_object_notify (G_OBJECT (slide), "background");
+}
+
+const gchar *
+glide_slide_get_animation (GlideSlide *slide)
+{
+  return slide->priv->animation;
 }

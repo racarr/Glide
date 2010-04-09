@@ -61,6 +61,9 @@ void glide_slide_construct_from_json (GlideSlide *slide, JsonObject *slide_obj, 
 void glide_slide_set_background (GlideSlide *slide, const gchar *background);
 const gchar *glide_slide_get_background (GlideSlide *slide);
 
+void glide_slide_set_animation (GlideSlide *slide, const gchar *animation);
+const gchar *glide_slide_get_animation (GlideSlide *slide);
+
 G_END_DECLS
 
 #endif /* __GLIDE_SLIDE_H__ */

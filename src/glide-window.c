@@ -500,6 +500,19 @@ glide_window_font_set_cb (GtkWidget *b, gpointer user_data)
 }
 
 static void
+glide_window_animations_box_changed_cb (GtkWidget *cbox, gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  gchar *text = gtk_combo_box_get_active_text (GTK_COMBO_BOX (cbox));
+  GlideSlide *s = glide_document_get_nth_slide (w->priv->document,
+						glide_stage_manager_get_current_slide (w->priv->manager));
+  
+  glide_slide_set_animation (s, text);  
+  
+  g_free (text);
+}
+
+static void
 glide_window_setup_animations_box (GlideWindow *window, GtkWidget *cbox)
 {
   gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "None");
@@ -507,6 +520,8 @@ glide_window_setup_animations_box (GlideWindow *window, GtkWidget *cbox)
   gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "Drop");
   
   gtk_combo_box_set_active (GTK_COMBO_BOX (cbox), 0);
+  
+  g_signal_connect (cbox, "changed", G_CALLBACK (glide_window_animations_box_changed_cb), window);
 }
 
 static void
