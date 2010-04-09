@@ -500,11 +500,21 @@ glide_window_font_set_cb (GtkWidget *b, gpointer user_data)
 }
 
 static void
+glide_window_setup_animations_box (GlideWindow *window, GtkWidget *cbox)
+{
+  gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "None");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "Fade");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "Drop");
+  
+  gtk_combo_box_set_active (GTK_COMBO_BOX (cbox), 0);
+}
+
+static void
 glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
 {
   GtkWidget *color_button = gtk_color_button_new ();
   GtkWidget *font_button = gtk_font_button_new ();
-  GtkWidget *prev, *next;
+  GtkWidget *prev, *next, *cbox;
   
   window->priv->color_button = color_button;
   window->priv->font_button = font_button;
@@ -514,6 +524,9 @@ glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
   
   prev = gtk_button_new ();
   next = gtk_button_new ();
+  
+  cbox = gtk_combo_box_new_text();
+  glide_window_setup_animations_box (window, cbox);
   
   g_signal_connect (prev, "clicked", G_CALLBACK (glide_window_slide_prev), window);
   g_signal_connect (next, "clicked", G_CALLBACK (glide_window_slide_next), window);
@@ -531,6 +544,8 @@ glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
   
   gtk_box_pack_start (GTK_BOX(hbox), color_button, FALSE, FALSE, 5);
   gtk_box_pack_start (GTK_BOX(hbox), font_button, FALSE, FALSE, 0);
+
+  gtk_box_pack_start (GTK_BOX(hbox), cbox, TRUE, TRUE, 30);
 }
 
 static void
