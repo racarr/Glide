@@ -278,9 +278,13 @@ glide_slide_paint (ClutterActor *actor)
 
 static void
 glide_slide_pick (ClutterActor       *actor,
-                         const ClutterColor *pick)
+		  const ClutterColor *pick)
 {
   GlideSlidePrivate *priv = GLIDE_SLIDE (actor)->priv;
+  
+  if (glide_stage_manager_get_presenting 
+      (glide_actor_get_stage_manager (GLIDE_ACTOR (actor))))
+    return;
 
   /* Chain up so we get a bounding box pained (if we are reactive) */
   CLUTTER_ACTOR_CLASS (glide_slide_parent_class)->pick (actor, pick);
@@ -437,8 +441,6 @@ glide_slide_class_init (GlideSlideClass *klass)
   actor_class->pick = glide_slide_pick;
   actor_class->show_all = glide_slide_show_all;
   actor_class->hide_all = glide_slide_hide_all;
-
-  
   
   g_object_class_install_property (object_class,
 				   PROP_DOCUMENT,

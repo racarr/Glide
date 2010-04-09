@@ -246,11 +246,6 @@ glide_window_open_document (GtkWidget *toolitem, gpointer data)
 static void
 glide_window_fullscreen_stage (GlideWindow *w)
 {
-  GdkScreen *screen = gtk_window_get_screen (GTK_WINDOW (w));
-  
-  gtk_widget_set_size_request (GTK_WIDGET (w), 
-			       gdk_screen_get_width (screen), 
-			       gdk_screen_get_height (screen));
   gtk_window_fullscreen (GTK_WINDOW (w));
   
   gtk_widget_hide_all (GTK_WIDGET (w));
@@ -261,12 +256,21 @@ glide_window_fullscreen_stage (GlideWindow *w)
 }
 
 static void
+glide_window_unfullscreen_stage (GlideWindow *w)
+{
+  gtk_window_unfullscreen (GTK_WINDOW (w));
+  gtk_widget_show_all (GTK_WIDGET (w));
+}
+
+static void
 glide_window_present_document (GtkWidget *toolitem, gpointer data)
 {
   GlideWindow *w = (GlideWindow *)data;
   GLIDE_NOTE (WINDOW, "Presenting document.");
 
   glide_window_fullscreen_stage (w);
+  
+  glide_stage_manager_set_presenting (w->priv->manager, TRUE);  
 }
 
 static void
@@ -409,6 +413,19 @@ glide_window_setup_chrome (GlideWindow *window)
 }
 
 static void
+glide_window_stage_manager_presenting_changed_cb (GObject *object,
+						  GParamSpec *pspec,
+						  gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  
+  if (!glide_stage_manager_get_presenting (w->priv->manager))
+    {
+      glide_window_unfullscreen_stage (w);
+    }
+}
+
+static void
 glide_window_setup_stage (GlideWindow *window)
 {
   ClutterColor white = {0xff, 0xff, 0xff, 0xff};
@@ -425,6 +442,11 @@ glide_window_setup_stage (GlideWindow *window)
   // Used for null selections.
   g_signal_connect (window->priv->stage, "button-press-event", 
 		    G_CALLBACK (glide_window_stage_button_press_cb), 
+		    window);
+  
+
+  g_signal_connect (window->priv->manager, "notify::presenting",
+		    G_CALLBACK (glide_window_stage_manager_presenting_changed_cb),
 		    window);
 }
 

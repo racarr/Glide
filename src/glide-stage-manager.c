@@ -41,7 +41,8 @@ enum {
   PROP_STAGE,
   PROP_SELECTION,
   PROP_DOCUMENT,
-  PROP_CURRENT_SLIDE
+  PROP_CURRENT_SLIDE,
+  PROP_PRESENTING
 };
 
 enum {
@@ -85,6 +86,9 @@ glide_stage_manager_get_property (GObject *object,
       break;
     case PROP_CURRENT_SLIDE:
       g_value_set_uint (value, manager->priv->current_slide);
+      break;
+    case PROP_PRESENTING:
+      g_value_set_boolean (value, manager->priv->presenting);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -162,6 +166,7 @@ glide_stage_manager_document_slide_added_cb (GlideDocument *document,
   GlideStageManager *manager = (GlideStageManager *)data;
   
   clutter_container_add_actor (CLUTTER_CONTAINER (manager->priv->stage), CLUTTER_ACTOR (slide));
+  glide_actor_set_stage_manager (GLIDE_ACTOR (slide), manager);
   
   glide_stage_manager_set_slide (manager, manager->priv->current_slide+1);
   
@@ -174,6 +179,29 @@ glide_stage_manager_set_document (GlideStageManager *manager,
 {
   manager->priv->document = g_object_ref (document);
   g_signal_connect (document, "slide-added", G_CALLBACK (glide_stage_manager_document_slide_added_cb), manager);
+}
+
+void
+glide_stage_manager_advance_slide (GlideStageManager *manager)
+{
+  if (manager->priv->current_slide + 1 < glide_document_get_n_slides(manager->priv->document))
+    glide_stage_manager_set_slide (manager, manager->priv->current_slide + 1);
+  else
+    glide_stage_manager_set_presenting (manager, FALSE);
+}
+
+gboolean
+glide_stage_manager_button_pressed (ClutterActor *actor,
+				    ClutterButtonEvent *event,
+				    gpointer user_data)
+{
+  GlideStageManager *manager = (GlideStageManager *) user_data;
+  if (event->button != 1)
+    return FALSE;
+  
+  glide_stage_manager_advance_slide (manager);
+  
+  return TRUE;
 }
 
 static void
@@ -189,6 +217,8 @@ glide_stage_manager_set_property (GObject *object,
     case PROP_STAGE:
       g_return_if_fail (manager->priv->stage == NULL);
       manager->priv->stage = CLUTTER_ACTOR (g_value_get_object (value));
+      
+      g_signal_connect (G_OBJECT (manager->priv->stage), "button-press-event", G_CALLBACK(glide_stage_manager_button_pressed), manager);
       break;
     case PROP_DOCUMENT:
       g_return_if_fail (manager->priv->document == NULL);
@@ -201,6 +231,10 @@ glide_stage_manager_set_property (GObject *object,
     case PROP_CURRENT_SLIDE:
       glide_stage_manager_set_slide (manager,
 				     g_value_get_uint (value));
+      break;
+    case PROP_PRESENTING:
+      glide_stage_manager_set_presenting (manager,
+					  g_value_get_boolean (value));
       break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -289,6 +323,15 @@ glide_stage_manager_class_init (GlideStageManagerClass *klass)
 						      "The currently displayed slide",
 						      0, G_MAXUINT, G_MAXUINT, 
 						      G_PARAM_READWRITE));
+
+  g_object_class_install_property (object_class,
+				   PROP_PRESENTING,
+				   g_param_spec_boolean("presenting",
+							"Presenting",
+							"Whether we are currently involved in a presentation",
+							FALSE,
+							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS));
+
   
   // Argument is old selection
   stage_manager_signals[SELECTION_CHANGED] = 
@@ -358,7 +401,7 @@ glide_stage_manager_add_actor (GlideStageManager *manager,
   clutter_actor_set_position (CLUTTER_ACTOR (actor), 200, 200);
   clutter_container_add_actor (CLUTTER_CONTAINER (current_slide),
 			       CLUTTER_ACTOR (actor));
-
+  
   clutter_actor_show (CLUTTER_ACTOR (actor));
   
   glide_stage_manager_set_selection (manager, actor);
@@ -407,4 +450,22 @@ glide_stage_manager_load_slides (GlideStageManager *manager, JsonArray *slides)
       
       glide_slide_construct_from_json (gs, slide, manager);
     }
+}
+
+void
+glide_stage_manager_set_presenting (GlideStageManager *manager, gboolean presenting)
+{
+  if (presenting != manager->priv->presenting)
+    {
+      manager->priv->presenting = presenting;
+      if (presenting)
+	glide_stage_manager_set_selection (manager, NULL);
+      g_object_notify (G_OBJECT (manager), "presenting");
+    }
+}
+
+gboolean
+glide_stage_manager_get_presenting (GlideStageManager *manager)
+{
+  return manager->priv->presenting;
 }

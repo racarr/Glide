@@ -95,6 +95,9 @@ void glide_stage_manager_set_current_slide (GlideStageManager *manager, guint sl
 
 void glide_stage_manager_load_slides (GlideStageManager *manager, JsonArray *slides);
 
+gboolean glide_stage_manager_get_presenting (GlideStageManager *manager);
+void glide_stage_manager_set_presenting (GlideStageManager *manager, gboolean presenting);
+
 
 G_END_DECLS
 
