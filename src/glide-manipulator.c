@@ -338,11 +338,27 @@ glide_manipulator_paint_widgets_geom (GlideManipulator *manip,
 }
   
 static void
+glide_manipulator_sync_transforms (ClutterActor *manipulator,
+				   ClutterActor *target)
+{
+  gfloat tx, ty, tw, th;
+  
+  clutter_actor_get_size (target, &tw, &th);
+  clutter_actor_get_position (target, &tx, &ty);
+  
+  clutter_actor_set_position (manipulator, tx, ty);
+  clutter_actor_set_size (manipulator, tw, th);
+}
+
+
+static void
 glide_manipulator_paint (ClutterActor *self)
 {
   GlideManipulator *manip = GLIDE_MANIPULATOR (self);
   ClutterGeometry geom;
   ClutterColor border_color = {0x00, 0x00, 0x00, 0xcc};
+  
+  glide_manipulator_sync_transforms (CLUTTER_ACTOR (manip), manip->priv->target);
 
   GLIDE_NOTE (PAINT,
 	      "painting manipulator '%s'",
@@ -624,30 +640,6 @@ glide_manipulator_get_property (GObject *object,
     }
 }
 
-static void
-glide_manipulator_sync_transforms (ClutterActor *manipulator,
-				   ClutterActor *target)
-{
-  gfloat tx, ty, tw, th;
-  
-  clutter_actor_get_size (target, &tw, &th);
-  clutter_actor_get_position (target, &tx, &ty);
-  
-  clutter_actor_set_position (manipulator, tx, ty);
-  clutter_actor_set_size (manipulator, tw, th);
-}
-
-static void
-glide_manipulator_target_allocation_changed_cb (GObject *object,
-						GParamSpec *pspec,
-						gpointer user_data)
-{
-  GlideManipulator *manipulator = (GlideManipulator *)user_data;
-  
-  //  return;
-
-  glide_manipulator_sync_transforms ((ClutterActor *)manipulator, manipulator->priv->target);
-}
 
 static void
 glide_manipulator_set_target_real (GlideManipulator *manip,
@@ -681,14 +673,9 @@ glide_manipulator_set_target_real (GlideManipulator *manip,
   if (manip->priv->target)
     {
       clutter_actor_queue_redraw (manip->priv->target);
-      if (manip->priv->allocation_notify_id)
-	g_signal_handler_disconnect (manip->priv->target, manip->priv->allocation_notify_id);
     }
 
   manip->priv->target = target;
-  manip->priv->allocation_notify_id = g_signal_connect (manip->priv->target, "notify::allocation",
-							G_CALLBACK (glide_manipulator_target_allocation_changed_cb),
-							manip);
   
   clutter_actor_grab_key_focus (manip->priv->target);
 }

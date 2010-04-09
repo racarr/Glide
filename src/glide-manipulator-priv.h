@@ -61,8 +61,6 @@ struct _GlideManipulatorPrivate
   
   gfloat rot_angle;
   
-  gulong allocation_notify_id;
-  
   gboolean width_only;
   
   CoglHandle widget_material;

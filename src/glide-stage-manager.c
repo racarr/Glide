@@ -478,7 +478,6 @@ glide_stage_manager_class_init (GlideStageManagerClass *klass)
 				       CLUTTER_Escape, 0,
 				       G_CALLBACK(glide_stage_manager_binding_end_presentation),
 				       NULL, NULL);
-    
 
   g_type_class_add_private (object_class, sizeof(GlideStageManagerPrivate));
 }
