@@ -488,7 +488,7 @@ glide_window_setup_stage (GlideWindow *window)
   ClutterColor white = {0xff, 0xff, 0xff, 0xff};
   ClutterActor *stage = window->priv->stage;
 
-  clutter_actor_set_size (stage, 800, 600);
+  clutter_actor_set_size (stage, 800, 640);
   clutter_stage_set_color (CLUTTER_STAGE (stage), &white);
   
   window->priv->manager = glide_stage_manager_new (window->priv->document, 
