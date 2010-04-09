@@ -403,7 +403,20 @@ glide_window_make_toolbar (GlideWindow *w)
   image10 =
     gtk_image_new_from_stock (GTK_STOCK_FILE, GTK_ICON_SIZE_LARGE_TOOLBAR);
 
-  
+
+  gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "New",
+			   "New document",
+			   NULL, image7, G_CALLBACK (glide_window_new_document),
+			   w);
+ gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "Save",
+			   "Save document",
+			   NULL, image6, G_CALLBACK (glide_window_save_document),
+			   w);
+  gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "Open",
+			   "Open document",
+			   NULL, image8, G_CALLBACK (glide_window_open_document),
+			   w);  
+ 
   gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "Image", 
 			   "Insert a new image in to the document", 
 			   NULL, image, G_CALLBACK(glide_window_new_image), 
@@ -416,26 +429,15 @@ glide_window_make_toolbar (GlideWindow *w)
 			   "Insert a new slide in to the document",
 			   NULL, image3, G_CALLBACK(glide_window_new_slide), 
 			   w);  
-  gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "Save",
-			   "Save document",
-			   NULL, image6, G_CALLBACK (glide_window_save_document),
-			   w);
-  gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "New",
-			   "New document",
-			   NULL, image7, G_CALLBACK (glide_window_new_document),
-			   w);
-  gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "Open",
-			   "Open document",
-			   NULL, image8, G_CALLBACK (glide_window_open_document),
+  gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "Background",
+			   "Set slide background",
+			   NULL, image10, G_CALLBACK (glide_window_set_slide_background),
 			   w);  
   gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "Present",
 			   "Present Document",
 			   NULL, image9, G_CALLBACK (glide_window_present_document),
 			   w);  
-  gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "Background",
-			   "Set slide background",
-			   NULL, image10, G_CALLBACK (glide_window_set_slide_background),
-			   w);  
+
   
   return toolbar;
 }
@@ -506,6 +508,9 @@ glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
   
   window->priv->color_button = color_button;
   window->priv->font_button = font_button;
+
+  gtk_widget_set_sensitive (window->priv->font_button, FALSE);
+  gtk_widget_set_sensitive (window->priv->color_button, FALSE);
   
   prev = gtk_button_new ();
   next = gtk_button_new ();
@@ -579,6 +584,40 @@ glide_window_stage_manager_presenting_changed_cb (GObject *object,
 }
 
 static void
+glide_window_stage_selection_changed_cb (GlideStageManager *manager,
+					 GObject *old_selection,
+					 gpointer data)
+{
+  GlideWindow *w = (GlideWindow *)data;
+  GdkColor c;
+  ClutterColor cc;
+  GlideActor *selection = glide_stage_manager_get_selection (manager);
+
+  if (!selection || !GLIDE_IS_TEXT (selection))
+    {
+      gtk_widget_set_sensitive (w->priv->font_button, FALSE);
+      gtk_widget_set_sensitive (w->priv->color_button, FALSE);
+    }
+
+  
+  if (selection && GLIDE_IS_TEXT (selection))
+    {
+
+      gtk_widget_set_sensitive (w->priv->font_button, TRUE);
+      gtk_widget_set_sensitive (w->priv->color_button, TRUE);
+
+      glide_text_get_color (GLIDE_TEXT (selection), &cc);
+      c.red = (cc.red/255.0) * 65535;
+      c.green = (cc.green/255.0) * 65535;
+      c.blue = (cc.blue/255.0) * 65535;
+      
+      gtk_color_button_set_color (GTK_COLOR_BUTTON (w->priv->color_button), &c);
+      gtk_font_button_set_font_name (GTK_FONT_BUTTON (w->priv->font_button),
+				     glide_text_get_font_name (GLIDE_TEXT (selection)));
+    }
+}
+
+static void
 glide_window_setup_stage (GlideWindow *window)
 {
   ClutterColor white = {0xff, 0xff, 0xff, 0xff};
@@ -594,6 +633,9 @@ glide_window_setup_stage (GlideWindow *window)
 
   g_signal_connect (window->priv->manager, "notify::presenting",
 		    G_CALLBACK (glide_window_stage_manager_presenting_changed_cb),
+		    window);
+  g_signal_connect (window->priv->manager, "selection-changed",
+		    G_CALLBACK (glide_window_stage_selection_changed_cb),
 		    window);
 }
 

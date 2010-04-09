@@ -194,7 +194,7 @@ glide_stage_manager_advance_slide (GlideStageManager *manager)
       b = glide_document_get_nth_slide (manager->priv->document, manager->priv->current_slide+1);
       manager->priv->current_slide++;
       
-      glide_animations_animate_fade (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1000);
+      glide_animations_animate_drop (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1000);
       
       // XXX: Maybe not?
       g_object_notify (G_OBJECT (manager), "current-slide");
