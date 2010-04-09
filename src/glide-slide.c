@@ -271,6 +271,19 @@ static void
 glide_slide_paint (ClutterActor *actor)
 {
   GlideSlidePrivate *priv = GLIDE_SLIDE (actor)->priv;
+  ClutterActorBox box = {0, };
+  
+  if (priv->background_material) 
+    {
+      cogl_material_set_color4ub (priv->background_material, 0xff, 0xff, 0xff, 0xff);
+      clutter_actor_get_allocation_box (clutter_actor_get_parent (actor), &box);
+      
+      cogl_set_source (priv->background_material);
+      cogl_rectangle_with_texture_coords (0, 0,
+					  box.x2 - box.x1, 
+					  box.y2 - box.y1,
+					  0, 0, 1, 1);
+    }
 
   GLIDE_NOTE (PAINT, "GlideSlide paint enter '%s'",
                 clutter_actor_get_name (actor) ? clutter_actor_get_name (actor)
