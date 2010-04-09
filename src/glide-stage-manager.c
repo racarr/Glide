@@ -189,12 +189,26 @@ glide_stage_manager_advance_slide (GlideStageManager *manager)
   if (manager->priv->current_slide + 1 < glide_document_get_n_slides(manager->priv->document))
     {
       GlideSlide *a, *b;
+      const gchar *animation;
+
       
       a = glide_document_get_nth_slide (manager->priv->document, manager->priv->current_slide);
       b = glide_document_get_nth_slide (manager->priv->document, manager->priv->current_slide+1);
+
+      animation = glide_slide_get_animation (a);
+      
+      if (!animation || !strcmp(animation, "None"))
+	{
+	  glide_stage_manager_set_slide_next (manager);
+	  return;
+	}
+
       manager->priv->current_slide++;
       
-      glide_animations_animate_drop (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1000);
+      if (!strcmp(animation, "Drop"))
+	glide_animations_animate_drop (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1500);
+      if (!strcmp(animation, "Fade"))
+	glide_animations_animate_fade (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1000);
       
       // XXX: Maybe not?
       g_object_notify (G_OBJECT (manager), "current-slide");

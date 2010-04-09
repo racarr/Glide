@@ -421,6 +421,9 @@ glide_slide_dispose (GObject *object)
     {
       cogl_handle_unref (priv->background_material);
     }
+  
+  g_free (priv->background);
+  g_free (priv->animation);
 
   G_OBJECT_CLASS (glide_slide_parent_class)->dispose (object);
 }
