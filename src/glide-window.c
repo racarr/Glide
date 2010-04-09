@@ -376,19 +376,35 @@ glide_window_set_slide_background (GtkWidget *toolitem, gpointer data)
 }
 
 static void
+glide_window_file_save_response_callback (GtkDialog *dialog,
+					  int response,
+					  gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *) user_data;
+  if (response == GTK_RESPONSE_ACCEPT)
+    {
+      JsonNode *node;
+      JsonGenerator *gen;
+      gchar *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+
+      node = glide_document_serialize (w->priv->document);
+      
+      gen = json_generator_new ();
+      json_generator_set_root (gen, node);
+      
+      // Error
+      json_generator_to_file (gen, filename, NULL);
+    }
+  
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
 glide_window_save_document (GtkWidget *toolitem, gpointer data)
 {
   GlideWindow *w = (GlideWindow *) data;
-  JsonNode *node;
-  JsonGenerator *gen;
   
-  node = glide_document_serialize (w->priv->document);
-  
-  gen = json_generator_new ();
-  json_generator_set_root (gen, node);
-
-  // Error
-  json_generator_to_file (gen, "/tmp/test.glide", NULL);
+  glide_gtk_util_show_save_dialog (G_CALLBACK (glide_window_file_save_response_callback ), w);
 }
 
 static void

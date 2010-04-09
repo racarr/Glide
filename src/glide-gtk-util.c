@@ -30,6 +30,26 @@ glide_gtk_util_get_clipboard_text ()
 }
 
 GtkWidget *
+glide_gtk_util_show_save_dialog (GCallback callback, gpointer user_data)
+{
+  GtkWidget *d;
+  
+  d = gtk_file_chooser_dialog_new ("Save File",
+				   NULL,
+				   GTK_FILE_CHOOSER_ACTION_SAVE,
+				   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				   GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+				   NULL);
+  gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (d), TRUE);
+
+  g_signal_connect (d, "response", callback, user_data);
+  
+  gtk_widget_show (d);
+
+  return d;
+}
+
+GtkWidget *
 glide_gtk_util_show_image_dialog (GCallback callback, gpointer user_data)
 {
   GtkWidget *d;
