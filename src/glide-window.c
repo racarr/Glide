@@ -110,12 +110,11 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
   ClutterActor *text;
   GdkColor c;
   ClutterColor cc;
-  
-  text = glide_text_new ();
-  glide_stage_manager_add_actor (window->priv->manager, GLIDE_ACTOR (text));
 
   gtk_color_button_get_color (GTK_COLOR_BUTTON (window->priv->color_button), &c);
   
+  text = glide_text_new ();
+
   cc.alpha = 0xff;
   cc.red = (c.red/65535.0)*255.0;
   cc.blue = (c.blue/65535.0)*255.0;
@@ -123,6 +122,8 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
   
   glide_text_set_color (GLIDE_TEXT (text), &cc);
   glide_text_set_font_name (GLIDE_TEXT (text), gtk_font_button_get_font_name (GTK_FONT_BUTTON (window->priv->font_button)));
+
+  glide_stage_manager_add_actor (window->priv->manager, GLIDE_ACTOR (text));
 
   GLIDE_NOTE (WINDOW, "Inserting new text, stage manager: %p", window->priv->manager);
 }
