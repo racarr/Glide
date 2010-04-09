@@ -244,6 +244,32 @@ glide_window_open_document (GtkWidget *toolitem, gpointer data)
 }
 
 static void
+glide_window_fullscreen_stage (GlideWindow *w)
+{
+  GdkScreen *screen = gtk_window_get_screen (GTK_WINDOW (w));
+  
+  gtk_widget_set_size_request (GTK_WIDGET (w), 
+			       gdk_screen_get_width (screen), 
+			       gdk_screen_get_height (screen));
+  gtk_window_fullscreen (GTK_WINDOW (w));
+  
+  gtk_widget_hide_all (GTK_WIDGET (w));
+
+  gtk_widget_show (GTK_WIDGET (w));
+  gtk_widget_show (w->priv->embed);
+  gtk_widget_show (gtk_widget_get_parent (w->priv->embed));
+}
+
+static void
+glide_window_present_document (GtkWidget *toolitem, gpointer data)
+{
+  GlideWindow *w = (GlideWindow *)data;
+  GLIDE_NOTE (WINDOW, "Presenting document.");
+
+  glide_window_fullscreen_stage (w);
+}
+
+static void
 glide_window_save_document (GtkWidget *toolitem, gpointer data)
 {
   GlideWindow *w = (GlideWindow *) data;
@@ -282,7 +308,7 @@ glide_window_stage_enter_notify (GtkWidget *widget,
 static GtkWidget *
 glide_window_make_toolbar (GlideWindow *w)
 {
-  GtkWidget *toolbar, *image, *image2, *image3, *image4, *image5, *image6, *image7, *image8;
+  GtkWidget *toolbar, *image, *image2, *image3, *image4, *image5, *image6, *image7, *image8, *image9;
 
   toolbar = gtk_toolbar_new ();
   
@@ -302,6 +328,8 @@ glide_window_make_toolbar (GlideWindow *w)
     gtk_image_new_from_stock (GTK_STOCK_NEW, GTK_ICON_SIZE_LARGE_TOOLBAR);
   image8 =
     gtk_image_new_from_stock (GTK_STOCK_OPEN, GTK_ICON_SIZE_LARGE_TOOLBAR);
+  image9 =
+    gtk_image_new_from_stock (GTK_STOCK_FULLSCREEN, GTK_ICON_SIZE_LARGE_TOOLBAR);
 
   
   gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New image", 
@@ -336,6 +364,11 @@ glide_window_make_toolbar (GlideWindow *w)
 			   "Open document",
 			   NULL, image8, G_CALLBACK (glide_window_open_document),
 			   w);  
+
+  gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "Present",
+			   "Present Document",
+			   NULL, image9, G_CALLBACK (glide_window_present_document),
+			   w);  
   
   return toolbar;
 }
@@ -346,6 +379,7 @@ glide_window_make_embed (GlideWindow *window)
 {
   GtkWidget *embed = gtk_clutter_embed_new ();
   window->priv->stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (embed));
+  window->priv->embed = embed;
   
   g_signal_connect (embed, "enter-notify-event",
 		    G_CALLBACK (glide_window_stage_enter_notify),

@@ -35,6 +35,8 @@ struct _GlideWindowPrivate
   
   GlideStageManager *manager;
   GlideDocument *document;
+  
+  GtkWidget *embed;
 };
 
 G_END_DECLS
