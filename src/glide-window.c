@@ -537,6 +537,8 @@ glide_window_setup_animations_box (GlideWindow *window, GtkWidget *cbox)
   gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "Fade");
   gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "Zoom");
   gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "Drop");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "Pivot");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "Slide");
   
   gtk_combo_box_set_active (GTK_COMBO_BOX (cbox), 0);
   
@@ -699,6 +701,10 @@ glide_window_stage_manager_slide_changed_cb (GObject *object,
     gtk_combo_box_set_active (GTK_COMBO_BOX (w->priv->animation_box), 2);
   if (!strcmp(animation, "Drop"))
     gtk_combo_box_set_active (GTK_COMBO_BOX (w->priv->animation_box), 3);
+  if (!strcmp(animation, "Pivot"))
+    gtk_combo_box_set_active (GTK_COMBO_BOX (w->priv->animation_box), 4);
+  if (!strcmp(animation, "Slide"))
+    gtk_combo_box_set_active (GTK_COMBO_BOX (w->priv->animation_box), 5);
 
 }
 
@@ -752,7 +758,7 @@ glide_window_stage_selection_changed_cb (GlideStageManager *manager,
 static void
 glide_window_setup_stage (GlideWindow *window)
 {
-  ClutterColor white = {0xff, 0xff, 0xff, 0xff};
+  ClutterColor white = {0x00, 0x00, 0x00, 0xff};
   ClutterActor *stage = window->priv->stage;
 
   clutter_actor_set_size (stage, PRESENTATION_WIDTH, PRESENTATION_HEIGHT);

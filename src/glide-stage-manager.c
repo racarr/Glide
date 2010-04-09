@@ -212,7 +212,11 @@ glide_stage_manager_advance_slide (GlideStageManager *manager)
       if (!strcmp(animation, "Fade"))
 	glide_animations_animate_fade (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1000);
       if (!strcmp(animation, "Zoom"))
-	glide_animations_animate_zoom (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1000);
+	glide_animations_animate_zoom (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1200);
+      if (!strcmp(animation, "Pivot"))
+	glide_animations_animate_pivot (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 2000);
+      if (!strcmp(animation, "Slide"))
+	glide_animations_animate_slide (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1200);
       
       // XXX: Maybe not?
       g_object_notify (G_OBJECT (manager), "current-slide");
