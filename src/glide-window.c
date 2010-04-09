@@ -386,10 +386,12 @@ glide_window_file_save_response_callback (GtkDialog *dialog,
       JsonNode *node;
       JsonGenerator *gen;
       gchar *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
-
+      
       node = glide_document_serialize (w->priv->document);
       
       gen = json_generator_new ();
+      g_object_set (gen, "pretty", TRUE, NULL);
+
       json_generator_set_root (gen, node);
       
       // Error
