@@ -318,7 +318,7 @@ glide_stage_manager_constructor (GType type,
   if (n > 0)
     clutter_actor_show (CLUTTER_ACTOR (glide_document_get_nth_slide (manager->priv->document, 0)));  
 
-  //  glide_stage_manager_add_manipulator (manager);
+  //glide_stage_manager_add_manipulator (manager);
 
   return obj;
 }
@@ -507,6 +507,8 @@ glide_stage_manager_set_presenting (GlideStageManager *manager, gboolean present
       manager->priv->presenting = presenting;
       if (presenting)
 	glide_stage_manager_set_selection (manager, NULL);
+      else
+	glide_stage_manager_add_manipulator (manager);
       g_object_notify (G_OBJECT (manager), "presenting");
     }
 }

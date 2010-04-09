@@ -175,8 +175,8 @@ glide_slide_foreach (ClutterContainer *container,
 
 static void
 glide_slide_raise (ClutterContainer *container,
-                          ClutterActor     *actor,
-                          ClutterActor     *sibling)
+		   ClutterActor     *actor,
+		   ClutterActor     *sibling)
 {
   GlideSlidePrivate *priv = GLIDE_SLIDE (container)->priv;
 
@@ -218,8 +218,8 @@ glide_slide_raise (ClutterContainer *container,
 
 static void
 glide_slide_lower (ClutterContainer *container,
-                          ClutterActor     *actor,
-                          ClutterActor     *sibling)
+		   ClutterActor     *actor,
+		   ClutterActor     *sibling)
 {
   GlideSlide *self = GLIDE_SLIDE (container);
   GlideSlidePrivate *priv = self->priv;

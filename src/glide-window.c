@@ -543,6 +543,8 @@ glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
   next = gtk_button_new ();
   
   cbox = gtk_combo_box_new_text();
+  window->priv->animation_box = cbox;
+
   glide_window_setup_animations_box (window, cbox);
   
   g_signal_connect (prev, "clicked", G_CALLBACK (glide_window_slide_prev), window);
@@ -599,6 +601,30 @@ glide_window_setup_chrome (GlideWindow *window)
   gtk_widget_set_size_request (embed, PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
 
   gtk_container_add (GTK_CONTAINER (window), vbox);
+
+}
+
+static void
+glide_window_stage_manager_slide_changed_cb (GObject *object,
+					     GParamSpec *pspec,
+					     gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *) user_data;
+  GlideSlide *slide = glide_document_get_nth_slide (w->priv->document,
+						    glide_stage_manager_get_current_slide (w->priv->manager));
+  const gchar *animation = glide_slide_get_animation (GLIDE_SLIDE (slide));
+
+  if (!animation)
+    animation = "None";
+
+  if (!strcmp(animation, "None"))
+    gtk_combo_box_set_active (GTK_COMBO_BOX (w->priv->animation_box), 0);
+  if (!strcmp(animation, "Fade"))
+    gtk_combo_box_set_active (GTK_COMBO_BOX (w->priv->animation_box), 1);
+  if (!strcmp(animation, "Zoom"))
+    gtk_combo_box_set_active (GTK_COMBO_BOX (w->priv->animation_box), 2);
+  if (!strcmp(animation, "Drop"))
+    gtk_combo_box_set_active (GTK_COMBO_BOX (w->priv->animation_box), 3);
 
 }
 
@@ -665,6 +691,9 @@ glide_window_setup_stage (GlideWindow *window)
 
   g_signal_connect (window->priv->manager, "notify::presenting",
 		    G_CALLBACK (glide_window_stage_manager_presenting_changed_cb),
+		    window);
+  g_signal_connect (window->priv->manager, "notify::current-slide",
+		    G_CALLBACK (glide_window_stage_manager_slide_changed_cb),
 		    window);
   g_signal_connect (window->priv->manager, "selection-changed",
 		    G_CALLBACK (glide_window_stage_selection_changed_cb),
