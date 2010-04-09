@@ -37,6 +37,7 @@ struct _GlideWindowPrivate
   GlideDocument *document;
   
   GtkWidget *embed;
+  GtkWidget *fixed;
 };
 
 G_END_DECLS

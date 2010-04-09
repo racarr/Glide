@@ -643,6 +643,8 @@ glide_manipulator_target_allocation_changed_cb (GObject *object,
 						gpointer user_data)
 {
   GlideManipulator *manipulator = (GlideManipulator *)user_data;
+  
+  //  return;
 
   glide_manipulator_sync_transforms ((ClutterActor *)manipulator, manipulator->priv->target);
 }
