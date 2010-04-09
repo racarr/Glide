@@ -98,6 +98,8 @@ void glide_stage_manager_load_slides (GlideStageManager *manager, JsonArray *sli
 gboolean glide_stage_manager_get_presenting (GlideStageManager *manager);
 void glide_stage_manager_set_presenting (GlideStageManager *manager, gboolean presenting);
 
+void glide_stage_manager_set_slide_background (GlideStageManager *manager, const gchar *bg);
+
 
 G_END_DECLS
 

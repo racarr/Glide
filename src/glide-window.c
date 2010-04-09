@@ -290,13 +290,13 @@ glide_window_slide_background_cb (GtkDialog *dialog,
 				  int response,
 				  gpointer user_data)
 {
-  //  GlideWindow *window = (GlideWindow *)user_data;
+  GlideWindow *window = (GlideWindow *)user_data;
   
   if (response == GTK_RESPONSE_ACCEPT)
     {
       gchar *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
       
-      g_message("Filename: %s", filename);
+      glide_stage_manager_set_slide_background (window->priv->manager, filename);
       
       g_free (filename);
     }

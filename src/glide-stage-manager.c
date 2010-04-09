@@ -481,3 +481,9 @@ glide_stage_manager_get_presenting (GlideStageManager *manager)
 {
   return manager->priv->presenting;
 }
+
+void
+glide_stage_manager_set_slide_background (GlideStageManager *manager, const gchar *bg)
+{
+  glide_slide_set_background (glide_document_get_nth_slide (manager->priv->document, manager->priv->current_slide), bg);
+}

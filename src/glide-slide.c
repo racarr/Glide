@@ -386,6 +386,10 @@ glide_slide_dispose (GObject *object)
       g_object_unref (priv->layout);
       priv->layout = NULL;
     }
+  if (priv->background_material)
+    {
+      cogl_handle_unref (priv->background_material);
+    }
 
   G_OBJECT_CLASS (glide_slide_parent_class)->dispose (object);
 }
@@ -512,6 +516,31 @@ glide_slide_construct_from_json (GlideSlide *slide, JsonObject *slide_obj, Glide
     }
 }
 
+static CoglHandle
+glide_slide_material_for_file (const gchar *filename)
+{
+  GError *e = NULL;
+  CoglHandle m, t;
+  
+  m = cogl_material_new ();
+  t = cogl_texture_new_from_file(filename,
+				 COGL_TEXTURE_NONE,
+				 COGL_PIXEL_FORMAT_ANY,
+				 &e);
+  if (e || t == COGL_INVALID_HANDLE)
+    {
+      g_warning ("glide-manipulator.c failed to load widget image: %s", filename);
+      g_error_free (e);
+    }
+  cogl_material_set_layer (m, 0, t);
+  cogl_material_set_layer_filters (m, 0,
+				   COGL_MATERIAL_FILTER_LINEAR_MIPMAP_LINEAR,
+				   COGL_MATERIAL_FILTER_LINEAR);
+  cogl_handle_unref (t);
+  
+  return m;
+}
+
 void 
 glide_slide_set_background (GlideSlide *slide, const gchar *background)
 {
@@ -519,6 +548,10 @@ glide_slide_set_background (GlideSlide *slide, const gchar *background)
     g_free (slide->priv->background);
   
   slide->priv->background = g_strdup (background);
+  
+  if (slide->priv->background_material)
+    cogl_handle_unref (slide->priv->background_material);
+  slide->priv->background_material = glide_slide_material_for_file (background);
   
   g_object_notify (G_OBJECT (slide), "background");
 }

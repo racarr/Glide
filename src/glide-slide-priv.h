@@ -35,6 +35,8 @@ struct _GlideSlidePrivate
   ClutterLayoutManager *layout;
   
   gchar *background;
+  
+  CoglHandle background_material;
 };
 
 G_END_DECLS
