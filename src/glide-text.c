@@ -2052,7 +2052,6 @@ glide_text_allocate (ClutterActor           *self,
   ClutterActorClass *parent_class;
   PangoRectangle logical_rect;
   PangoLayout *layout;
-  ClutterActorBox pbox;
 
   /* Ensure that there is a cached layout with the right width so
    * that we don't need to create the text during the paint run
@@ -2061,12 +2060,6 @@ glide_text_allocate (ClutterActor           *self,
 				     box->x2 - box->x1,
 				     box->y2 - box->y1);
   pango_layout_get_extents (layout, NULL, &logical_rect);
-  
-  pbox.x1 = logical_rect.x+box->x1;
-  pbox.y1 = logical_rect.y+box->y1;
-  
-  pbox.x2 = pbox.x1 + logical_rect.width / (double)PANGO_SCALE;
-  pbox.y2 = pbox.y1 + logical_rect.height / (double)PANGO_SCALE;
   
   parent_class = CLUTTER_ACTOR_CLASS (glide_text_parent_class);
   parent_class->allocate (self, box, flags);
