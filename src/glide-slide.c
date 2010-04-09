@@ -573,6 +573,9 @@ glide_slide_material_for_file (const gchar *filename)
 void 
 glide_slide_set_background (GlideSlide *slide, const gchar *background)
 {
+  if (!background)
+    return;
+  
   if (slide->priv->background)
     g_free (slide->priv->background);
   
