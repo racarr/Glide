@@ -78,9 +78,9 @@ glide_window_update_slide_label (GlideWindow *w)
   current_slide = glide_stage_manager_get_current_slide (w->priv->manager) + 1;
   n_slides = glide_document_get_n_slides (w->priv->document);
   
-  message = g_strdup_printf("(%d of %d)", current_slide, n_slides);
+  message = g_strdup_printf("(<b>%d</b> of <b>%d</b>)", current_slide, n_slides);
   
-  gtk_label_set_text (GTK_LABEL (w->priv->slide_label), message);
+  gtk_label_set_markup (GTK_LABEL (w->priv->slide_label), message);
 
   g_free (message);
 }
