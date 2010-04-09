@@ -2579,11 +2579,19 @@ glide_json_object_add_text_properties (JsonObject *obj, GlideText *text)
 {
   JsonNode *n = json_node_new (JSON_NODE_OBJECT);
   JsonObject *img_obj = json_object_new ();
+  ClutterColor c;
+  gchar *cs;
   
   json_node_set_object (n, img_obj);
   
+  glide_text_get_color (text, &c);
+  cs = clutter_color_to_string (&c);
+  
   glide_json_object_set_string (img_obj, "text", glide_text_get_text (text));
   glide_json_object_set_string (img_obj, "font-name", glide_text_get_font_name (text));
+  glide_json_object_set_string (img_obj, "color", cs);
+
+  g_free (cs);
   
   json_object_set_member (obj, "text-properties", n);
 }
@@ -2610,6 +2618,7 @@ glide_text_deserialize (GlideActor *actor, JsonObject *actor_obj)
   GlideText *text = GLIDE_TEXT (actor);
   JsonObject *text_props;
   const gchar *stext, *fontname;
+  ClutterColor c;
   
   {
     JsonNode *n = json_object_get_member (actor_obj, "text-properties");
@@ -2621,6 +2630,9 @@ glide_text_deserialize (GlideActor *actor, JsonObject *actor_obj)
 
   glide_text_set_text (text, stext);
   glide_text_set_font_name (text, fontname);
+  
+  clutter_color_from_string (&c, glide_json_object_get_string (text_props, "color"));
+  glide_text_set_color (text, &c);
 }
 
 static void

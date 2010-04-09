@@ -523,13 +523,14 @@ glide_slide_construct_from_json (GlideSlide *slide, JsonObject *slide_obj, Glide
   JsonNode *actors_n;
   JsonArray *actors;
   GList *actors_l, *a;
+  const gchar *background;
   
   actors_n = json_object_get_member (slide_obj, "actors");
   actors = json_node_get_array (actors_n);
   
-  glide_slide_set_background (slide, 
-			      glide_json_object_get_string (slide_obj, 
-							    "background"));
+  background = glide_json_object_get_string (slide_obj, "background");
+  if (background)
+    glide_slide_set_background (slide, background);
   
   actors_l = json_array_get_elements (actors);
   for (a = actors_l; a; a = a->next)
@@ -558,7 +559,7 @@ glide_slide_material_for_file (const gchar *filename)
 				 &e);
   if (e || t == COGL_INVALID_HANDLE)
     {
-      g_warning ("glide-manipulator.c failed to load widget image: %s", filename);
+      g_warning ("glide-slide.c failed to load widget image: %s", filename);
       g_error_free (e);
     }
   cogl_material_set_layer (m, 0, t);
