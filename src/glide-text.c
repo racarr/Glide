@@ -76,10 +76,11 @@
 #include "glide-manipulator.h"
 
 #include "glide-json-util.h"
+#include "glide-gtk-util.h"
 
 #include "glide-debug.h"
 
-#include <gtk/gtk.h>
+
 
 
 
@@ -2504,6 +2505,18 @@ glide_text_font_selection_response_callback (GtkDialog *dialog,
 }
 
 static gboolean
+glide_text_paste (GlideText         *self,
+		  const gchar         *action,
+		  guint                keyval,
+		  ClutterModifierType  modifiers)
+{
+  gint pos = glide_text_get_cursor_position (self);
+  glide_text_insert_text (self, glide_gtk_util_get_clipboard_text (), pos);
+
+  return TRUE;
+}
+
+static gboolean
 glide_text_show_font_selection_dialog (GlideText         *self,
 				       const gchar         *action,
 				       guint                keyval,
@@ -3246,6 +3259,11 @@ glide_text_class_init (GlideTextClass *klass)
   clutter_binding_pool_install_action (binding_pool, "select-font",
 				       CLUTTER_f, CLUTTER_CONTROL_MASK,
 				       G_CALLBACK (glide_text_show_font_selection_dialog),
+				       NULL, NULL);
+  
+  clutter_binding_pool_install_action (binding_pool, "paste",
+				       CLUTTER_v, CLUTTER_CONTROL_MASK,
+				       G_CALLBACK (glide_text_paste),
 				       NULL, NULL);
 
 }

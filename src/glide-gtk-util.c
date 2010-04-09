@@ -22,6 +22,12 @@
 
 #include "glide-gtk-util.h"
 
+gchar *
+glide_gtk_util_get_clipboard_text ()
+{
+  GtkClipboard *c = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
+  return gtk_clipboard_wait_for_text (c);
+}
 
 GtkWidget *
 glide_gtk_util_show_image_dialog (GCallback callback, gpointer user_data)
