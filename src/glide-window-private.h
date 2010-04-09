@@ -42,6 +42,7 @@ struct _GlideWindowPrivate
   GtkWidget *color_button;
   GtkWidget *font_button;
   GtkWidget *animation_box;
+  GtkWidget *slide_label;
 
   gint of_width;
   gint of_height;

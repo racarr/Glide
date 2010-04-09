@@ -70,6 +70,23 @@ glide_window_class_init (GlideWindowClass *klass)
 }
 
 static void
+glide_window_update_slide_label (GlideWindow *w)
+{
+  gchar *message;
+  gint current_slide, n_slides;
+  
+  current_slide = glide_stage_manager_get_current_slide (w->priv->manager) + 1;
+  n_slides = glide_document_get_n_slides (w->priv->document);
+  
+  message = g_strdup_printf("(%d of %d)", current_slide, n_slides);
+  
+  gtk_label_set_text (GTK_LABEL (w->priv->slide_label), message);
+
+  g_free (message);
+}
+
+
+static void
 glide_window_image_open_response_callback (GtkDialog *dialog,
 					   int response,
 					   gpointer user_data)
@@ -526,12 +543,14 @@ glide_window_setup_animations_box (GlideWindow *window, GtkWidget *cbox)
   g_signal_connect (cbox, "changed", G_CALLBACK (glide_window_animations_box_changed_cb), window);
 }
 
+
 static void
 glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
 {
   GtkWidget *color_button = gtk_color_button_new ();
   GtkWidget *font_button = gtk_font_button_new ();
   GtkWidget *prev, *next, *cbox;
+  GtkWidget *lab;
   
   window->priv->color_button = color_button;
   window->priv->font_button = font_button;
@@ -544,6 +563,10 @@ glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
   
   cbox = gtk_combo_box_new_text();
   window->priv->animation_box = cbox;
+  
+  lab = gtk_label_new ("");
+  window->priv->slide_label = lab;
+  //  glide_window_update_slide_label (window);
 
   glide_window_setup_animations_box (window, cbox);
   
@@ -559,6 +582,7 @@ glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
 			gtk_image_new_from_stock (GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_SMALL_TOOLBAR));
 
   gtk_box_pack_start (GTK_BOX(hbox), prev, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(hbox), lab, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(hbox), next, FALSE, FALSE, 0);
   
   gtk_box_pack_start (GTK_BOX(hbox), color_button, FALSE, FALSE, 5);
@@ -613,6 +637,8 @@ glide_window_stage_manager_slide_changed_cb (GObject *object,
   GlideSlide *slide = glide_document_get_nth_slide (w->priv->document,
 						    glide_stage_manager_get_current_slide (w->priv->manager));
   const gchar *animation = glide_slide_get_animation (GLIDE_SLIDE (slide));
+  
+  glide_window_update_slide_label (w);
 
   if (!animation)
     animation = "None";
