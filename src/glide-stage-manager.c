@@ -30,6 +30,8 @@
 #include "glide-actor.h"
 #include "glide-slide.h"
 
+#include "glide-animations.h"
+
 #include "glide-debug.h"
 
 G_DEFINE_TYPE(GlideStageManager, glide_stage_manager, G_TYPE_OBJECT)
@@ -185,7 +187,19 @@ void
 glide_stage_manager_advance_slide (GlideStageManager *manager)
 {
   if (manager->priv->current_slide + 1 < glide_document_get_n_slides(manager->priv->document))
-    glide_stage_manager_set_slide (manager, manager->priv->current_slide + 1);
+    {
+      GlideSlide *a, *b;
+      
+      a = glide_document_get_nth_slide (manager->priv->document, manager->priv->current_slide);
+      b = glide_document_get_nth_slide (manager->priv->document, manager->priv->current_slide+1);
+      manager->priv->current_slide++;
+      
+      glide_animations_animate_fade (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1000);
+      
+      // XXX: Maybe not?
+      g_object_notify (G_OBJECT (manager), "current-slide");
+    }
+
   else
     glide_stage_manager_set_presenting (manager, FALSE);
 }
@@ -204,16 +218,20 @@ glide_stage_manager_button_pressed (ClutterActor *actor,
   GlideStageManager *manager = (GlideStageManager *) user_data;
   if (event->button == 1)
     {
-      glide_stage_manager_advance_slide (manager);
+      if (manager->priv->presenting)
+	glide_stage_manager_advance_slide (manager);
+      else
+	glide_stage_manager_set_selection (manager, NULL);
+
       return TRUE;
     }
   else if (event->button == 3)
     {
-      glide_stage_manager_reverse_slide (manager);
+      if (manager->priv->presenting)
+	glide_stage_manager_reverse_slide (manager);
       return TRUE;
     }
-  
-  return TRUE;
+  return FALSE;
 }
 
 static void

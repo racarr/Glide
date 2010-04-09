@@ -329,18 +329,6 @@ glide_window_save_document (GtkWidget *toolitem, gpointer data)
   json_generator_to_file (gen, "/tmp/test.glide", NULL);
 }
 
-static gboolean
-glide_window_stage_button_press_cb (ClutterActor *actor,
-				    ClutterEvent *event,
-				    gpointer user_data)
-{
-  GlideWindow *w = (GlideWindow *) user_data;
-  
-  glide_stage_manager_set_selection (w->priv->manager, NULL);
-  
-  return TRUE;
-}
-
 static void
 glide_window_stage_enter_notify (GtkWidget *widget,
 				 GdkEventCrossing *event,
@@ -495,12 +483,6 @@ glide_window_setup_stage (GlideWindow *window)
 						   CLUTTER_STAGE (stage));
 
   clutter_actor_show (stage);
-
-  // Used for null selections.
-  g_signal_connect (window->priv->stage, "button-press-event", 
-		    G_CALLBACK (glide_window_stage_button_press_cb), 
-		    window);
-  
 
   g_signal_connect (window->priv->manager, "notify::presenting",
 		    G_CALLBACK (glide_window_stage_manager_presenting_changed_cb),
