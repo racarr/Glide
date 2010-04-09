@@ -543,13 +543,43 @@ glide_window_setup_animations_box (GlideWindow *window, GtkWidget *cbox)
   g_signal_connect (cbox, "changed", G_CALLBACK (glide_window_animations_box_changed_cb), window);
 }
 
+static void
+glide_window_align_selected_text (GlideWindow *w, PangoAlignment alignment)
+{
+  GlideActor *selected = glide_stage_manager_get_selection (w->priv->manager);
+  
+  if (!selected || !GLIDE_IS_TEXT (selected))
+    return;
+  glide_text_set_line_alignment (GLIDE_TEXT (selected), alignment);
+}
+
+static void
+glide_window_align_left (GtkWidget *b, gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  glide_window_align_selected_text (w, PANGO_ALIGN_LEFT);
+}
+
+static void
+glide_window_align_center (GtkWidget *b, gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  glide_window_align_selected_text (w, PANGO_ALIGN_CENTER);
+}
+
+static void
+glide_window_align_right (GtkWidget *b, gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  glide_window_align_selected_text (w, PANGO_ALIGN_RIGHT);
+}
 
 static void
 glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
 {
   GtkWidget *color_button = gtk_color_button_new ();
   GtkWidget *font_button = gtk_font_button_new ();
-  GtkWidget *prev, *next, *cbox;
+  GtkWidget *prev, *next, *cbox, *left, *center, *right;
   GtkWidget *lab;
   
   window->priv->color_button = color_button;
@@ -560,6 +590,9 @@ glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
   
   prev = gtk_button_new ();
   next = gtk_button_new ();
+  left = gtk_button_new ();
+  center = gtk_button_new ();
+  right = gtk_button_new ();
   
   cbox = gtk_combo_box_new_text();
   window->priv->animation_box = cbox;
@@ -572,6 +605,10 @@ glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
   
   g_signal_connect (prev, "clicked", G_CALLBACK (glide_window_slide_prev), window);
   g_signal_connect (next, "clicked", G_CALLBACK (glide_window_slide_next), window);
+
+  g_signal_connect (left, "clicked", G_CALLBACK (glide_window_align_left), window);
+  g_signal_connect (right, "clicked", G_CALLBACK (glide_window_align_right), window);
+  g_signal_connect (center, "clicked", G_CALLBACK (glide_window_align_center), window);
   
   g_signal_connect (color_button, "color-set", G_CALLBACK (glide_window_color_set_cb), window);
   g_signal_connect (font_button, "font-set", G_CALLBACK (glide_window_font_set_cb), window);
@@ -581,12 +618,23 @@ glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
   gtk_button_set_image (GTK_BUTTON (next),
 			gtk_image_new_from_stock (GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_SMALL_TOOLBAR));
 
+  gtk_button_set_image (GTK_BUTTON (left),
+			gtk_image_new_from_stock (GTK_STOCK_JUSTIFY_LEFT, GTK_ICON_SIZE_SMALL_TOOLBAR));
+  gtk_button_set_image (GTK_BUTTON (center),
+			gtk_image_new_from_stock (GTK_STOCK_JUSTIFY_CENTER, GTK_ICON_SIZE_SMALL_TOOLBAR));
+  gtk_button_set_image (GTK_BUTTON (right),
+			gtk_image_new_from_stock (GTK_STOCK_JUSTIFY_RIGHT, GTK_ICON_SIZE_SMALL_TOOLBAR));
+
   gtk_box_pack_start (GTK_BOX(hbox), prev, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(hbox), lab, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(hbox), next, FALSE, FALSE, 0);
   
   gtk_box_pack_start (GTK_BOX(hbox), color_button, FALSE, FALSE, 5);
   gtk_box_pack_start (GTK_BOX(hbox), font_button, FALSE, FALSE, 0);
+
+  gtk_box_pack_start (GTK_BOX(hbox), left, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(hbox), center, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(hbox), right, FALSE, FALSE, 0);
 
   gtk_box_pack_start (GTK_BOX(hbox), cbox, TRUE, TRUE, 30);
 }
