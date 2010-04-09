@@ -2587,6 +2587,34 @@ glide_text_selected (GlideActor *actor)
   glide_manipulator_set_width_only (manip, TRUE);  
 }
 
+const gchar *
+glide_text_name_from_alignment (PangoAlignment align)
+{
+  if (align == PANGO_ALIGN_LEFT)
+    return "Left";
+  else if (align == PANGO_ALIGN_CENTER)
+    return "Center";
+  else if (align == PANGO_ALIGN_RIGHT)
+    return "Right";
+  return NULL;
+}
+
+PangoAlignment
+glide_text_alignment_from_name (const gchar *text)
+{
+  if (!text)
+    return PANGO_ALIGN_LEFT;
+
+  if (!strcmp (text, "Left"))
+    return PANGO_ALIGN_LEFT;
+  if (!strcmp (text, "Right"))
+    return PANGO_ALIGN_RIGHT;
+  if (!strcmp (text, "Center"))
+    return PANGO_ALIGN_CENTER;
+  
+  return PANGO_ALIGN_LEFT;
+}
+
 static void
 glide_json_object_add_text_properties (JsonObject *obj, GlideText *text)
 {
@@ -2603,6 +2631,8 @@ glide_json_object_add_text_properties (JsonObject *obj, GlideText *text)
   glide_json_object_set_string (img_obj, "text", glide_text_get_text (text));
   glide_json_object_set_string (img_obj, "font-name", glide_text_get_font_name (text));
   glide_json_object_set_string (img_obj, "color", cs);
+  glide_json_object_set_string (img_obj, "alignment",
+				glide_text_name_from_alignment (glide_text_get_line_alignment (text)));
 
   g_free (cs);
   
@@ -2646,6 +2676,8 @@ glide_text_deserialize (GlideActor *actor, JsonObject *actor_obj)
   
   clutter_color_from_string (&c, glide_json_object_get_string (text_props, "color"));
   glide_text_set_color (text, &c);
+  
+  glide_text_set_line_alignment (text, glide_text_alignment_from_name (glide_json_object_get_string (text_props, "alignment")));
 }
 
 static void
