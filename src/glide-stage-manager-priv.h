@@ -39,6 +39,8 @@ struct _GlideStageManagerPrivate
   gint current_slide;
   
   gboolean presenting;
+
+  gulong button_notify_id;
 };
 
 G_END_DECLS

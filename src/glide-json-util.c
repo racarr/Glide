@@ -38,6 +38,9 @@ glide_json_object_get_string (JsonObject *obj, const gchar *prop)
 {
   JsonNode *n = json_object_get_member (obj, prop);
   
+  if (!n)
+    return NULL;
+  
   return json_node_get_string (n);
 }
 

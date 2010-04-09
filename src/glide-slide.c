@@ -464,6 +464,8 @@ glide_slide_serialize (GlideActor *self)
     glide_json_object_set_string (obj, "background", slide->priv->background); 
   if (slide->priv->animation)
     glide_json_object_set_string (obj, "animation", slide->priv->animation); 
+  else
+    glide_json_object_set_string (obj, "animation", "None"); 
   
   return node;
 }

@@ -518,6 +518,7 @@ glide_window_setup_animations_box (GlideWindow *window, GtkWidget *cbox)
 {
   gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "None");
   gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "Fade");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "Zoom");
   gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "Drop");
   
   gtk_combo_box_set_active (GTK_COMBO_BOX (cbox), 0);

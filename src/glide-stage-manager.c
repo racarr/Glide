@@ -61,6 +61,9 @@ glide_stage_manager_finalize (GObject *object)
   GLIDE_NOTE (STAGE_MANAGER, "Finalizing stage manager: %p",
 	      object);
   
+  if (manager->priv->button_notify_id)
+    g_signal_handler_disconnect (manager->priv->stage, manager->priv->button_notify_id);
+  
   g_object_unref (G_OBJECT (manager->priv->document));
 
   G_OBJECT_CLASS (glide_stage_manager_parent_class)->finalize (object);
@@ -155,6 +158,7 @@ glide_stage_manager_set_slide (GlideStageManager *manager, guint slide)
     clutter_actor_hide (CLUTTER_ACTOR (glide_document_get_nth_slide (manager->priv->document, manager->priv->current_slide)));
   manager->priv->current_slide = slide;
   clutter_actor_show_all (CLUTTER_ACTOR (glide_document_get_nth_slide (manager->priv->document, slide)));  
+  
   glide_stage_manager_add_manipulator (manager);
   
   g_object_notify (G_OBJECT (manager), "current-slide");
@@ -209,6 +213,8 @@ glide_stage_manager_advance_slide (GlideStageManager *manager)
 	glide_animations_animate_drop (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1500);
       if (!strcmp(animation, "Fade"))
 	glide_animations_animate_fade (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1000);
+      if (!strcmp(animation, "Zoom"))
+	glide_animations_animate_zoom (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1000);
       
       // XXX: Maybe not?
       g_object_notify (G_OBJECT (manager), "current-slide");
@@ -226,11 +232,10 @@ glide_stage_manager_reverse_slide (GlideStageManager *manager)
 
 gboolean
 glide_stage_manager_button_pressed (ClutterActor *actor,
-				    ClutterButtonEvent *event,
-				    gpointer user_data)
+				    ClutterEvent *event,
+				    GlideStageManager *manager)
 {
-  GlideStageManager *manager = (GlideStageManager *) user_data;
-  if (event->button == 1)
+  if (event->button.button == 1)
     {
       if (manager->priv->presenting)
 	glide_stage_manager_advance_slide (manager);
@@ -239,7 +244,7 @@ glide_stage_manager_button_pressed (ClutterActor *actor,
 
       return TRUE;
     }
-  else if (event->button == 3)
+  else if (event->button.button == 3)
     {
       if (manager->priv->presenting)
 	glide_stage_manager_reverse_slide (manager);
@@ -262,7 +267,7 @@ glide_stage_manager_set_property (GObject *object,
       g_return_if_fail (manager->priv->stage == NULL);
       manager->priv->stage = CLUTTER_ACTOR (g_value_get_object (value));
       
-      g_signal_connect (G_OBJECT (manager->priv->stage), "button-press-event", G_CALLBACK(glide_stage_manager_button_pressed), manager);
+      manager->priv->button_notify_id = g_signal_connect (G_OBJECT (manager->priv->stage), "button-press-event", G_CALLBACK(glide_stage_manager_button_pressed), manager);
       break;
     case PROP_DOCUMENT:
       g_return_if_fail (manager->priv->document == NULL);
