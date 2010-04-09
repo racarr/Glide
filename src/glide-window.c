@@ -108,9 +108,21 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
 {
   GlideWindow *window = (GlideWindow *)data;
   ClutterActor *text;
+  GdkColor c;
+  ClutterColor cc;
   
   text = glide_text_new ();
   glide_stage_manager_add_actor (window->priv->manager, GLIDE_ACTOR (text));
+
+  gtk_color_button_get_color (GTK_COLOR_BUTTON (window->priv->color_button), &c);
+  
+  cc.alpha = 0xff;
+  cc.red = (c.red/65535.0)*255.0;
+  cc.blue = (c.blue/65535.0)*255.0;
+  cc.green = (c.green/65535.0)*255.0;
+  
+  glide_text_set_color (GLIDE_TEXT (text), &cc);
+  glide_text_set_font_name (GLIDE_TEXT (text), gtk_font_button_get_font_name (GTK_FONT_BUTTON (window->priv->font_button)));
 
   GLIDE_NOTE (WINDOW, "Inserting new text, stage manager: %p", window->priv->manager);
 }
@@ -444,6 +456,47 @@ glide_window_make_embed (GlideWindow *window)
   return embed;
 }
 
+
+
+static void
+glide_window_color_set_cb (GtkWidget *b, gpointer user_data)
+{
+  GlideActor *selection;
+  GlideWindow *w = (GlideWindow *)user_data;
+  GdkColor c;
+  ClutterColor cc;
+  
+  selection = glide_stage_manager_get_selection (w->priv->manager);
+  
+  if (!selection || !GLIDE_IS_TEXT(selection))
+    return;
+  
+  gtk_color_button_get_color (GTK_COLOR_BUTTON (b), &c);
+  
+  cc.alpha = 0xff;
+  cc.red = (c.red/65535.0)*255.0;
+  cc.blue = (c.blue/65535.0)*255.0;
+  cc.green = (c.green/65535.0)*255.0;
+  
+  glide_text_set_color (GLIDE_TEXT (selection), &cc);
+}
+
+
+
+static void
+glide_window_font_set_cb (GtkWidget *b, gpointer user_data)
+{
+  GlideActor *selection;
+  GlideWindow *w = (GlideWindow *)user_data;
+  
+  selection = glide_stage_manager_get_selection (w->priv->manager);
+  
+  if (!selection || !GLIDE_IS_TEXT(selection))
+    return;
+  
+  glide_text_set_font_name (GLIDE_TEXT (selection), gtk_font_button_get_font_name (GTK_FONT_BUTTON (b)));
+}
+
 static void
 glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
 {
@@ -451,11 +504,17 @@ glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
   GtkWidget *font_button = gtk_font_button_new ();
   GtkWidget *prev, *next;
   
+  window->priv->color_button = color_button;
+  window->priv->font_button = font_button;
+  
   prev = gtk_button_new ();
   next = gtk_button_new ();
   
   g_signal_connect (prev, "clicked", G_CALLBACK (glide_window_slide_prev), window);
   g_signal_connect (next, "clicked", G_CALLBACK (glide_window_slide_next), window);
+  
+  g_signal_connect (color_button, "color-set", G_CALLBACK (glide_window_color_set_cb), window);
+  g_signal_connect (font_button, "font-set", G_CALLBACK (glide_window_font_set_cb), window);
   
   gtk_button_set_image (GTK_BUTTON (prev),
 			gtk_image_new_from_stock (GTK_STOCK_GO_BACK, GTK_ICON_SIZE_SMALL_TOOLBAR));

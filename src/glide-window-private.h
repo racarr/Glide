@@ -38,6 +38,9 @@ struct _GlideWindowPrivate
   
   GtkWidget *embed;
   GtkWidget *fixed;
+  
+  GtkWidget *color_button;
+  GtkWidget *font_button;
 
   gint of_width;
   gint of_height;
