@@ -129,14 +129,14 @@ glide_window_new_slide (GtkWidget *toolitem, gpointer data)
 }
 
 static void
-glide_window_slide_next (GtkWidget *toolitem, gpointer data)
+glide_window_slide_next (GtkWidget *button, gpointer data)
 {
   GlideWindow *w = (GlideWindow *) data;
   glide_stage_manager_set_slide_next (w->priv->manager);
 }
 
 static void
-glide_window_slide_prev (GtkWidget *toolitem, gpointer data)
+glide_window_slide_prev (GtkWidget *button, gpointer data)
 {
   GlideWindow *w = (GlideWindow *) data;
   glide_stage_manager_set_slide_prev (w->priv->manager);
@@ -370,7 +370,7 @@ glide_window_stage_enter_notify (GtkWidget *widget,
 static GtkWidget *
 glide_window_make_toolbar (GlideWindow *w)
 {
-  GtkWidget *toolbar, *image, *image2, *image3, *image4, *image5, *image6, *image7, *image8, *image9, *image10;
+  GtkWidget *toolbar, *image, *image2, *image3, *image6, *image7, *image8, *image9, *image10;
 
   toolbar = gtk_toolbar_new ();
   
@@ -380,10 +380,6 @@ glide_window_make_toolbar (GlideWindow *w)
     gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_LARGE_TOOLBAR);
   image3 = 
     gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_LARGE_TOOLBAR);
-  image4 = 
-    gtk_image_new_from_stock (GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_LARGE_TOOLBAR);
-  image5 = 
-    gtk_image_new_from_stock (GTK_STOCK_GO_BACK, GTK_ICON_SIZE_LARGE_TOOLBAR);
   image6 =
     gtk_image_new_from_stock (GTK_STOCK_SAVE, GTK_ICON_SIZE_LARGE_TOOLBAR);
   image7 =
@@ -407,14 +403,6 @@ glide_window_make_toolbar (GlideWindow *w)
   gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New slide", 
 			   "Insert a new slide in to the document",
 			   NULL, image3, G_CALLBACK(glide_window_new_slide), 
-			   w);  
-  gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "Previous", 
-			   "Move to the previous slide",
-			   NULL, image5, G_CALLBACK(glide_window_slide_prev), 
-			   w);  
-  gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "Next", 
-			   "Move to the Next slide",
-			   NULL, image4, G_CALLBACK(glide_window_slide_next), 
 			   w);  
   gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "Save",
 			   "Save document",
@@ -460,8 +448,25 @@ static void
 glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
 {
   GtkWidget *color_button = gtk_color_button_new ();
+  GtkWidget *font_button = gtk_font_button_new ();
+  GtkWidget *prev, *next;
   
-  gtk_box_pack_start (GTK_BOX(hbox), color_button, FALSE, FALSE, 0);
+  prev = gtk_button_new ();
+  next = gtk_button_new ();
+  
+  g_signal_connect (prev, "clicked", G_CALLBACK (glide_window_slide_prev), window);
+  g_signal_connect (next, "clicked", G_CALLBACK (glide_window_slide_next), window);
+  
+  gtk_button_set_image (GTK_BUTTON (prev),
+			gtk_image_new_from_stock (GTK_STOCK_GO_BACK, GTK_ICON_SIZE_SMALL_TOOLBAR));
+  gtk_button_set_image (GTK_BUTTON (next),
+			gtk_image_new_from_stock (GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_SMALL_TOOLBAR));
+
+  gtk_box_pack_start (GTK_BOX(hbox), prev, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(hbox), next, FALSE, FALSE, 0);
+  
+  gtk_box_pack_start (GTK_BOX(hbox), color_button, FALSE, FALSE, 5);
+  gtk_box_pack_start (GTK_BOX(hbox), font_button, FALSE, FALSE, 0);
 }
 
 static void
