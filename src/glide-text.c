@@ -222,8 +222,6 @@ struct _GlideTextPrivate
   gfloat drag_center_x;
   gfloat drag_center_y;
   
-  /* Signal handler for width changes */
-  guint width_changed_id;
 };
 
 enum
@@ -881,14 +879,6 @@ glide_text_update_actor_size (GlideText *self)
     clutter_actor_set_height (CLUTTER_ACTOR (self), logical_rect.height / 1024.0f );
 }
 
-static void
-glide_text_width_changed_cb (GObject    *gobject,
-			     GParamSpec *pspec)
-{
-  glide_text_update_actor_size (GLIDE_TEXT (gobject));
-}
-
-
 static inline void
 glide_text_set_text_internal (GlideText *self,
                                 const gchar *text)
@@ -1248,11 +1238,6 @@ glide_text_dispose (GObject *gobject)
       g_signal_handler_disconnect (clutter_get_default_backend (),
                                    priv->font_changed_id);
       priv->font_changed_id = 0;
-    }
-  if (priv->width_changed_id)
-    {
-      g_signal_handler_disconnect (self, priv->width_changed_id);
-      priv->width_changed_id = 0;
     }
 
   G_OBJECT_CLASS (glide_text_parent_class)->dispose (gobject);
@@ -2051,6 +2036,7 @@ glide_text_allocate (ClutterActor           *self,
   GlideText *text = GLIDE_TEXT (self);
   ClutterActorClass *parent_class;
   PangoRectangle logical_rect;
+  ClutterActorBox pbox;
   PangoLayout *layout;
 
   /* Ensure that there is a cached layout with the right width so
@@ -2061,8 +2047,12 @@ glide_text_allocate (ClutterActor           *self,
 				     box->y2 - box->y1);
   pango_layout_get_extents (layout, NULL, &logical_rect);
   
+  pbox = *box;
+  if (logical_rect.height > (pbox.y2-pbox.y1))
+    pbox.y2 = pbox.y1+logical_rect.height / (double)PANGO_SCALE;
+  
   parent_class = CLUTTER_ACTOR_CLASS (glide_text_parent_class);
-  parent_class->allocate (self, box, flags);
+  parent_class->allocate (self, &pbox, flags);
 }
 
 static gboolean
@@ -3360,11 +3350,6 @@ glide_text_init (GlideText *self)
     g_signal_connect (self, "notify::text-direction",
                       G_CALLBACK (glide_text_direction_changed_cb),
                       NULL);
-  
-  priv->width_changed_id =
-    g_signal_connect (self, "notify::width",
-		      G_CALLBACK (glide_text_width_changed_cb),
-		      NULL);
   
   glide_text_set_text (self, "Lorem ipsum dolor sit amet");
 }
