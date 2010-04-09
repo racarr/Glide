@@ -43,6 +43,9 @@
 								      GLIDE_TYPE_WINDOW, \
 								      GlideWindowPrivate))
 
+#define PRESENTATION_WIDTH 800
+#define PRESENTATION_HEIGHT 600
+
 G_DEFINE_TYPE(GlideWindow, glide_window, GTK_TYPE_WINDOW)
 
 static void glide_window_setup_stage (GlideWindow *window);
@@ -246,7 +249,7 @@ glide_window_center_stage (GlideWindow *w)
 {
   GtkAllocation a;
   gtk_widget_get_allocation (w->priv->fixed, &a);
-  gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, (a.width-800)/2.0, (a.height-600)/2.0);
+  gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, (a.width-PRESENTATION_WIDTH)/2.0, (a.height-PRESENTATION_HEIGHT)/2.0);
 }
 /* hack */
 static void
@@ -294,11 +297,11 @@ glide_window_unfullscreen_stage (GlideWindow *w)
   gtk_widget_show_all (GTK_WIDGET (w));
   
   gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, 0, 0);
-  gtk_widget_set_size_request (w->priv->embed, 800, 600);
-  gtk_widget_set_size_request (w->priv->fixed, 800, 600);
+  gtk_widget_set_size_request (w->priv->embed, PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
+  gtk_widget_set_size_request (w->priv->fixed, PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
   gtk_window_resize (GTK_WINDOW (w), 1, 1);
 
-  gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, (w->priv->of_width-800)/2.0, (w->priv->of_height-600)/2.0);
+  gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, (w->priv->of_width-PRESENTATION_WIDTH)/2.0, (w->priv->of_height-PRESENTATION_HEIGHT)/2.0);
 }
 
 static void
@@ -454,12 +457,21 @@ glide_window_make_embed (GlideWindow *window)
 }
 
 static void
+glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
+{
+  GtkWidget *color_button = gtk_color_button_new ();
+  
+  gtk_box_pack_start (GTK_BOX(hbox), color_button, FALSE, FALSE, 0);
+}
+
+static void
 glide_window_setup_chrome (GlideWindow *window)
 {
-  GtkWidget *vbox, *embed, *toolbar, *fixed;
+  GtkWidget *vbox, *embed, *toolbar, *fixed, *hbox;
   GdkColor black;
   
   vbox = gtk_vbox_new (FALSE, 0);
+  hbox = gtk_hbox_new (FALSE, 0);
   
   embed = glide_window_make_embed (window);
   toolbar = glide_window_make_toolbar (window);
@@ -475,11 +487,15 @@ glide_window_setup_chrome (GlideWindow *window)
 		      FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), fixed,
 		      FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox,
+		      FALSE, FALSE, 0);
+  
+  glide_window_make_bottom_bar (window, hbox);
   
   gtk_fixed_put (GTK_FIXED (fixed), embed, 0, 0);
   
-  gtk_widget_set_size_request (fixed, 800, 600);
-  gtk_widget_set_size_request (embed, 800, 600);
+  gtk_widget_set_size_request (fixed, PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
+  gtk_widget_set_size_request (embed, PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
 
   gtk_container_add (GTK_CONTAINER (window), vbox);
 
@@ -504,7 +520,7 @@ glide_window_setup_stage (GlideWindow *window)
   ClutterColor white = {0xff, 0xff, 0xff, 0xff};
   ClutterActor *stage = window->priv->stage;
 
-  clutter_actor_set_size (stage, 800, 600);
+  clutter_actor_set_size (stage, PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
   clutter_stage_set_color (CLUTTER_STAGE (stage), &white);
   
   window->priv->manager = glide_stage_manager_new (window->priv->document, 

@@ -583,6 +583,8 @@ glide_slide_set_background (GlideSlide *slide, const gchar *background)
   slide->priv->background_material = glide_slide_material_for_file (background);
   
   g_object_notify (G_OBJECT (slide), "background");
+  
+  clutter_actor_queue_redraw (CLUTTER_ACTOR (slide));
 }
 
 const gchar *
