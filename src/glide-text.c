@@ -2069,7 +2069,7 @@ glide_text_allocate (ClutterActor           *self,
   pbox.y2 = pbox.y1 + logical_rect.height / (double)PANGO_SCALE;
   
   parent_class = CLUTTER_ACTOR_CLASS (glide_text_parent_class);
-  parent_class->allocate (self, &pbox, flags);
+  parent_class->allocate (self, box, flags);
 }
 
 static gboolean
