@@ -23,6 +23,8 @@
 #include "glide-slide.h"
 #include "glide-slide-priv.h"
 
+#include "glide-json-util.h"
+
 #include "glide-debug.h"
 
 static void clutter_container_iface_init (ClutterContainerIface *iface);
@@ -446,7 +448,8 @@ glide_slide_serialize (GlideActor *self)
   obj = json_object_new ();
   json_node_set_object (node, obj);
   
-  glide_slide_json_obj_set_actors(slide, obj);
+  glide_slide_json_obj_set_actors (slide, obj);
+  glide_json_object_set_string (obj, "background", slide->priv->background); 
   
   return node;
 }
@@ -523,6 +526,10 @@ glide_slide_construct_from_json (GlideSlide *slide, JsonObject *slide_obj, Glide
   
   actors_n = json_object_get_member (slide_obj, "actors");
   actors = json_node_get_array (actors_n);
+  
+  glide_slide_set_background (slide, 
+			      glide_json_object_get_string (slide_obj, 
+							    "background"));
   
   actors_l = json_array_get_elements (actors);
   for (a = actors_l; a; a = a->next)
