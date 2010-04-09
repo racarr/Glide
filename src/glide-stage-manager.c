@@ -190,16 +190,28 @@ glide_stage_manager_advance_slide (GlideStageManager *manager)
     glide_stage_manager_set_presenting (manager, FALSE);
 }
 
+void
+glide_stage_manager_reverse_slide (GlideStageManager *manager)
+{
+  glide_stage_manager_set_slide_prev (manager);
+}
+
 gboolean
 glide_stage_manager_button_pressed (ClutterActor *actor,
 				    ClutterButtonEvent *event,
 				    gpointer user_data)
 {
   GlideStageManager *manager = (GlideStageManager *) user_data;
-  if (event->button != 1)
-    return FALSE;
-  
-  glide_stage_manager_advance_slide (manager);
+  if (event->button == 1)
+    {
+      glide_stage_manager_advance_slide (manager);
+      return TRUE;
+    }
+  else if (event->button == 3)
+    {
+      glide_stage_manager_reverse_slide (manager);
+      return TRUE;
+    }
   
   return TRUE;
 }
