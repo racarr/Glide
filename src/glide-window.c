@@ -760,7 +760,7 @@ glide_window_stage_selection_changed_cb (GlideStageManager *manager,
 static void
 glide_window_setup_stage (GlideWindow *window)
 {
-  ClutterColor white = {0x00, 0x00, 0x00, 0xff};
+  ClutterColor white = {0xff, 0xff, 0xff, 0xff};
   ClutterActor *stage = window->priv->stage;
 
   clutter_actor_set_size (stage, PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
