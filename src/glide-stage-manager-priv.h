@@ -36,7 +36,7 @@ struct _GlideStageManagerPrivate
 
   GlideDocument *document;
   
-  guint current_slide;
+  gint current_slide;
 };
 
 G_END_DECLS

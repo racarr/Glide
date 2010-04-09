@@ -155,6 +155,8 @@ glide_window_new_document_real (GlideWindow *w)
 
   clutter_group_remove_all (CLUTTER_GROUP (w->priv->stage));
   glide_window_setup_stage (w);
+  
+  glide_document_add_slide (w->priv->document);
 }
 
 static void
