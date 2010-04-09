@@ -64,6 +64,7 @@ struct _GlideActorClass
   ClutterActorClass parent_class;
   
   JsonNode* (* serialize) (GlideActor *actor);
+  void (* deserialize) (GlideActor *actor, JsonObject *obj);
   
   void (* selected) (GlideActor *actor);
   void (* deselected) (GlideActor *actor);
@@ -84,6 +85,9 @@ void glide_actor_set_stage_manager (GlideActor *actor, GlideStageManager *manage
 gboolean glide_actor_get_selected (GlideActor *actor);
 
 JsonNode *glide_actor_serialize (GlideActor *actor);
+
+GlideActor *glide_actor_construct_from_json (JsonObject *obj);
+void glide_actor_deserialize (GlideActor *actor, JsonObject *obj);
 
 G_END_DECLS
 

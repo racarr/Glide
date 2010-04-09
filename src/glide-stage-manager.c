@@ -28,6 +28,7 @@
 #include "glide-stage-manager-priv.h"
 #include "glide-manipulator.h"
 #include "glide-actor.h"
+#include "glide-slide.h"
 
 #include "glide-debug.h"
 
@@ -386,4 +387,23 @@ void
 glide_stage_manager_set_current_slide (GlideStageManager *manager, guint slide)
 {
   glide_stage_manager_set_slide (manager, slide);
+}
+
+// TODO: Error handling.
+void
+glide_stage_manager_load_slides (GlideStageManager *manager, JsonArray *slides)
+{
+  GList *slides_list, *s;
+  
+  // Handle broken first slide.
+  
+  slides_list = json_array_get_elements (slides);
+  for (s = slides_list; s; s = s->next)
+    {
+      JsonNode *n = s->data;
+      JsonObject *slide = json_node_get_object (n);
+      GlideSlide *gs = glide_document_add_slide (manager->priv->document);
+      
+      glide_slide_construct_from_json (gs, slide, manager);
+    }
 }

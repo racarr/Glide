@@ -27,6 +27,9 @@
 #include <math.h>
 
 #include "glide-actor-priv.h"
+#include "glide-json-util.h"
+
+#include "glide-image.h"
 
 
 G_DEFINE_ABSTRACT_TYPE(GlideActor, glide_actor, CLUTTER_TYPE_ACTOR)
@@ -218,4 +221,40 @@ glide_actor_serialize (GlideActor *actor)
     return klass->serialize (actor);
   
   return NULL;
+}
+
+void
+glide_actor_deserialize (GlideActor *actor, JsonObject *actor_obj)
+{
+  GlideActorClass *klass;
+  
+  klass = GLIDE_ACTOR_GET_CLASS (actor);
+  if (klass->deserialize)
+    klass->deserialize (actor, actor_obj);
+  
+  glide_json_object_restore_actor_geometry (actor_obj, CLUTTER_ACTOR (actor));
+}
+
+
+GlideActor *
+glide_actor_construct_from_json (JsonObject *actor_obj)
+{
+  const gchar *a_type = glide_json_object_get_string (actor_obj, "type");
+  GlideActor *ret;
+  
+  if (!strcmp(a_type, "image"))
+    {
+      ret = (GlideActor *)glide_image_new ();
+    }
+  else if (!strcmp (a_type, "text"))
+    {
+      ret = (GlideActor *)glide_text_new ();
+    }
+  else
+    {
+      return NULL;
+    }
+  glide_actor_deserialize (ret, actor_obj);
+
+  return ret;
 }

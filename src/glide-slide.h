@@ -56,6 +56,8 @@ GType glide_slide_get_type (void) G_GNUC_CONST;
 
 GlideSlide *glide_slide_new  (GlideDocument *document);
 
+void glide_slide_construct_from_json (GlideSlide *slide, JsonObject *slide_obj, GlideStageManager *manager);
+
 G_END_DECLS
 
 #endif /* __GLIDE_SLIDE_H__ */

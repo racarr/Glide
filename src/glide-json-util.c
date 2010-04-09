@@ -21,6 +21,8 @@
  */
 
 #include "glide-json-util.h"
+#include <math.h>
+#include <stdlib.h>
 
 void
 glide_json_object_set_string (JsonObject *obj, const gchar *prop, const gchar *value)
@@ -52,6 +54,30 @@ glide_json_object_set_double (JsonObject *obj, const gchar *prop, gdouble value)
   g_free (s);
 
   json_object_set_member (obj, prop, n);
+}
+
+gdouble
+glide_json_object_get_double (JsonObject *obj, const char *prop)
+{
+  JsonNode *n = json_object_get_member (obj, prop);
+  const gchar *ds;
+  
+  ds = json_node_get_string (n);
+  
+  return atof (ds);
+}
+
+void
+glide_json_object_restore_actor_geometry (JsonObject *obj, ClutterActor *actor)
+{
+  JsonNode *n = json_object_get_member (obj, "geometry");
+  JsonObject *geom_obj = json_node_get_object (n);
+  clutter_actor_set_size (actor,
+			  glide_json_object_get_double(geom_obj, "width"),
+			  glide_json_object_get_double(geom_obj, "height"));
+  clutter_actor_set_position (actor,
+			      glide_json_object_get_double(geom_obj, "x"),
+			      glide_json_object_get_double(geom_obj, "y"));
 }
 
 void

@@ -31,5 +31,6 @@ const gchar *glide_json_object_get_string (JsonObject *obj, const gchar *prop);
 void glide_json_object_set_double (JsonObject *obj, const gchar *prop, gdouble value);
 
 void glide_json_object_add_actor_geometry (JsonObject *obj, ClutterActor *actor);
+void glide_json_object_restore_actor_geometry (JsonObject *obj, ClutterActor *actor);
 
 #endif

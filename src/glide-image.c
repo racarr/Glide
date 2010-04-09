@@ -236,6 +236,23 @@ glide_image_get_property (GObject *object,
     }
 }
 
+void
+glide_image_deserialize (GlideActor *actor, JsonObject *actor_obj)
+{
+  GlideImage *image = GLIDE_IMAGE (actor);
+  JsonObject *image_props;
+  const gchar *filename;
+  
+  {
+    JsonNode *n = json_object_get_member (actor_obj, "image-properties");
+    image_props = json_node_get_object (n);
+  }
+  
+  filename = glide_json_object_get_string (image_props, "filename");
+  // TODO: Error checking
+  glide_image_set_from_file (image, filename, NULL);
+}
+
 static void
 glide_image_class_init (GlideImageClass *klass)
 {
@@ -253,6 +270,7 @@ glide_image_class_init (GlideImageClass *klass)
   actor_class->get_preferred_height = glide_image_get_preferred_height;
   
   glide_actor_class->serialize = glide_image_serialize;
+  glide_actor_class->deserialize = glide_image_deserialize;
 
   
   object_class->finalize = glide_image_finalize;

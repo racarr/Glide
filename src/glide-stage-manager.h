@@ -93,6 +93,8 @@ void glide_stage_manager_set_slide_next (GlideStageManager *manager);
 guint glide_stage_manager_get_current_slide (GlideStageManager *manager);
 void glide_stage_manager_set_current_slide (GlideStageManager *manager, guint slide);
 
+void glide_stage_manager_load_slides (GlideStageManager *manager, JsonArray *slides);
+
 
 G_END_DECLS
 

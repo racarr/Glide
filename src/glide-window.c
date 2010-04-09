@@ -163,7 +163,8 @@ glide_window_open_document_real (GlideWindow *window,
 {
   JsonParser *p = json_parser_new ();
   GError *e = NULL;
-  JsonNode *root;
+  JsonNode *root, *slide_n;
+  JsonArray *slide_array;
   JsonObject *root_obj;
 
   json_parser_load_from_file (p, filename, &e);
@@ -183,6 +184,11 @@ glide_window_open_document_real (GlideWindow *window,
   window->priv->document = glide_document_new (glide_json_object_get_string (root_obj, "name"));
   clutter_group_remove_all (CLUTTER_GROUP (window->priv->stage));
   glide_window_setup_stage (window);
+  
+  slide_n = json_object_get_member (root_obj, "slides");
+  slide_array = json_node_get_array (slide_n);
+  
+  glide_stage_manager_load_slides (window->priv->manager, slide_array);
   
   g_object_unref (p);
 }

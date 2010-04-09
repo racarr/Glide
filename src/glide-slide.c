@@ -473,3 +473,26 @@ glide_slide_new (GlideDocument *d)
 		       NULL);
 }
 
+void
+glide_slide_construct_from_json (GlideSlide *slide, JsonObject *slide_obj, GlideStageManager *manager)
+{
+  JsonNode *actors_n;
+  JsonArray *actors;
+  GList *actors_l, *a;
+  
+  actors_n = json_object_get_member (slide_obj, "actors");
+  actors = json_node_get_array (actors_n);
+  
+  actors_l = json_array_get_elements (actors);
+  for (a = actors_l; a; a = a->next)
+    {
+      GlideActor *actor;
+      JsonNode *actor_n = a->data;
+      JsonObject *actor_obj = json_node_get_object (actor_n);
+      
+      actor = glide_actor_construct_from_json (actor_obj);
+      clutter_container_add_actor (CLUTTER_CONTAINER (slide), CLUTTER_ACTOR (actor));
+      glide_actor_set_stage_manager (actor, manager);
+      clutter_actor_show (CLUTTER_ACTOR (actor));      
+    }
+}
