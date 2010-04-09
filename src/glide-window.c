@@ -142,19 +142,29 @@ glide_window_slide_prev (GtkWidget *toolitem, gpointer data)
 }
 
 static void
+glide_window_new_document_real (GlideWindow *w)
+{
+  GLIDE_NOTE (WINDOW, "New document");
+  
+  if (w->priv->document)
+    g_object_unref (w->priv->document);
+  if (w->priv->manager)
+    g_object_unref (w->priv->manager);
+
+  w->priv->document = glide_document_new ("New document");
+
+  clutter_group_remove_all (CLUTTER_GROUP (w->priv->stage));
+  glide_window_setup_stage (w);
+}
+
+static void
 glide_window_new_document (GtkWidget *toolitem, gpointer data)
 {
   GlideWindow *w = (GlideWindow *) data;
 
   GLIDE_NOTE (WINDOW, "New document");
   
-  g_object_unref (w->priv->document);
-  g_object_unref (w->priv->manager);
-
-  w->priv->document = glide_document_new ("New document");
-
-  clutter_group_remove_all (CLUTTER_GROUP (w->priv->stage));
-  glide_window_setup_stage (w);
+  glide_window_new_document_real (w);
 }
 
 static void
@@ -390,10 +400,9 @@ glide_window_init (GlideWindow *window)
 
   GLIDE_NOTE (WINDOW, "Intializing Glide window");
   
-  window->priv->document = glide_document_new ("First Document");
-
   glide_window_setup_chrome (window);
-  glide_window_setup_stage (window);
+
+  glide_window_new_document_real (window);
 
   gtk_widget_show_all (GTK_WIDGET (window));
 }
