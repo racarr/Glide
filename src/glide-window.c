@@ -34,6 +34,8 @@
 #include "glide-json-util.h"
 #include "glide-gtk-util.h"
 
+#include "glide-slide.h"
+
 #include "glide-debug.h"
 
 
@@ -114,8 +116,13 @@ static void
 glide_window_new_slide (GtkWidget *toolitem, gpointer data)
 {
   GlideWindow *window = (GlideWindow *)data;
+  GlideSlide *slide, *oslide;
   
-  glide_document_add_slide (window->priv->document);
+  oslide = glide_document_get_nth_slide (window->priv->document,
+					 glide_stage_manager_get_current_slide (window->priv->manager));
+  
+  slide = glide_document_add_slide (window->priv->document);
+  glide_slide_set_background (slide, glide_slide_get_background (oslide));
 }
 
 static void
