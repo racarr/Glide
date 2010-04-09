@@ -41,6 +41,7 @@ struct _GlideStageManagerPrivate
   gboolean presenting;
 
   gulong button_notify_id;
+  gulong key_notify_id;
 };
 
 G_END_DECLS

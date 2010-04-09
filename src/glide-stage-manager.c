@@ -63,6 +63,8 @@ glide_stage_manager_finalize (GObject *object)
   
   if (manager->priv->button_notify_id)
     g_signal_handler_disconnect (manager->priv->stage, manager->priv->button_notify_id);
+  if (manager->priv->key_notify_id)
+    g_signal_handler_disconnect (manager->priv->stage, manager->priv->key_notify_id);
   
   g_object_unref (G_OBJECT (manager->priv->document));
 
@@ -255,6 +257,23 @@ glide_stage_manager_button_pressed (ClutterActor *actor,
   return FALSE;
 }
 
+static gboolean
+glide_stage_manager_key_pressed (ClutterActor *actor,
+				 ClutterKeyEvent *event,
+				 gpointer user_data)
+{
+  GlideStageManager *m = (GlideStageManager *)user_data;
+  ClutterBindingPool *pool;
+  
+  if (!m->priv->presenting)
+    return FALSE;
+  
+  pool = clutter_binding_pool_find (g_type_name (GLIDE_TYPE_STAGE_MANAGER));
+  
+  return clutter_binding_pool_activate (pool, event->keyval, event->modifier_state,
+					G_OBJECT (m));  
+}
+
 static void
 glide_stage_manager_set_property (GObject *object,
 				  guint prop_id,
@@ -270,6 +289,7 @@ glide_stage_manager_set_property (GObject *object,
       manager->priv->stage = CLUTTER_ACTOR (g_value_get_object (value));
       
       manager->priv->button_notify_id = g_signal_connect (G_OBJECT (manager->priv->stage), "button-press-event", G_CALLBACK(glide_stage_manager_button_pressed), manager);
+      manager->priv->key_notify_id = g_signal_connect (G_OBJECT (manager->priv->stage), "key-press-event", G_CALLBACK(glide_stage_manager_key_pressed), manager);
       break;
     case PROP_DOCUMENT:
       g_return_if_fail (manager->priv->document == NULL);
@@ -327,10 +347,55 @@ glide_stage_manager_constructor (GType type,
   return obj;
 }
 
+static gboolean
+glide_stage_manager_binding_prev (GlideStageManager         *self,
+				  const gchar         *action,
+				  guint                keyval,
+				  ClutterModifierType  modifiers)
+{
+  if (self->priv->presenting)
+    {
+      glide_stage_manager_reverse_slide (self);
+      
+      return TRUE;
+    }
+  return FALSE;
+}
+
+static gboolean
+glide_stage_manager_binding_end_presentation (GlideStageManager         *self,
+					      const gchar         *action,
+					      guint                keyval,
+					      ClutterModifierType  modifiers)
+{
+  if (self->priv->presenting)
+    {
+      glide_stage_manager_set_presenting (self, FALSE);
+      return TRUE;
+    }
+  return FALSE;
+}
+
+static gboolean
+glide_stage_manager_binding_next (GlideStageManager         *self,
+				  const gchar         *action,
+				  guint                keyval,
+				  ClutterModifierType  modifiers)
+{
+  if (self->priv->presenting)
+    {
+      glide_stage_manager_advance_slide (self);
+      
+      return TRUE;
+    }
+  return FALSE;
+}
+
 static void
 glide_stage_manager_class_init (GlideStageManagerClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  ClutterBindingPool *binding_pool;
   
   object_class->finalize = glide_stage_manager_finalize;
   object_class->set_property = glide_stage_manager_set_property;
@@ -394,6 +459,25 @@ glide_stage_manager_class_init (GlideStageManagerClass *klass)
 		  g_cclosure_marshal_VOID__OBJECT,
 		  G_TYPE_NONE, 1,
 		  G_TYPE_OBJECT);
+  
+  binding_pool = clutter_binding_pool_get_for_class (klass);
+  
+  clutter_binding_pool_install_action (binding_pool, "previous",
+				       CLUTTER_Left, 0,
+				       G_CALLBACK(glide_stage_manager_binding_prev),
+				       NULL, NULL);
+  clutter_binding_pool_install_action (binding_pool, "next",
+				       CLUTTER_Right, 0,
+				       G_CALLBACK(glide_stage_manager_binding_next),
+				       NULL, NULL);
+  clutter_binding_pool_install_action (binding_pool, "next",
+				       CLUTTER_space, 0,
+				       G_CALLBACK(glide_stage_manager_binding_next),
+				       NULL, NULL);
+  clutter_binding_pool_install_action (binding_pool, "end",
+				       CLUTTER_Escape, 0,
+				       G_CALLBACK(glide_stage_manager_binding_end_presentation),
+				       NULL, NULL);
     
 
   g_type_class_add_private (object_class, sizeof(GlideStageManagerPrivate));

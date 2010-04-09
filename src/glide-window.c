@@ -318,6 +318,8 @@ glide_window_fullscreen_stage (GlideWindow *w)
   gtk_widget_set_size_request (w->priv->fixed, gdk_screen_get_width (s), gdk_screen_get_height (s));
   
   glide_window_center_stage_fullscreen (w);
+  
+  clutter_actor_grab_key_focus (w->priv->stage);
 }
 
 static void
