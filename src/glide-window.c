@@ -32,8 +32,10 @@
 #include "glide-text.h"
 
 #include "glide-json-util.h"
+#include "glide-gtk-util.h"
 
 #include "glide-debug.h"
+
 
 #define GLIDE_WINDOW_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object),	\
 								      GLIDE_TYPE_WINDOW, \
@@ -89,22 +91,11 @@ glide_window_image_open_response_callback (GtkDialog *dialog,
 static void
 glide_window_new_image (GtkWidget *toolitem, gpointer user_data)
 {
-  GtkWidget *d;
   GlideWindow *w = (GlideWindow *)user_data;
   
   GLIDE_NOTE (WINDOW, "Inserting new image.");
-  d = gtk_file_chooser_dialog_new ("Open image",
-				   NULL,
-				   GTK_FILE_CHOOSER_ACTION_OPEN,
-				   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-				   GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-				   NULL);
-  g_signal_connect (d, "response",
-		    G_CALLBACK (glide_window_image_open_response_callback),
-		    w);
-  
-  // TODO: Make it start on our current font...
-  gtk_widget_show (d);
+
+  glide_gtk_util_show_image_dialog (G_CALLBACK (glide_window_image_open_response_callback), w);
 }
 
 static void
@@ -251,6 +242,8 @@ glide_window_center_stage (GlideWindow *w)
   
   width = gdk_screen_get_width (s);
   height = gdk_screen_get_height (s);
+  
+  gtk_widget_set_size_request (w->priv->fixed, width, height);
     
   gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, (width-800)/2.0, (height-640)/2.0);
 }
@@ -277,6 +270,7 @@ glide_window_unfullscreen_stage (GlideWindow *w)
   
   gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, 0, 0);
   gtk_widget_set_size_request (w->priv->embed, 800, 640);
+  gtk_widget_set_size_request (w->priv->fixed, 800, 640);
   gtk_window_resize (GTK_WINDOW (w), 1, 1);
 }
 
@@ -289,6 +283,12 @@ glide_window_present_document (GtkWidget *toolitem, gpointer data)
   glide_window_fullscreen_stage (w);
   
   glide_stage_manager_set_presenting (w->priv->manager, TRUE);  
+}
+
+static void
+glide_window_set_slide_background (GtkWidget *toolitem, gpointer data)
+{
+  GLIDE_NOTE (WINDOW, "Setting slide background");
 }
 
 static void
@@ -330,7 +330,7 @@ glide_window_stage_enter_notify (GtkWidget *widget,
 static GtkWidget *
 glide_window_make_toolbar (GlideWindow *w)
 {
-  GtkWidget *toolbar, *image, *image2, *image3, *image4, *image5, *image6, *image7, *image8, *image9;
+  GtkWidget *toolbar, *image, *image2, *image3, *image4, *image5, *image6, *image7, *image8, *image9, *image10;
 
   toolbar = gtk_toolbar_new ();
   
@@ -352,6 +352,8 @@ glide_window_make_toolbar (GlideWindow *w)
     gtk_image_new_from_stock (GTK_STOCK_OPEN, GTK_ICON_SIZE_LARGE_TOOLBAR);
   image9 =
     gtk_image_new_from_stock (GTK_STOCK_FULLSCREEN, GTK_ICON_SIZE_LARGE_TOOLBAR);
+  image10 =
+    gtk_image_new_from_stock (GTK_STOCK_FILE, GTK_ICON_SIZE_LARGE_TOOLBAR);
 
   
   gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "Image", 
@@ -386,10 +388,13 @@ glide_window_make_toolbar (GlideWindow *w)
 			   "Open document",
 			   NULL, image8, G_CALLBACK (glide_window_open_document),
 			   w);  
-
   gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "Present",
 			   "Present Document",
 			   NULL, image9, G_CALLBACK (glide_window_present_document),
+			   w);  
+  gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "Background",
+			   "Set slide background",
+			   NULL, image10, G_CALLBACK (glide_window_set_slide_background),
 			   w);  
   
   return toolbar;
@@ -415,6 +420,7 @@ static void
 glide_window_setup_chrome (GlideWindow *window)
 {
   GtkWidget *vbox, *embed, *toolbar, *fixed;
+  GdkColor black;
   
   vbox = gtk_vbox_new (FALSE, 0);
   
@@ -424,6 +430,9 @@ glide_window_setup_chrome (GlideWindow *window)
   fixed = gtk_fixed_new();
   gtk_fixed_set_has_window (GTK_FIXED (fixed), TRUE); 
   window->priv->fixed = fixed;
+  
+  gdk_color_parse ("black", &black);
+  gtk_widget_modify_bg (fixed, GTK_STATE_NORMAL, &black);
 
   gtk_box_pack_start (GTK_BOX (vbox), toolbar,
 		      FALSE, FALSE, 0);

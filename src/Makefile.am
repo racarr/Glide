@@ -44,7 +44,9 @@ glide_SOURCES = \
 	glide-slide.h \
 	glide-slide.c \
 	glide-json-util.h \
-	glide-json-util.c 
+	glide-json-util.c \
+	glide-gtk-util.h \
+	glide-gtk-util.c 
 
 glide_LDFLAGS = \
 	-Wl,--export-dynamic
