@@ -2577,6 +2577,7 @@ glide_json_object_add_text_properties (JsonObject *obj, GlideText *text)
   json_node_set_object (n, img_obj);
   
   glide_json_object_set_string (img_obj, "text", glide_text_get_text (text));
+  glide_json_object_set_string (img_obj, "font-name", glide_text_get_font_name (text));
   
   json_object_set_member (obj, "text-properties", n);
 }
@@ -2602,7 +2603,7 @@ glide_text_deserialize (GlideActor *actor, JsonObject *actor_obj)
 {
   GlideText *text = GLIDE_TEXT (actor);
   JsonObject *text_props;
-  const gchar *stext;
+  const gchar *stext, *fontname;
   
   {
     JsonNode *n = json_object_get_member (actor_obj, "text-properties");
@@ -2610,7 +2611,10 @@ glide_text_deserialize (GlideActor *actor, JsonObject *actor_obj)
   }
   
   stext = glide_json_object_get_string (text_props, "text");
+  fontname = glide_json_object_get_string (text_props, "font-name");
+
   glide_text_set_text (text, stext);
+  glide_text_set_font_name (text, fontname);
 }
 
 static void
@@ -3980,7 +3984,7 @@ glide_text_get_font_name (GlideText *text)
 {
   g_return_val_if_fail (GLIDE_IS_TEXT (text), NULL);
 
-  return text->priv->font_name;
+  return pango_font_description_to_string (text->priv->font_desc);
 }
 
 /**
