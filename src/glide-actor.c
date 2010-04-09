@@ -30,6 +30,7 @@
 #include "glide-json-util.h"
 
 #include "glide-image.h"
+#include "glide-text.h"
 
 
 G_DEFINE_ABSTRACT_TYPE(GlideActor, glide_actor, CLUTTER_TYPE_ACTOR)

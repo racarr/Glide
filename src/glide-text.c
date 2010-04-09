@@ -2568,6 +2568,19 @@ glide_text_selected (GlideActor *actor)
   glide_manipulator_set_width_only (manip, TRUE);  
 }
 
+static void
+glide_json_object_add_text_properties (JsonObject *obj, GlideText *text)
+{
+  JsonNode *n = json_node_new (JSON_NODE_OBJECT);
+  JsonObject *img_obj = json_object_new ();
+  
+  json_node_set_object (n, img_obj);
+  
+  glide_json_object_set_string (img_obj, "text", glide_text_get_text (text));
+  
+  json_object_set_member (obj, "text-properties", n);
+}
+
 static JsonNode *
 glide_text_serialize (GlideActor *self)
 {
@@ -2579,8 +2592,25 @@ glide_text_serialize (GlideActor *self)
   
   glide_json_object_set_string (obj, "type", "text");
   glide_json_object_add_actor_geometry (obj, CLUTTER_ACTOR (self));
+  glide_json_object_add_text_properties (obj, GLIDE_TEXT (self));
   
   return node;
+}
+
+void
+glide_text_deserialize (GlideActor *actor, JsonObject *actor_obj)
+{
+  GlideText *text = GLIDE_TEXT (actor);
+  JsonObject *text_props;
+  const gchar *stext;
+  
+  {
+    JsonNode *n = json_object_get_member (actor_obj, "text-properties");
+    text_props = json_node_get_object (n);
+  }
+  
+  stext = glide_json_object_get_string (text_props, "text");
+  glide_text_set_text (text, stext);
 }
 
 static void
@@ -2612,6 +2642,7 @@ glide_text_class_init (GlideTextClass *klass)
   glide_actor_class->deselected = glide_text_deselected;
   glide_actor_class->selected = glide_text_selected;
   glide_actor_class->serialize = glide_text_serialize;
+  glide_actor_class->deserialize = glide_text_deserialize;
 
   /**
    * GlideText:font-name:
