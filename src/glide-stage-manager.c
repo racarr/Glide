@@ -144,8 +144,8 @@ glide_stage_manager_add_manipulator (GlideStageManager *manager)
       manip = glide_manipulator_new (NULL);
     }
   
-  clutter_container_add_actor (CLUTTER_CONTAINER (glide_document_get_nth_slide (manager->priv->document,
-										manager->priv->current_slide)), 
+  glide_slide_add_actor_content (glide_document_get_nth_slide (manager->priv->document,
+										manager->priv->current_slide), 
 						  CLUTTER_ACTOR (manip));
   
   clutter_actor_hide_all (CLUTTER_ACTOR (manip));
@@ -219,6 +219,8 @@ glide_stage_manager_advance_slide (GlideStageManager *manager)
 	glide_animations_animate_pivot (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 2000);
       if (!strcmp(animation, "Slide"))
 	glide_animations_animate_slide (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1200);
+      if (!strcmp(animation, "Zoom Contents"))
+	glide_animations_animate_zoom_contents (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1200);
       
       // XXX: Maybe not?
       g_object_notify (G_OBJECT (manager), "current-slide");
@@ -340,7 +342,7 @@ glide_stage_manager_constructor (GType type,
   
   manager->priv->current_slide = n-1;
   if (n > 0)
-    clutter_actor_show (CLUTTER_ACTOR (glide_document_get_nth_slide (manager->priv->document, 0)));  
+    clutter_actor_show_all (CLUTTER_ACTOR (glide_document_get_nth_slide (manager->priv->document, 0)));  
 
   //glide_stage_manager_add_manipulator (manager);
 
@@ -533,8 +535,8 @@ glide_stage_manager_add_actor (GlideStageManager *manager,
 						manager->priv->current_slide);
   
   clutter_actor_set_position (CLUTTER_ACTOR (actor), 200, 200);
-  clutter_container_add_actor (CLUTTER_CONTAINER (current_slide),
-			       CLUTTER_ACTOR (actor));
+  g_message("Hello");
+  glide_slide_add_actor_content (current_slide, CLUTTER_ACTOR (actor));
   
   clutter_actor_show (CLUTTER_ACTOR (actor));
   

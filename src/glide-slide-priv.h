@@ -38,6 +38,8 @@ struct _GlideSlidePrivate
   gchar *animation;
   
   CoglHandle background_material;
+  
+  ClutterActor *contents_group;
 };
 
 G_END_DECLS

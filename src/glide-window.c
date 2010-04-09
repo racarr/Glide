@@ -146,7 +146,7 @@ glide_window_new_text (GtkWidget *toolitem, gpointer data)
 }
 
 static void
-glide_window_new_slide (GtkWidget *toolitem, gpointer data)
+glide_window_new_slide (GtkButton *button, gpointer data)
 {
   GlideWindow *window = (GlideWindow *)data;
   GlideSlide *slide, *oslide;
@@ -420,16 +420,14 @@ glide_window_stage_enter_notify (GtkWidget *widget,
 static GtkWidget *
 glide_window_make_toolbar (GlideWindow *w)
 {
-  GtkWidget *toolbar, *image, *image2, *image3, *image6, *image7, *image8, *image9, *image10;
+  GtkWidget *toolbar, *image, *image2, *image6, *image7, *image8, *image9, *image10;
 
   toolbar = gtk_toolbar_new ();
   
   image = 
-    gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_LARGE_TOOLBAR);
+    gtk_image_new_from_stock (GTK_STOCK_ORIENTATION_PORTRAIT, GTK_ICON_SIZE_LARGE_TOOLBAR);
   image2 = 
-    gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_LARGE_TOOLBAR);
-  image3 = 
-    gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_LARGE_TOOLBAR);
+    gtk_image_new_from_stock (GTK_STOCK_UNDERLINE, GTK_ICON_SIZE_LARGE_TOOLBAR);
   image6 =
     gtk_image_new_from_stock (GTK_STOCK_SAVE, GTK_ICON_SIZE_LARGE_TOOLBAR);
   image7 =
@@ -439,7 +437,7 @@ glide_window_make_toolbar (GlideWindow *w)
   image9 =
     gtk_image_new_from_stock (GTK_STOCK_FULLSCREEN, GTK_ICON_SIZE_LARGE_TOOLBAR);
   image10 =
-    gtk_image_new_from_stock (GTK_STOCK_FILE, GTK_ICON_SIZE_LARGE_TOOLBAR);
+    gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_LARGE_TOOLBAR);
 
 
   gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "New",
@@ -462,10 +460,6 @@ glide_window_make_toolbar (GlideWindow *w)
   gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "Text", 
 			   "Insert a new text object in to the document", 
 			   NULL, image2, G_CALLBACK(glide_window_new_text), 
-			   w);  
-  gtk_toolbar_append_item (GTK_TOOLBAR(toolbar), "New slide", 
-			   "Insert a new slide in to the document",
-			   NULL, image3, G_CALLBACK(glide_window_new_slide), 
 			   w);  
   gtk_toolbar_append_item (GTK_TOOLBAR (toolbar), "Background",
 			   "Set slide background",
@@ -559,6 +553,7 @@ glide_window_setup_animations_box (GlideWindow *window, GtkWidget *cbox)
   gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "Drop");
   gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "Pivot");
   gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "Slide");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (cbox), "Zoom Contents");
   
   gtk_combo_box_set_active (GTK_COMBO_BOX (cbox), 0);
   
@@ -601,7 +596,7 @@ glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
 {
   GtkWidget *color_button = gtk_color_button_new ();
   GtkWidget *font_button = gtk_font_button_new ();
-  GtkWidget *prev, *next, *cbox, *left, *center, *right;
+  GtkWidget *prev, *next, *cbox, *left, *center, *right, *add;
   GtkWidget *lab;
   
   window->priv->color_button = color_button;
@@ -615,6 +610,8 @@ glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
   left = gtk_button_new ();
   center = gtk_button_new ();
   right = gtk_button_new ();
+
+  add = gtk_button_new ();
   
   cbox = gtk_combo_box_new_text();
   window->priv->animation_box = cbox;
@@ -624,6 +621,8 @@ glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
   //  glide_window_update_slide_label (window);
 
   glide_window_setup_animations_box (window, cbox);
+
+  g_signal_connect (add, "clicked", G_CALLBACK (glide_window_new_slide), window);
   
   g_signal_connect (prev, "clicked", G_CALLBACK (glide_window_slide_prev), window);
   g_signal_connect (next, "clicked", G_CALLBACK (glide_window_slide_next), window);
@@ -634,6 +633,9 @@ glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
   
   g_signal_connect (color_button, "color-set", G_CALLBACK (glide_window_color_set_cb), window);
   g_signal_connect (font_button, "font-set", G_CALLBACK (glide_window_font_set_cb), window);
+
+  gtk_button_set_image (GTK_BUTTON (add),
+			gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_SMALL_TOOLBAR));
   
   gtk_button_set_image (GTK_BUTTON (prev),
 			gtk_image_new_from_stock (GTK_STOCK_GO_BACK, GTK_ICON_SIZE_SMALL_TOOLBAR));
@@ -646,6 +648,8 @@ glide_window_make_bottom_bar (GlideWindow *window, GtkWidget *hbox)
 			gtk_image_new_from_stock (GTK_STOCK_JUSTIFY_CENTER, GTK_ICON_SIZE_SMALL_TOOLBAR));
   gtk_button_set_image (GTK_BUTTON (right),
 			gtk_image_new_from_stock (GTK_STOCK_JUSTIFY_RIGHT, GTK_ICON_SIZE_SMALL_TOOLBAR));
+
+  gtk_box_pack_start (GTK_BOX(hbox), add, FALSE, FALSE, 0);
 
   gtk_box_pack_start (GTK_BOX(hbox), prev, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(hbox), lab, FALSE, FALSE, 0);
@@ -725,6 +729,8 @@ glide_window_stage_manager_slide_changed_cb (GObject *object,
     gtk_combo_box_set_active (GTK_COMBO_BOX (w->priv->animation_box), 4);
   if (!strcmp(animation, "Slide"))
     gtk_combo_box_set_active (GTK_COMBO_BOX (w->priv->animation_box), 5);
+  if (!strcmp(animation, "Zoom Contents"))
+    gtk_combo_box_set_active (GTK_COMBO_BOX (w->priv->animation_box), 6);
 
 }
 

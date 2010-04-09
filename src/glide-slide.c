@@ -111,7 +111,7 @@ sort_by_depth (gconstpointer a,
 
 static void
 glide_slide_add (ClutterContainer *container,
-                        ClutterActor     *actor)
+		 ClutterActor     *actor)
 {
   GlideSlidePrivate *priv = GLIDE_SLIDE (container)->priv;
 
@@ -530,7 +530,16 @@ glide_slide_init (GlideSlide *self)
   self->priv->layout = clutter_fixed_layout_new ();
   g_object_ref_sink (self->priv->layout);
   
+  self->priv->contents_group = clutter_group_new ();
+  clutter_container_add_actor (CLUTTER_CONTAINER (self), self->priv->contents_group);
+  
   CLUTTER_ACTOR_SET_FLAGS (self, CLUTTER_ACTOR_NO_LAYOUT);
+}
+
+void
+glide_slide_add_actor_content (GlideSlide *s, ClutterActor *a)
+{
+  clutter_container_add_actor (CLUTTER_CONTAINER (s->priv->contents_group), a);
 }
 
 GlideSlide*
@@ -568,7 +577,7 @@ glide_slide_construct_from_json (GlideSlide *slide, JsonObject *slide_obj, Glide
       JsonObject *actor_obj = json_node_get_object (actor_n);
       
       actor = glide_actor_construct_from_json (actor_obj);
-      clutter_container_add_actor (CLUTTER_CONTAINER (slide), CLUTTER_ACTOR (actor));
+      glide_slide_add_actor_content (slide, CLUTTER_ACTOR (actor));
       glide_actor_set_stage_manager (actor, manager);
       clutter_actor_show (CLUTTER_ACTOR (actor));      
     }
@@ -639,4 +648,10 @@ const gchar *
 glide_slide_get_animation (GlideSlide *slide)
 {
   return slide->priv->animation;
+}
+
+ClutterActor *
+glide_slide_get_contents (GlideSlide *slide)
+{
+  return slide->priv->contents_group;
 }

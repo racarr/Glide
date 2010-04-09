@@ -64,6 +64,10 @@ const gchar *glide_slide_get_background (GlideSlide *slide);
 void glide_slide_set_animation (GlideSlide *slide, const gchar *animation);
 const gchar *glide_slide_get_animation (GlideSlide *slide);
 
+void glide_slide_add_actor_content (GlideSlide *s, ClutterActor *a);
+
+ClutterActor *glide_slide_get_contents (GlideSlide *slide);
+
 G_END_DECLS
 
 #endif /* __GLIDE_SLIDE_H__ */
