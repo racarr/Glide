@@ -35,7 +35,8 @@ G_DEFINE_TYPE_WITH_CODE (GlideSlide, glide_slide, GLIDE_TYPE_ACTOR,
 
 enum {
   PROP_0,
-  PROP_DOCUMENT
+  PROP_DOCUMENT,
+  PROP_BACKGROUND
 };
 
 static void
@@ -50,6 +51,9 @@ glide_slide_get_property (GObject *object,
     {
     case PROP_DOCUMENT:
       g_value_set_object (value, slide->priv->document);
+      break;
+    case PROP_BACKGROUND:
+      g_value_set_string (value, slide->priv->background);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -70,6 +74,9 @@ glide_slide_set_property (GObject *object,
     case PROP_DOCUMENT:
       g_return_if_fail (slide->priv->document == NULL);
       slide->priv->document = GLIDE_DOCUMENT (g_value_get_object (value));
+      break;
+    case PROP_BACKGROUND:
+      glide_slide_set_background (slide, g_value_get_string (value));
       break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -451,7 +458,13 @@ glide_slide_class_init (GlideSlideClass *klass)
 							G_PARAM_READWRITE |
 							G_PARAM_CONSTRUCT_ONLY |
 							G_PARAM_STATIC_STRINGS));
-    
+  g_object_class_install_property (object_class,
+				   PROP_BACKGROUND,
+				   g_param_spec_string ("background",
+							"Background image",
+							"A file path to the background image for the slide",
+							NULL,
+							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));    
   
   g_type_class_add_private (object_class, sizeof(GlideSlidePrivate));
 }
@@ -497,4 +510,21 @@ glide_slide_construct_from_json (GlideSlide *slide, JsonObject *slide_obj, Glide
       glide_actor_set_stage_manager (actor, manager);
       clutter_actor_show (CLUTTER_ACTOR (actor));      
     }
+}
+
+void 
+glide_slide_set_background (GlideSlide *slide, const gchar *background)
+{
+  if (slide->priv->background)
+    g_free (slide->priv->background);
+  
+  slide->priv->background = g_strdup (background);
+  
+  g_object_notify (G_OBJECT (slide), "background");
+}
+
+const gchar *
+glide_slide_get_background (GlideSlide *slide)
+{
+  return slide->priv->background;
 }

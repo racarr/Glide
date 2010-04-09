@@ -58,6 +58,9 @@ GlideSlide *glide_slide_new  (GlideDocument *document);
 
 void glide_slide_construct_from_json (GlideSlide *slide, JsonObject *slide_obj, GlideStageManager *manager);
 
+void glide_slide_set_background (GlideSlide *slide, const gchar *background);
+const gchar *glide_slide_get_background (GlideSlide *slide);
+
 G_END_DECLS
 
 #endif /* __GLIDE_SLIDE_H__ */

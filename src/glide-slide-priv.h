@@ -33,6 +33,8 @@ struct _GlideSlidePrivate
   
   GList *children;
   ClutterLayoutManager *layout;
+  
+  gchar *background;
 };
 
 G_END_DECLS
