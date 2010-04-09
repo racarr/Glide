@@ -246,21 +246,22 @@ glide_window_center_stage (GlideWindow *w)
 {
   GtkAllocation a;
   gtk_widget_get_allocation (w->priv->fixed, &a);
-  gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, (a.width-800)/2.0, (a.height-640)/2.0);
+  gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, (a.width-800)/2.0, (a.height-600)/2.0);
 }
 /* hack */
 static void
 glide_window_center_stage_fullscreen (GlideWindow *w)
 {
-  GtkRequisition a;
+  GtkRequisition a, e;
   
   gdk_flush();
   
   gtk_widget_size_request (w->priv->fixed, &a);
+  gtk_widget_size_request (w->priv->embed, &e);
   
   //  gtk_widget_size_request (w->priv->fixed, &r);
   
-  gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, (a.width-800)/2.0, (a.height-640)/2.0);
+  gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, (a.width-e.width)/2.0, (a.height-e.height)/2.0);
 }
 
 static void
@@ -293,11 +294,11 @@ glide_window_unfullscreen_stage (GlideWindow *w)
   gtk_widget_show_all (GTK_WIDGET (w));
   
   gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, 0, 0);
-  gtk_widget_set_size_request (w->priv->embed, 800, 640);
-  gtk_widget_set_size_request (w->priv->fixed, 800, 640);
+  gtk_widget_set_size_request (w->priv->embed, 800, 600);
+  gtk_widget_set_size_request (w->priv->fixed, 800, 600);
   gtk_window_resize (GTK_WINDOW (w), 1, 1);
 
-  gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, (w->priv->of_width-800)/2.0, (w->priv->of_height-640)/2.0);
+  gtk_fixed_move (GTK_FIXED (w->priv->fixed), w->priv->embed, (w->priv->of_width-800)/2.0, (w->priv->of_height-600)/2.0);
 }
 
 static void
@@ -477,8 +478,8 @@ glide_window_setup_chrome (GlideWindow *window)
   
   gtk_fixed_put (GTK_FIXED (fixed), embed, 0, 0);
   
-  gtk_widget_set_size_request (fixed, 800, 640);
-  gtk_widget_set_size_request (embed, 800, 640);
+  gtk_widget_set_size_request (fixed, 800, 600);
+  gtk_widget_set_size_request (embed, 800, 600);
 
   gtk_container_add (GTK_CONTAINER (window), vbox);
 
@@ -503,7 +504,7 @@ glide_window_setup_stage (GlideWindow *window)
   ClutterColor white = {0xff, 0xff, 0xff, 0xff};
   ClutterActor *stage = window->priv->stage;
 
-  clutter_actor_set_size (stage, 800, 640);
+  clutter_actor_set_size (stage, 800, 600);
   clutter_stage_set_color (CLUTTER_STAGE (stage), &white);
   
   window->priv->manager = glide_stage_manager_new (window->priv->document, 
