@@ -55,6 +55,18 @@ static GtkWidget *glide_window_make_embed ();
 static void glide_window_stage_enter_notify (GtkWidget *w, GdkEventCrossing *e, gpointer user_data);
 
 static void glide_window_insert_stage (GlideWindow *w);
+static void glide_window_close_document (GlideWindow *w);
+
+
+static void
+glide_window_close_document (GlideWindow *w)
+{
+  if (w->priv->document)
+    g_object_unref (w->priv->document);
+  if (w->priv->manager)
+    g_object_unref (w->priv->manager);
+  clutter_group_remove_all (CLUTTER_GROUP (w->priv->stage));
+}
 
 static void
 glide_window_open_document_real (GlideWindow *window,
@@ -146,16 +158,49 @@ glide_window_new_action_activate (GtkAction *a,
 {
   GlideWindow *w = (GlideWindow *)user_data;
 
+  glide_window_close_document (w);
   glide_window_new_document_real (w);
+}
+
+static void
+glide_window_file_open_response_callback (GtkDialog *dialog,
+					  int response,
+					  gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *) user_data;
+  if (response == GTK_RESPONSE_ACCEPT)
+    {
+      gchar *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+      
+      g_message("Loading file: %s \n", filename);
+      
+      glide_window_close_document (w);
+      glide_window_open_document_real (w, filename);
+      g_free (filename);
+    }
+  
+  gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 void
 glide_window_open_action_activate (GtkAction *a,
 				   gpointer user_data)
 {
+  GtkWidget *d;
   GlideWindow *w = (GlideWindow *)user_data;
-
-  glide_window_open_document_real (w, "/home/racarr/lol.glide");
+  
+  GLIDE_NOTE (WINDOW, "Loading file.");
+  d = gtk_file_chooser_dialog_new ("Load presentation",
+				   NULL,
+				   GTK_FILE_CHOOSER_ACTION_OPEN,
+				   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				   GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+				   NULL);
+  g_signal_connect (d, "response",
+		    G_CALLBACK (glide_window_file_open_response_callback),
+		    w);
+  
+  gtk_widget_show (d);
 }
 
 static void
