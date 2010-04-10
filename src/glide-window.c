@@ -153,6 +153,22 @@ glide_window_make_embed ()
 
 
 void
+glide_window_next_slide_action_activate (GtkAction *a,
+					 gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *) user_data;
+  glide_stage_manager_set_slide_next (w->priv->manager);
+}
+
+void
+glide_window_prev_slide_action_activate (GtkAction *a,
+					 gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *) user_data;
+  glide_stage_manager_set_slide_prev (w->priv->manager);
+}
+
+void
 glide_window_new_action_activate (GtkAction *a,
 				  gpointer user_data)
 {
