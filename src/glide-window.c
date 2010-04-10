@@ -58,6 +58,14 @@ static void glide_window_insert_stage (GlideWindow *w);
 static void glide_window_close_document (GlideWindow *w);
 
 static void
+glide_window_set_text_palette_sensitive (GlideWindow *w, gboolean sensitive)
+{
+  GtkWidget *tp = GTK_WIDGET (gtk_builder_get_object (w->priv->builder, "text-toolpalette"));
+  
+  gtk_widget_set_sensitive (tp, sensitive);
+}
+
+static void
 glide_window_enable_action (GlideWindow *w, const gchar *action)
 {
   GtkAction *a = 
@@ -105,6 +113,21 @@ glide_window_slide_changed_cb (GObject *object,
 }
 
 static void
+glide_window_stage_selection_changed_cb (GlideStageManager *manager,
+					 GObject *old_selection,
+					 gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  GlideActor *selection = 
+    glide_stage_manager_get_selection (w->priv->manager);
+  
+  if (selection && GLIDE_IS_TEXT (selection))
+    glide_window_set_text_palette_sensitive (w, TRUE);
+  else
+    glide_window_set_text_palette_sensitive (w, FALSE);
+}
+
+static void
 glide_window_set_document (GlideWindow *w, GlideDocument *d)
 {
   if (!w->priv->document)
@@ -116,6 +139,10 @@ glide_window_set_document (GlideWindow *w, GlideDocument *d)
   g_signal_connect (w->priv->manager,
 		    "notify::current-slide",
 		    G_CALLBACK (glide_window_slide_changed_cb),
+		    w);
+  g_signal_connect (w->priv->manager,
+		    "selection-changed",
+		    G_CALLBACK (glide_window_stage_selection_changed_cb),
 		    w);
 }
 

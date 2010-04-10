@@ -243,11 +243,11 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToolItem" id="text-toolpallete">
+              <object class="GtkToolItem" id="text-toolpalette">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <child>
-                  <object class="GtkHBox" id="text-pallete-hbox">
+                  <object class="GtkHBox" id="text-palette-hbox">
                     <property name="visible">True</property>
                     <child>
                       <object class="GtkColorButton" id="text-color-button">
