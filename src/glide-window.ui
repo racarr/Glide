@@ -499,6 +499,7 @@
     <property name="short_label">Save File</property>
     <property name="tooltip">Save the current file.</property>
     <property name="stock_id">gtk-save</property>
+    <property name="sensitive">False</property>
   </object>
   <object class="GtkAction" id="save-as-action">
     <property name="label">Save As...</property>
@@ -613,5 +614,6 @@
     <property name="tooltip">Set the background of the current slide</property>
     <property name="icon_name">x-office-presentation</property>
     <property name="sensitive">False</property>
+    <signal name="activate" handler="glide_window_background_action_activate"/>
   </object>
 </interface>

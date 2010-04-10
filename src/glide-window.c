@@ -75,7 +75,35 @@ glide_window_enable_document_actions (GlideWindow *w)
   glide_window_enable_action (w, "add-slide-action");
   glide_window_enable_action (w, "present-action");
   glide_window_enable_action (w, "background-action");
+  glide_window_enable_action (w, "save-action");
 }
+
+static void
+glide_window_update_slide_label (GlideWindow *w)
+{
+  gchar *message;
+  gint current_slide, n_slides;
+  
+  current_slide = glide_stage_manager_get_current_slide (w->priv->manager) + 1;
+  n_slides = glide_document_get_n_slides (w->priv->document);
+  
+  message = g_strdup_printf("(<b>%d</b> of <b>%d</b>)", current_slide, n_slides);
+  
+  gtk_label_set_markup (GTK_LABEL (gtk_builder_get_object (w->priv->builder, "slide-label")), message);
+
+  g_free (message);
+}
+
+static void
+glide_window_slide_changed_cb (GObject *object,
+			       GParamSpec *pspec,
+			       gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *) user_data;
+  
+  glide_window_update_slide_label (w);
+}
+
 static void
 glide_window_set_document (GlideWindow *w, GlideDocument *d)
 {
@@ -83,6 +111,12 @@ glide_window_set_document (GlideWindow *w, GlideDocument *d)
     glide_window_enable_document_actions (w);
   w->priv->document = d;
   w->priv->manager = glide_stage_manager_new (w->priv->document, CLUTTER_STAGE (w->priv->stage));
+  
+  // TODO: disconnect
+  g_signal_connect (w->priv->manager,
+		    "notify::current-slide",
+		    G_CALLBACK (glide_window_slide_changed_cb),
+		    w);
 }
 
 static void
@@ -199,6 +233,35 @@ glide_window_image_open_response_callback (GtkDialog *dialog,
     }
   
   gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
+glide_window_slide_background_cb (GtkDialog *dialog,
+				  int response,
+				  gpointer user_data)
+{
+  GlideWindow *window = (GlideWindow *)user_data;
+  
+  if (response == GTK_RESPONSE_ACCEPT)
+    {
+      gchar *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+      
+      glide_stage_manager_set_slide_background (window->priv->manager, filename);
+      
+      g_free (filename);
+    }
+  
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+void 
+glide_window_background_action_activate (GtkAction *a,
+					 gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  GLIDE_NOTE (WINDOW, "Setting slide background");
+  
+  glide_gtk_util_show_image_dialog (G_CALLBACK (glide_window_slide_background_cb), w); 
 }
 
 void
