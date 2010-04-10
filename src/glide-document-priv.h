@@ -32,6 +32,7 @@ struct _GlideDocumentPrivate
   GList *slides;
 
   gchar *name;
+  gchar *path;
 };
 
 G_END_DECLS

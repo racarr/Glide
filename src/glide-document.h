@@ -75,6 +75,8 @@ GType 		 glide_document_get_type 			(void) G_GNUC_CONST;
 GlideDocument   *glide_document_new (const gchar *name);
 
 const gchar     *glide_document_get_name (GlideDocument *document);
+const gchar     *glide_document_get_path (GlideDocument *document);
+void glide_document_set_path (GlideDocument *document, const gchar *path);
 
 guint glide_document_get_n_slides (GlideDocument *document);
 GlideSlide *glide_document_get_nth_slide (GlideDocument *document, guint n);

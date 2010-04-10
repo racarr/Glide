@@ -35,7 +35,8 @@ G_DEFINE_TYPE(GlideDocument, glide_document, G_TYPE_OBJECT)
 
 enum {
   PROP_0,
-  PROP_NAME
+  PROP_NAME,
+  PROP_PATH
 };
 
 enum {
@@ -72,6 +73,9 @@ glide_document_get_property (GObject *object,
     case PROP_NAME:
       g_value_set_string (value, document->priv->name);
       break;
+    case PROP_PATH:
+      g_value_set_string (value, document->priv->path);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -94,6 +98,11 @@ glide_document_set_property (GObject *object,
       GLIDE_NOTE (DOCUMENT, "Constructing new GlideDocument (%p): %s",
 		  object, document->priv->name);
       break;
+    case PROP_PATH:
+      if (document->priv->path)
+	g_free (document->priv->path);
+      document->priv->path = g_value_dup_string (value);
+      break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -113,6 +122,14 @@ glide_document_class_init (GlideDocumentClass *klass)
 				   g_param_spec_string ("name",
 							"Name",
 							"Name of the document",
+							NULL,
+							G_PARAM_READWRITE |
+							G_PARAM_STATIC_STRINGS |
+							G_PARAM_CONSTRUCT_ONLY));
+g_object_class_install_property (object_class, PROP_PATH,
+				   g_param_spec_string ("path",
+							"Path",
+							"Path of the document",
 							NULL,
 							G_PARAM_READWRITE |
 							G_PARAM_STATIC_STRINGS |
@@ -152,6 +169,19 @@ const gchar *
 glide_document_get_name (GlideDocument *document)
 {
   return document->priv->name;
+}
+
+const gchar *
+glide_document_get_path (GlideDocument *document)
+{
+  return document->priv->path;
+}
+
+void
+glide_document_set_path (GlideDocument *document, const gchar *path)
+{
+  document->priv->path = g_strdup (path);
+  g_object_notify (G_OBJECT (document), "path");
 }
 
 guint
