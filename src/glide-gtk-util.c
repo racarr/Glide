@@ -73,3 +73,20 @@ glide_gtk_util_show_image_dialog (GCallback callback, gpointer user_data)
   
   return d;
 }
+
+void
+glide_gdk_color_from_clutter_color (ClutterColor *cc, GdkColor *c)
+{
+  c->red = (cc->red/255.0) * 65535;
+  c->green = (cc->green/255.0) * 65535;
+  c->blue = (cc->blue/255.0) * 65535;
+}
+
+void
+glide_clutter_color_from_gdk_color (GdkColor *c, ClutterColor *cc)
+{
+  cc->alpha = 0xff;
+  cc->red = (c->red/65535.0)*255.0;
+  cc->blue = (c->blue/65535.0)*255.0;
+  cc->green = (c->green/65535.0)*255.0;
+}

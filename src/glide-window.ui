@@ -254,6 +254,7 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="color">#000000000000</property>
+                        <signal name="color_set" handler="glide_window_color_set_cb"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>

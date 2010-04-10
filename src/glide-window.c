@@ -112,6 +112,26 @@ glide_window_slide_changed_cb (GObject *object,
   glide_window_update_slide_label (w);
 }
 
+void
+glide_window_color_set_cb (GtkWidget *b,
+			   gpointer user_data)
+{
+  GlideActor *selection;
+  GlideWindow *w = (GlideWindow *)user_data;
+  GdkColor c;
+  ClutterColor cc;
+  
+  selection = glide_stage_manager_get_selection (w->priv->manager);
+
+  if (!selection || !GLIDE_IS_TEXT (selection))
+    return;
+  
+  gtk_color_button_get_color (GTK_COLOR_BUTTON (b), &c);
+  glide_clutter_color_from_gdk_color (&c, &cc);
+  
+  glide_text_set_color (GLIDE_TEXT (selection), &cc);  
+}
+
 static void
 glide_window_stage_selection_changed_cb (GlideStageManager *manager,
 					 GObject *old_selection,
@@ -122,7 +142,17 @@ glide_window_stage_selection_changed_cb (GlideStageManager *manager,
     glide_stage_manager_get_selection (w->priv->manager);
   
   if (selection && GLIDE_IS_TEXT (selection))
-    glide_window_set_text_palette_sensitive (w, TRUE);
+    {
+      GdkColor c;
+      ClutterColor cc;
+      
+      glide_text_get_color (GLIDE_TEXT (selection), &cc);
+      glide_gdk_color_from_clutter_color (&cc, &c);
+
+      gtk_color_button_set_color (GTK_COLOR_BUTTON (gtk_builder_get_object (w->priv->builder, "text-color-button")), &c);
+
+      glide_window_set_text_palette_sensitive (w, TRUE);
+    }
   else
     glide_window_set_text_palette_sensitive (w, FALSE);
 }

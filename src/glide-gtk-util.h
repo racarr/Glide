@@ -24,9 +24,14 @@
 #define __GLIDE_GTK_UTIL_H__
 
 #include <gtk/gtk.h>
+#include <clutter/clutter.h>
 
 GtkWidget *glide_gtk_util_show_image_dialog (GCallback callback, gpointer user_data);
 GtkWidget *glide_gtk_util_show_save_dialog (GCallback callback, gpointer user_data);
 gchar *glide_gtk_util_get_clipboard_text ();
+
+void glide_gdk_color_from_clutter_color (ClutterColor *cc, GdkColor *c);
+void glide_clutter_color_from_gdk_color (GdkColor *c, ClutterColor *cc);
+
 
 #endif
