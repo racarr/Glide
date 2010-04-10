@@ -82,6 +82,7 @@ glide_window_set_document (GlideWindow *w, GlideDocument *d)
   if (!w->priv->document)
     glide_window_enable_document_actions (w);
   w->priv->document = d;
+  w->priv->manager = glide_stage_manager_new (w->priv->document, CLUTTER_STAGE (w->priv->stage));
 }
 
 static void
@@ -116,7 +117,7 @@ glide_window_open_document_real (GlideWindow *window,
   root_obj = json_node_get_object (root);
 
   glide_window_set_document (window, glide_document_new (glide_json_object_get_string (root_obj, "name")));
-   window->priv->manager = glide_stage_manager_new (window->priv->document, CLUTTER_STAGE (window->priv->stage));
+
   
   slide_n = json_object_get_member (root_obj, "slides");
   slide_array = json_node_get_array (slide_n);
@@ -130,10 +131,9 @@ static void
 glide_window_new_document_real (GlideWindow *w)
 {
   GlideDocument *d = glide_document_new ("New Document...");
+
   glide_window_set_document (w, d);
-  
-  w->priv->manager = glide_stage_manager_new (w->priv->document,
-					      CLUTTER_STAGE (w->priv->stage));
+
   glide_document_add_slide (d);
 }
 
