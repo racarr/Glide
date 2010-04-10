@@ -151,6 +151,41 @@ glide_window_make_embed ()
   return embed;
 }
 
+static void
+glide_window_image_open_response_callback (GtkDialog *dialog,
+					   int response,
+					   gpointer user_data)
+{
+  GlideWindow *window = (GlideWindow *)user_data;
+
+  if (response == GTK_RESPONSE_ACCEPT)
+    {
+      ClutterActor *im;
+      // Todo: URI
+      gchar *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+      
+      im =  glide_image_new_from_file (filename, NULL);
+      glide_stage_manager_add_actor (window->priv->manager, GLIDE_ACTOR (im));
+      
+      g_free (filename);
+      
+      clutter_actor_show (im);
+    }
+  
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+void
+glide_window_new_image_action_activate (GtkAction *a, 
+					gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  
+  GLIDE_NOTE (WINDOW, "Inserting new image.");
+
+  glide_gtk_util_show_image_dialog (G_CALLBACK (glide_window_image_open_response_callback), w);
+}
+
 void
 glide_window_new_text_action_activate (GtkAction *a,
 				       gpointer user_data)

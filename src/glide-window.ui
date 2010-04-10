@@ -208,6 +208,7 @@
             <child>
               <object class="GtkToolButton" id="text-toolbutton">
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <property name="use_action_appearance">True</property>
                 <property name="related_action">new-text-action</property>
                 <property name="label" translatable="yes">Text</property>
@@ -221,6 +222,7 @@
             <child>
               <object class="GtkToolButton" id="image-toolbutton">
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <property name="use_action_appearance">True</property>
                 <property name="related_action">new-image-action</property>
                 <property name="label" translatable="yes">Image</property>
@@ -243,6 +245,7 @@
             <child>
               <object class="GtkToolItem" id="text-toolpallete">
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <child>
                   <object class="GtkHBox" id="text-pallete-hbox">
                     <property name="visible">True</property>
@@ -432,7 +435,7 @@
             <child>
               <object class="GtkLabel" id="slide-label">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">(&lt;b&gt;1&lt;/b&gt; of &lt;b&gt;1&lt;/b&gt;)</property>
+                <property name="label" translatable="yes">(&lt;b&gt;0&lt;/b&gt; of &lt;b&gt;0&lt;/b&gt;)</property>
                 <property name="use_markup">True</property>
               </object>
               <packing>
@@ -544,12 +547,14 @@
     <property name="short_label">Add Slide to Document</property>
     <property name="tooltip">Insert a new Slide in the current document.</property>
     <property name="stock_id">gtk-add</property>
+    <property name="sensitive">False</property>
   </object>
   <object class="GtkAction" id="prev-slide-action">
     <property name="label">Previous Slide</property>
     <property name="short_label">Previous Slide</property>
     <property name="tooltip">Sets the current slide to the previous slide.</property>
     <property name="icon_name">font-x-generic</property>
+    <property name="sensitive">False</property>
     <signal name="activate" handler="glide_window_prev_slide_action_activate"/>
   </object>
   <object class="GtkAction" id="next-slide-action">
@@ -557,6 +562,7 @@
     <property name="short_label">Next Slide</property>
     <property name="tooltip">Sets the current slide to the next slide.</property>
     <property name="stock_id">gtk-go-forward</property>
+    <property name="sensitive">False</property>
     <signal name="activate" handler="glide_window_next_slide_action_activate"/>
   </object>
   <object class="GtkAction" id="new-text-action">
@@ -564,6 +570,7 @@
     <property name="short_label">Insert Text</property>
     <property name="tooltip">Insert a new text object in to the document.</property>
     <property name="icon_name">font-x-generic</property>
+    <property name="sensitive">False</property>
     <signal name="activate" handler="glide_window_new_text_action_activate"/>
   </object>
   <object class="GtkAction" id="new-image-action">
@@ -571,6 +578,8 @@
     <property name="short_label">New Image</property>
     <property name="tooltip">Insert a new image object in to the document.</property>
     <property name="icon_name">image-x-generic</property>
+    <property name="sensitive">False</property>
+    <signal name="activate" handler="glide_window_new_image_action_activate"/>
   </object>
   <object class="GtkAction" id="align-left-action">
     <property name="label">Align Left</property>
@@ -595,11 +604,13 @@
     <property name="short_label">Present</property>
     <property name="tooltip">Starts the current presentation</property>
     <property name="stock_id">gtk-fullscreen</property>
+    <property name="sensitive">False</property>
   </object>
   <object class="GtkAction" id="background-action">
     <property name="label">Set Background</property>
     <property name="short_label">Background</property>
     <property name="tooltip">Set the background of the current slide</property>
     <property name="icon_name">x-office-presentation</property>
+    <property name="sensitive">False</property>
   </object>
 </interface>
