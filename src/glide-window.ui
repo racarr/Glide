@@ -588,18 +588,21 @@
     <property name="short_label">Left</property>
     <property name="tooltip">Align the selected text object to the left boundary.</property>
     <property name="stock_id">gtk-justify-left</property>
+    <signal name="activate" handler="glide_window_align_left_action_activate"/>
   </object>
   <object class="GtkAction" id="align-center-action">
     <property name="label">Align Center</property>
     <property name="short_label">Center</property>
     <property name="tooltip">Align the selected text object between both boundaries.</property>
     <property name="stock_id">gtk-justify-center</property>
+    <signal name="activate" handler="glide_window_align_center_action_activate"/>
   </object>
   <object class="GtkAction" id="align-right-action">
     <property name="label">Align Right</property>
     <property name="short_label">Right</property>
     <property name="tooltip">Align the selected text object to the right boundary.</property>
     <property name="stock_id">gtk-justify-right</property>
+    <signal name="activate" handler="glide_window_align_right_action_activate"/>
   </object>
   <object class="GtkAction" id="present-action">
     <property name="label">Start Presentation</property>

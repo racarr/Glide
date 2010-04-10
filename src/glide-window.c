@@ -291,6 +291,43 @@ glide_window_background_action_activate (GtkAction *a,
   glide_gtk_util_show_image_dialog (G_CALLBACK (glide_window_slide_background_cb), w); 
 }
 
+static void
+glide_window_align_selected_text (GlideWindow *w, PangoAlignment alignment)
+{
+  GlideActor *selected = glide_stage_manager_get_selection (w->priv->manager);
+  
+  if (!selected || !GLIDE_IS_TEXT (selected))
+    {
+      g_warning ("Align invoked on non-text selection, might mean a bug?");
+      return;
+    }
+  glide_text_set_line_alignment (GLIDE_TEXT (selected), alignment);
+}
+
+void
+glide_window_align_left_action_activate (GtkAction *a, 
+					 gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  glide_window_align_selected_text (w, PANGO_ALIGN_LEFT);
+}
+
+void
+glide_window_align_right_action_activate (GtkAction *a, 
+					 gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  glide_window_align_selected_text (w, PANGO_ALIGN_RIGHT);
+}
+
+void
+glide_window_align_center_action_activate (GtkAction *a, 
+					 gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  glide_window_align_selected_text (w, PANGO_ALIGN_CENTER);
+}
+
 void
 glide_window_new_image_action_activate (GtkAction *a, 
 					gpointer user_data)
