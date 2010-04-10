@@ -447,6 +447,15 @@ glide_window_new_text_action_activate (GtkAction *a,
 {
   GlideWindow *w = (GlideWindow *)user_data;
   ClutterActor *text = glide_text_new ();
+  ClutterColor cc;
+  GdkColor c;
+  
+  gtk_color_button_get_color (GTK_COLOR_BUTTON (gtk_builder_get_object (w->priv->builder, "text-color-button")),
+			      &c);
+  glide_clutter_color_from_gdk_color (&c, &cc);
+  
+  glide_text_set_color (GLIDE_TEXT (text), &cc);
+  
   
   glide_stage_manager_add_actor (w->priv->manager, GLIDE_ACTOR (text));
 }
