@@ -564,6 +564,7 @@
     <property name="short_label">Insert Text</property>
     <property name="tooltip">Insert a new text object in to the document.</property>
     <property name="icon_name">font-x-generic</property>
+    <signal name="activate" handler="glide_window_new_text_action_activate"/>
   </object>
   <object class="GtkAction" id="new-image-action">
     <property name="label">New Image</property>

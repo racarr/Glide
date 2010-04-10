@@ -151,6 +151,15 @@ glide_window_make_embed ()
   return embed;
 }
 
+void
+glide_window_new_text_action_activate (GtkAction *a,
+				       gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  ClutterActor *text = glide_text_new ();
+  
+  glide_stage_manager_add_actor (w->priv->manager, GLIDE_ACTOR (text));
+}
 
 void
 glide_window_next_slide_action_activate (GtkAction *a,
