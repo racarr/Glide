@@ -548,6 +548,7 @@
     <property name="tooltip">Insert a new Slide in the current document.</property>
     <property name="stock_id">gtk-add</property>
     <property name="sensitive">False</property>
+    <signal name="activate" handler="glide_window_add_slide_action_activate"/>
   </object>
   <object class="GtkAction" id="prev-slide-action">
     <property name="label">Previous Slide</property>

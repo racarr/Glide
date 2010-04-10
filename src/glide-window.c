@@ -57,6 +57,32 @@ static void glide_window_stage_enter_notify (GtkWidget *w, GdkEventCrossing *e, 
 static void glide_window_insert_stage (GlideWindow *w);
 static void glide_window_close_document (GlideWindow *w);
 
+static void
+glide_window_enable_action (GlideWindow *w, const gchar *action)
+{
+  GtkAction *a = 
+    GTK_ACTION (gtk_builder_get_object (w->priv->builder, action));
+  gtk_action_set_sensitive (a, TRUE);
+}
+
+static void
+glide_window_enable_document_actions (GlideWindow *w)
+{
+  glide_window_enable_action (w, "new-image-action");
+  glide_window_enable_action (w, "new-text-action");
+  glide_window_enable_action (w, "next-slide-action");
+  glide_window_enable_action (w, "prev-slide-action");
+  glide_window_enable_action (w, "add-slide-action");
+  glide_window_enable_action (w, "present-action");
+  glide_window_enable_action (w, "background-action");
+}
+static void
+glide_window_set_document (GlideWindow *w, GlideDocument *d)
+{
+  if (!w->priv->document)
+    glide_window_enable_document_actions (w);
+  w->priv->document = d;
+}
 
 static void
 glide_window_close_document (GlideWindow *w)
@@ -89,7 +115,7 @@ glide_window_open_document_real (GlideWindow *window,
   root = json_parser_get_root (p);
   root_obj = json_node_get_object (root);
 
-   window->priv->document = glide_document_new (glide_json_object_get_string (root_obj, "name"));
+  glide_window_set_document (window, glide_document_new (glide_json_object_get_string (root_obj, "name")));
    window->priv->manager = glide_stage_manager_new (window->priv->document, CLUTTER_STAGE (window->priv->stage));
   
   slide_n = json_object_get_member (root_obj, "slides");
@@ -104,7 +130,7 @@ static void
 glide_window_new_document_real (GlideWindow *w)
 {
   GlideDocument *d = glide_document_new ("New Document...");
-  w->priv->document = d;
+  glide_window_set_document (w, d);
   
   w->priv->manager = glide_stage_manager_new (w->priv->document,
 					      CLUTTER_STAGE (w->priv->stage));
@@ -194,6 +220,20 @@ glide_window_new_text_action_activate (GtkAction *a,
   ClutterActor *text = glide_text_new ();
   
   glide_stage_manager_add_actor (w->priv->manager, GLIDE_ACTOR (text));
+}
+
+void
+glide_window_add_slide_action_activate (GtkAction *a,
+					gpointer user_data)
+{
+  GlideWindow *window = (GlideWindow *)user_data;
+  GlideSlide *slide, *oslide;
+  
+  oslide = glide_document_get_nth_slide (window->priv->document,
+					 glide_stage_manager_get_current_slide (window->priv->manager));
+  
+  slide = glide_document_add_slide (window->priv->document);
+  glide_slide_set_background (slide, glide_slide_get_background (oslide));
 }
 
 void
