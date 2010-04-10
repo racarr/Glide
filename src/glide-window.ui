@@ -1,0 +1,600 @@
+<?xml version="1.0"?>
+<interface>
+  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-naming-policy project-wide -->
+  <object class="GtkWindow" id="window1">
+    <child>
+      <object class="GtkVBox" id="main-vbox">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkMenuBar" id="menubar">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkMenuItem" id="file-menuitem">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_File</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="file-menu">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="new-menuitem">
+                        <property name="label">gtk-new</property>
+                        <property name="visible">True</property>
+                        <property name="related_action">new-action</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="open-menuitem">
+                        <property name="label">gtk-open</property>
+                        <property name="visible">True</property>
+                        <property name="related_action">open-action</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="save-menuitem">
+                        <property name="label">gtk-save</property>
+                        <property name="visible">True</property>
+                        <property name="related_action">save-action</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="save-as-menuitem">
+                        <property name="label">gtk-save-as</property>
+                        <property name="visible">True</property>
+                        <property name="related_action">save-as-action</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="file-menu-separator">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="quiz-menuitem">
+                        <property name="label">gtk-quit</property>
+                        <property name="visible">True</property>
+                        <property name="related_action">quit-action</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="edit-menuitem">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Edit</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="edit-menu">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="cut-menuitem">
+                        <property name="label">gtk-cut</property>
+                        <property name="visible">True</property>
+                        <property name="related_action">cut-action</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="copy-menuitem">
+                        <property name="label">gtk-copy</property>
+                        <property name="visible">True</property>
+                        <property name="related_action">copy-action</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="paste-menuitem">
+                        <property name="label">gtk-paste</property>
+                        <property name="visible">True</property>
+                        <property name="related_action">paste-action</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="delete-menuitem">
+                        <property name="label">gtk-delete</property>
+                        <property name="visible">True</property>
+                        <property name="related_action">delete-action</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="view-menuitem">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_View</property>
+                <property name="use_underline">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="help-menuitem">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Help</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="help-menu">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="about-menuitem">
+                        <property name="label">gtk-about</property>
+                        <property name="visible">True</property>
+                        <property name="related_action">about-action</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolbar" id="main-toolbar">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkToolButton" id="new-toolbutton">
+                <property name="visible">True</property>
+                <property name="use_action_appearance">True</property>
+                <property name="related_action">new-action</property>
+                <property name="label" translatable="yes">New File</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="open-toolbutton">
+                <property name="visible">True</property>
+                <property name="use_action_appearance">True</property>
+                <property name="related_action">open-action</property>
+                <property name="label" translatable="yes">Open File</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="save-toolbutton">
+                <property name="visible">True</property>
+                <property name="use_action_appearance">True</property>
+                <property name="related_action">save-action</property>
+                <property name="label" translatable="yes">Save File</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSeparatorToolItem" id="separator1">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="text-toolbutton">
+                <property name="visible">True</property>
+                <property name="use_action_appearance">True</property>
+                <property name="related_action">new-text-action</property>
+                <property name="label" translatable="yes">Text</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="image-toolbutton">
+                <property name="visible">True</property>
+                <property name="use_action_appearance">True</property>
+                <property name="related_action">new-image-action</property>
+                <property name="label" translatable="yes">Image</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSeparatorToolItem" id="separator2">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolItem" id="text-toolpallete">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkHBox" id="text-pallete-hbox">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkColorButton" id="text-color-button">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="color">#000000000000</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkFontButton" id="text-font-button">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">5</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="align-left-button">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="related_action">align-left-action</property>
+                        <child>
+                          <object class="GtkImage" id="align-left-image">
+                            <property name="visible">True</property>
+                            <property name="stock">gtk-justify-left</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="align-center-button">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="related_action">align-center-action</property>
+                        <child>
+                          <object class="GtkImage" id="align-center-image">
+                            <property name="visible">True</property>
+                            <property name="stock">gtk-justify-center</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="align-right-button">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="related_action">align-right-action</property>
+                        <child>
+                          <object class="GtkImage" id="align-right-image">
+                            <property name="visible">True</property>
+                            <property name="stock">gtk-justify-right</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">4</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSeparatorToolItem" id="separator3">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="background-toolbutton">
+                <property name="visible">True</property>
+                <property name="use_action_appearance">True</property>
+                <property name="related_action">background-action</property>
+                <property name="label" translatable="yes">Set Background</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="present-toolbutton">
+                <property name="visible">True</property>
+                <property name="use_action_appearance">True</property>
+                <property name="related_action">present-action</property>
+                <property name="label" translatable="yes">Present</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkFixed" id="embed-fixed">
+            <property name="width_request">800</property>
+            <property name="height_request">600</property>
+            <property name="visible">True</property>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="bottom-hbox">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkButton" id="add-slide-button">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="related_action">add-slide-action</property>
+                <child>
+                  <object class="GtkImage" id="add-slide-image">
+                    <property name="visible">True</property>
+                    <property name="stock">gtk-add</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="prev-slide-button">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <child>
+                  <object class="GtkImage" id="prev-slide-image">
+                    <property name="visible">True</property>
+                    <property name="stock">gtk-go-back</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="slide-label">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">(&lt;b&gt;1&lt;/b&gt; of &lt;b&gt;1&lt;/b&gt;)</property>
+                <property name="use_markup">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="next-slide-button">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <child>
+                  <object class="GtkImage" id="next-slide-image">
+                    <property name="visible">True</property>
+                    <property name="stock">gtk-go-forward</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBox" id="animation-combobox">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="padding">38</property>
+                <property name="position">4</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkAction" id="new-action">
+    <property name="label">New</property>
+    <property name="short_label">New File</property>
+    <property name="tooltip">Open a New Presentation</property>
+    <property name="stock_id">gtk-new</property>
+    <signal name="activate" handler="glide_window_new_action_activate"/>
+  </object>
+  <object class="GtkAction" id="open-action">
+    <property name="label">Open</property>
+    <property name="short_label">Open File</property>
+    <property name="tooltip">Open an Existing Presentation</property>
+    <property name="stock_id">gtk-open</property>
+    <signal name="activate" handler="glide_window_open_action_activate"/>
+  </object>
+  <object class="GtkAction" id="save-action">
+    <property name="label">Save</property>
+    <property name="short_label">Save File</property>
+    <property name="tooltip">Save the current file.</property>
+    <property name="stock_id">gtk-save</property>
+  </object>
+  <object class="GtkAction" id="save-as-action">
+    <property name="label">Save As...</property>
+    <property name="short_label">Save File As...</property>
+    <property name="tooltip">Saves the current file with a new name.</property>
+    <property name="stock_id">gtk-save-as</property>
+  </object>
+  <object class="GtkAction" id="quit-action">
+    <property name="label">Quit</property>
+    <property name="short_label">Quit</property>
+    <property name="tooltip">Quits Glide.</property>
+    <property name="stock_id">gtk-close</property>
+  </object>
+  <object class="GtkAction" id="cut-action">
+    <property name="label">Cut</property>
+    <property name="short_label">Cut Selection</property>
+    <property name="tooltip">Cuts the current selection to the clipboard.</property>
+    <property name="stock_id">gtk-cut</property>
+  </object>
+  <object class="GtkAction" id="copy-action">
+    <property name="label">Copy</property>
+    <property name="short_label">Copy Selection</property>
+    <property name="tooltip">Copies the current selection to the clipboard.</property>
+    <property name="stock_id">gtk-copy</property>
+  </object>
+  <object class="GtkAction" id="paste-action">
+    <property name="label">Paste</property>
+    <property name="short_label">Paste</property>
+    <property name="tooltip">Pastes the contents of the clipboard in to the document.</property>
+    <property name="stock_id">gtk-paste</property>
+  </object>
+  <object class="GtkAction" id="delete-action">
+    <property name="label">Delete</property>
+    <property name="short_label">Delete Selection</property>
+    <property name="tooltip">Deletes the current selection.</property>
+    <property name="stock_id">gtk-delete</property>
+  </object>
+  <object class="GtkAction" id="about-action">
+    <property name="label">About</property>
+    <property name="short_label">About Glide...</property>
+    <property name="tooltip">Displays the Glide about dialog.</property>
+    <property name="stock_id">gtk-about</property>
+  </object>
+  <object class="GtkAction" id="add-slide-action">
+    <property name="label">Add Slide</property>
+    <property name="short_label">Add Slide to Document</property>
+    <property name="tooltip">Insert a new Slide in the current document.</property>
+    <property name="stock_id">gtk-add</property>
+  </object>
+  <object class="GtkAction" id="prev-slide-action">
+    <property name="label">Previous Slide</property>
+    <property name="short_label">Previous Slide</property>
+    <property name="tooltip">Sets the current slide to the previous slide.</property>
+    <property name="icon_name">font-x-generic</property>
+  </object>
+  <object class="GtkAction" id="next-slide-action">
+    <property name="label">Next Slide</property>
+    <property name="short_label">Next Slide</property>
+    <property name="tooltip">Sets the current slide to the next slide.</property>
+    <property name="stock_id">gtk-go-forward</property>
+  </object>
+  <object class="GtkAction" id="new-text-action">
+    <property name="label">Insert Text</property>
+    <property name="short_label">Insert Text</property>
+    <property name="tooltip">Insert a new text object in to the document.</property>
+    <property name="icon_name">font-x-generic</property>
+  </object>
+  <object class="GtkAction" id="new-image-action">
+    <property name="label">New Image</property>
+    <property name="short_label">New Image</property>
+    <property name="tooltip">Insert a new image object in to the document.</property>
+    <property name="icon_name">image-x-generic</property>
+  </object>
+  <object class="GtkAction" id="align-left-action">
+    <property name="label">Align Left</property>
+    <property name="short_label">Left</property>
+    <property name="tooltip">Align the selected text object to the left boundary.</property>
+    <property name="stock_id">gtk-justify-left</property>
+  </object>
+  <object class="GtkAction" id="align-center-action">
+    <property name="label">Align Center</property>
+    <property name="short_label">Center</property>
+    <property name="tooltip">Align the selected text object between both boundaries.</property>
+    <property name="stock_id">gtk-justify-center</property>
+  </object>
+  <object class="GtkAction" id="align-right-action">
+    <property name="label">Align Right</property>
+    <property name="short_label">Right</property>
+    <property name="tooltip">Align the selected text object to the right boundary.</property>
+    <property name="stock_id">gtk-justify-right</property>
+  </object>
+  <object class="GtkAction" id="present-action">
+    <property name="label">Start Presentation</property>
+    <property name="short_label">Present</property>
+    <property name="tooltip">Starts the current presentation</property>
+    <property name="stock_id">gtk-fullscreen</property>
+  </object>
+  <object class="GtkAction" id="background-action">
+    <property name="label">Set Background</property>
+    <property name="short_label">Background</property>
+    <property name="tooltip">Set the background of the current slide</property>
+    <property name="icon_name">x-office-presentation</property>
+  </object>
+</interface>

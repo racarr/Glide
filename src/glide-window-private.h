@@ -31,21 +31,12 @@ G_BEGIN_DECLS
 
 struct _GlideWindowPrivate
 {
+  GtkBuilder *builder;
+  
   ClutterActor *stage;
   
   GlideStageManager *manager;
   GlideDocument *document;
-  
-  GtkWidget *embed;
-  GtkWidget *fixed;
-  
-  GtkWidget *color_button;
-  GtkWidget *font_button;
-  GtkWidget *animation_box;
-  GtkWidget *slide_label;
-
-  gint of_width;
-  gint of_height;
 };
 
 G_END_DECLS

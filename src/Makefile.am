@@ -16,7 +16,7 @@ AM_CPPFLAGS = \
 
 AM_CFLAGS =\
 	 -Wall \
-	 -Werror 	
+	 -Werror 
 
 bin_PROGRAMS = glide
 
@@ -53,7 +53,7 @@ glide_SOURCES = \
 glide_LDFLAGS = \
 	-Wl,--export-dynamic
 
-glide_LDADD = $(GTK_LIBS) $(CLUTTER_LIBS) $(CLUTTER_GTK_LIBS) $(GOBJECT_INTROSPECTION_LIBS) $(JSON_GLIB_LIBS)
+glide_LDADD = $(GTK_LIBS) $(CLUTTER_LIBS) $(CLUTTER_GTK_LIBS) $(GOBJECT_INTROSPECTION_LIBS) $(JSON_GLIB_LIBS) $(GMODULE_LIBS)
 
 EXTRA_DIST = $(ui_DATA)
 
