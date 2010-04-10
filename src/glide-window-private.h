@@ -33,10 +33,13 @@ struct _GlideWindowPrivate
 {
   GtkBuilder *builder;
   
+  GtkWidget *embed;
   ClutterActor *stage;
   
   GlideStageManager *manager;
   GlideDocument *document;
+  
+  gint lfw, lfh;
 };
 
 G_END_DECLS

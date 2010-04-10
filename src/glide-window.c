@@ -128,6 +128,26 @@ glide_window_stage_selection_changed_cb (GlideStageManager *manager,
 }
 
 static void
+glide_window_unfullscreen_stage (GlideWindow *w)
+{
+  gtk_window_unfullscreen (GTK_WINDOW (w));
+  gtk_widget_show_all (GTK_WIDGET (w));
+}
+
+static void
+glide_window_presenting_changed_cb (GObject *object,
+				    GParamSpec *pspec,
+				    gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  
+  if (!glide_stage_manager_get_presenting (w->priv->manager))
+    {
+      glide_window_unfullscreen_stage (w);
+    }
+}
+
+static void
 glide_window_set_document (GlideWindow *w, GlideDocument *d)
 {
   if (!w->priv->document)
@@ -143,6 +163,9 @@ glide_window_set_document (GlideWindow *w, GlideDocument *d)
   g_signal_connect (w->priv->manager,
 		    "selection-changed",
 		    G_CALLBACK (glide_window_stage_selection_changed_cb),
+		    w);
+  g_signal_connect (w->priv->manager, "notify::presenting",
+		    G_CALLBACK (glide_window_presenting_changed_cb),
 		    w);
 }
 
@@ -199,11 +222,35 @@ glide_window_new_document_real (GlideWindow *w)
 }
 
 static void
+glide_window_fixed_embed_size_allocate (GtkWidget *widget,
+					GtkAllocation *allocation,
+					gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  
+  if (allocation->width != w->priv->lfw ||
+      allocation->height != w->priv->lfh)
+    {
+      gtk_fixed_move (GTK_FIXED (widget), w->priv->embed,
+		      (allocation->width-PRESENTATION_WIDTH)/2.0,
+		      (allocation->height-PRESENTATION_HEIGHT)/2.0);
+      w->priv->lfw = allocation->width;
+      w->priv->lfh = allocation->height;
+    }
+}
+
+static void
 glide_window_insert_stage (GlideWindow *w)
 {
   ClutterColor white = {0xff, 0xff, 0xff, 0xff};
   GtkWidget *fixed = GTK_WIDGET (gtk_builder_get_object (w->priv->builder, "embed-fixed"));
   GtkWidget *embed = glide_window_make_embed ();
+  GdkColor black;
+
+  gdk_color_parse ("black", &black);
+  gtk_widget_modify_bg (fixed, GTK_STATE_NORMAL, &black);
+  
+  w->priv->embed = embed;
   
   w->priv->stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (embed));
   clutter_actor_set_size (w->priv->stage, 800, 600);
@@ -215,6 +262,8 @@ glide_window_insert_stage (GlideWindow *w)
   gtk_fixed_put (GTK_FIXED (fixed), embed, 0, 0);
   gtk_widget_set_size_request (fixed, 800, 600);
   gtk_widget_set_size_request (embed, 800, 600);
+  
+  g_signal_connect_after (fixed, "size-allocate", G_CALLBACK (glide_window_fixed_embed_size_allocate), w);
 }
 
 static void
@@ -289,6 +338,29 @@ glide_window_background_action_activate (GtkAction *a,
   GLIDE_NOTE (WINDOW, "Setting slide background");
   
   glide_gtk_util_show_image_dialog (G_CALLBACK (glide_window_slide_background_cb), w); 
+}
+
+static void
+glide_window_fullscreen_stage (GlideWindow *w)
+{
+  gtk_window_fullscreen (GTK_WINDOW (w));
+  
+  gtk_widget_hide_all (GTK_WIDGET (w));
+
+  gtk_widget_show (GTK_WIDGET (w));
+  gtk_widget_show_all (GTK_WIDGET (gtk_builder_get_object (w->priv->builder, "embed-fixed")));
+  gtk_widget_show (GTK_WIDGET (gtk_builder_get_object (w->priv->builder, "main-vbox")));
+}
+
+void
+glide_window_present_action_activate (GtkAction *a,
+				      gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  
+  glide_window_fullscreen_stage (w);
+  
+  glide_stage_manager_set_presenting (w->priv->manager, TRUE);
 }
 
 static void

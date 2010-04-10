@@ -20,10 +20,9 @@
                     <property name="visible">True</property>
                     <child>
                       <object class="GtkImageMenuItem" id="new-menuitem">
-                        <property name="label">gtk-new</property>
                         <property name="visible">True</property>
+                        <property name="use_action_appearance">True</property>
                         <property name="related_action">new-action</property>
-                        <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
                     </child>
@@ -60,7 +59,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="quiz-menuitem">
+                      <object class="GtkImageMenuItem" id="quit-menuitem">
                         <property name="label">gtk-quit</property>
                         <property name="visible">True</property>
                         <property name="related_action">quit-action</property>
@@ -610,6 +609,7 @@
     <property name="tooltip">Starts the current presentation</property>
     <property name="stock_id">gtk-fullscreen</property>
     <property name="sensitive">False</property>
+    <signal name="activate" handler="glide_window_present_action_activate"/>
   </object>
   <object class="GtkAction" id="background-action">
     <property name="label">Set Background</property>
