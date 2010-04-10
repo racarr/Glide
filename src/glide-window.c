@@ -132,6 +132,20 @@ glide_window_color_set_cb (GtkWidget *b,
   glide_text_set_color (GLIDE_TEXT (selection), &cc);  
 }
 
+void
+glide_window_font_set_cb (GtkWidget *b, gpointer user_data)
+{
+  GlideActor *selection;
+  GlideWindow *w = (GlideWindow *)user_data;
+  
+  selection = glide_stage_manager_get_selection (w->priv->manager);
+  
+  if (!selection || !GLIDE_IS_TEXT(selection))
+    return;
+  
+  glide_text_set_font_name (GLIDE_TEXT (selection), gtk_font_button_get_font_name (GTK_FONT_BUTTON (b)));
+}
+
 static void
 glide_window_stage_selection_changed_cb (GlideStageManager *manager,
 					 GObject *old_selection,
@@ -150,6 +164,9 @@ glide_window_stage_selection_changed_cb (GlideStageManager *manager,
       glide_gdk_color_from_clutter_color (&cc, &c);
 
       gtk_color_button_set_color (GTK_COLOR_BUTTON (gtk_builder_get_object (w->priv->builder, "text-color-button")), &c);
+
+      gtk_font_button_set_font_name (GTK_FONT_BUTTON (gtk_builder_get_object (w->priv->builder, "text-font-button")),
+				     glide_text_get_font_name (GLIDE_TEXT (selection)));
 
       glide_window_set_text_palette_sensitive (w, TRUE);
     }
@@ -455,7 +472,9 @@ glide_window_new_text_action_activate (GtkAction *a,
   glide_clutter_color_from_gdk_color (&c, &cc);
   
   glide_text_set_color (GLIDE_TEXT (text), &cc);
-  
+
+  glide_text_set_font_name (GLIDE_TEXT (text), 
+			    gtk_font_button_get_font_name (GTK_FONT_BUTTON (gtk_builder_get_object (w->priv->builder, "text-font-button"))));  
   
   glide_stage_manager_add_actor (w->priv->manager, GLIDE_ACTOR (text));
 }

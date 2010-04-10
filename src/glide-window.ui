@@ -267,6 +267,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <signal name="font_set" handler="glide_window_font_set_cb"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
