@@ -435,7 +435,7 @@ glide_slide_json_obj_set_actors (GlideSlide *slide, JsonObject *obj)
   JsonArray *array = json_array_new ();
   GList *s;
   
-  for (s = slide->priv->children; s; s = s->next)
+  for (s = clutter_container_get_children (CLUTTER_CONTAINER (slide->priv->contents_group)); s; s = s->next)
     {
       GlideActor *actor = (GlideActor *)(s->data);
       JsonNode *n;

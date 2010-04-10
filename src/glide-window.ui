@@ -21,8 +21,9 @@
                     <child>
                       <object class="GtkImageMenuItem" id="new-menuitem">
                         <property name="visible">True</property>
-                        <property name="use_action_appearance">True</property>
                         <property name="related_action">new-action</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
                     </child>
@@ -159,8 +160,8 @@
             <child>
               <object class="GtkToolButton" id="new-toolbutton">
                 <property name="visible">True</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">new-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">New File</property>
                 <property name="use_underline">True</property>
               </object>
@@ -172,8 +173,8 @@
             <child>
               <object class="GtkToolButton" id="open-toolbutton">
                 <property name="visible">True</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">open-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">Open File</property>
                 <property name="use_underline">True</property>
               </object>
@@ -185,8 +186,8 @@
             <child>
               <object class="GtkToolButton" id="save-toolbutton">
                 <property name="visible">True</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">save-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">Save File</property>
                 <property name="use_underline">True</property>
               </object>
@@ -208,8 +209,8 @@
               <object class="GtkToolButton" id="text-toolbutton">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">new-text-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">Text</property>
                 <property name="use_underline">True</property>
               </object>
@@ -222,8 +223,8 @@
               <object class="GtkToolButton" id="image-toolbutton">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">new-image-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">Image</property>
                 <property name="use_underline">True</property>
               </object>
@@ -353,8 +354,8 @@
             <child>
               <object class="GtkToolButton" id="background-toolbutton">
                 <property name="visible">True</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">background-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">Set Background</property>
                 <property name="use_underline">True</property>
               </object>
@@ -366,8 +367,8 @@
             <child>
               <object class="GtkToolButton" id="present-toolbutton">
                 <property name="visible">True</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">present-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">Present</property>
                 <property name="use_underline">True</property>
               </object>
@@ -507,6 +508,7 @@
     <property name="short_label">Save File As...</property>
     <property name="tooltip">Saves the current file with a new name.</property>
     <property name="stock_id">gtk-save-as</property>
+    <signal name="activate" handler="glide_window_save_as_action_activate"/>
   </object>
   <object class="GtkAction" id="quit-action">
     <property name="label">Quit</property>
