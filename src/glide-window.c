@@ -105,13 +105,43 @@ glide_window_update_slide_label (GlideWindow *w)
 }
 
 static void
+glide_window_animation_box_set_animation (GlideWindow *w,
+					  const gchar *animation)
+{
+  GtkComboBox *c = GTK_COMBO_BOX (GLIDE_WINDOW_UI_OBJECT (w, "animation-combobox"));
+  GtkTreeModel *m = gtk_combo_box_get_model (c);
+  GtkTreeIter iter;
+  
+  if (!animation)
+    animation = "None";
+  
+  gtk_tree_model_get_iter_first (m, &iter);
+  do {
+    gchar *e;
+    
+    gtk_tree_model_get (m, &iter, 0, &e, -1);
+    if (!strcmp (e, animation))
+      {
+	gtk_combo_box_set_active_iter (c, &iter);
+	g_free (e);
+	return;
+      }
+    g_free (e);
+  } while (gtk_tree_model_iter_next (m, &iter));
+
+}
+
+static void
 glide_window_slide_changed_cb (GObject *object,
 			       GParamSpec *pspec,
 			       gpointer user_data)
 {
   GlideWindow *w = (GlideWindow *) user_data;
+  GlideSlide *s = glide_document_get_nth_slide (w->priv->document,
+						glide_stage_manager_get_current_slide (w->priv->manager));
   
   glide_window_update_slide_label (w);
+  glide_window_animation_box_set_animation (w, glide_slide_get_animation (s));
 }
 
 void
@@ -147,6 +177,7 @@ glide_window_font_set_cb (GtkWidget *b, gpointer user_data)
   
   glide_text_set_font_name (GLIDE_TEXT (selection), gtk_font_button_get_font_name (GTK_FONT_BUTTON (b)));
 }
+
 
 static void
 glide_window_stage_selection_changed_cb (GlideStageManager *manager,
