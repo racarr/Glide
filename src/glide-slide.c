@@ -684,6 +684,8 @@ glide_slide_set_color (GlideSlide *slide, const ClutterColor *color)
 {
   slide->priv->color = *color;
   g_object_notify (G_OBJECT (slide), "color");
+
+  clutter_actor_queue_redraw (CLUTTER_ACTOR (slide));
 }
 
 void 
