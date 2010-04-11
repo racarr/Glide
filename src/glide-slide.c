@@ -39,8 +39,11 @@ enum {
   PROP_0,
   PROP_DOCUMENT,
   PROP_BACKGROUND,
-  PROP_ANIMATION
+  PROP_ANIMATION,
+  PROP_COLOR
 };
+
+static const ClutterColor default_slide_color = { 0xff, 0xff, 0xff, 0xff };
 
 static void
 glide_slide_get_property (GObject *object, 
@@ -60,6 +63,9 @@ glide_slide_get_property (GObject *object,
       break;
     case PROP_ANIMATION:
       g_value_set_string (value, slide->priv->animation);
+      break;
+    case PROP_COLOR:
+      clutter_value_set_color (value, &slide->priv->color);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -86,6 +92,9 @@ glide_slide_set_property (GObject *object,
       break;
     case PROP_ANIMATION:
       glide_slide_set_animation (slide, g_value_get_string (value));
+      break;
+    case PROP_COLOR:
+      glide_slide_set_color (slide, clutter_value_get_color (value));
       break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -519,6 +528,15 @@ glide_slide_class_init (GlideSlideClass *klass)
 							NULL,
 							G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));    
   
+  g_object_class_install_property (object_class,
+				   PROP_COLOR,
+				   clutter_param_spec_color ("color",
+							     "Color",
+							     "The background color of the slide.",
+							     &default_slide_color,
+							     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+							     
+  
   g_type_class_add_private (object_class, sizeof(GlideSlidePrivate));
 }
 
@@ -654,4 +672,17 @@ ClutterActor *
 glide_slide_get_contents (GlideSlide *slide)
 {
   return slide->priv->contents_group;
+}
+
+void 
+glide_slide_set_color (GlideSlide *slide, const ClutterColor *color)
+{
+  slide->priv->color = *color;
+  g_object_notify (G_OBJECT (slide), "color");
+}
+
+void 
+glide_slide_get_color (GlideSlide *slide, ClutterColor *color)
+{
+  *color = slide->priv->color;
 }

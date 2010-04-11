@@ -68,6 +68,10 @@ void glide_slide_add_actor_content (GlideSlide *s, ClutterActor *a);
 
 ClutterActor *glide_slide_get_contents (GlideSlide *slide);
 
+void glide_slide_set_color (GlideSlide *slide, const ClutterColor *color);
+void glide_slide_get_color (GlideSlide *slide, ClutterColor *color);
+
+
 G_END_DECLS
 
 #endif /* __GLIDE_SLIDE_H__ */

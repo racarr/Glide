@@ -40,6 +40,8 @@ struct _GlideSlidePrivate
   CoglHandle background_material;
   
   ClutterActor *contents_group;
+  
+  ClutterColor color;
 };
 
 G_END_DECLS
