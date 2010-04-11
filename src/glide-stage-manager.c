@@ -177,6 +177,7 @@ glide_stage_manager_document_slide_added_cb (GlideDocument *document,
   glide_actor_set_stage_manager (GLIDE_ACTOR (slide), manager);
   
   glide_stage_manager_set_slide (manager, manager->priv->current_slide+1);
+  glide_stage_manager_set_selection (manager, NULL);
 }
 
 void
