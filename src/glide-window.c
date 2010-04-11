@@ -21,7 +21,9 @@
  */
  
 #include <glib/gi18n.h>
+
 #include <gdk/gdkkeysyms.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 
 #include "glide-window.h"
@@ -610,8 +612,18 @@ glide_window_copy_action_activate (GtkAction *a,
       else
 	{
 	  gtk_clipboard_set_text (clipboard, glide_text_get_text (GLIDE_TEXT (selection)), -1);
-	  return;
 	}
+    }
+  else if (GLIDE_IS_IMAGE (selection))
+    {
+      GdkPixbuf *pbuf;
+      const gchar *filename = glide_image_get_filename (GLIDE_IMAGE (selection));
+      
+      // TODO: Error checking
+      pbuf = gdk_pixbuf_new_from_file (filename, NULL);
+
+      gtk_clipboard_set_image (clipboard, pbuf);
+      g_object_unref (G_OBJECT (pbuf));
     }
 }
 
