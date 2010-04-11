@@ -1757,10 +1757,7 @@ glide_text_key_press (ClutterActor    *actor,
                                          event->modifier_state,
                                          G_OBJECT (actor));
   
-  if (res)
-    {
-      glide_text_set_editable (self, TRUE);
-    }
+  glide_text_set_editable (self, TRUE);
 
   /* if the key binding has handled the event we bail out
    * as fast as we can; otherwise, we try to insert the

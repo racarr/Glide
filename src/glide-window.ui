@@ -407,6 +407,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="related_action">add-slide-action</property>
+                <property name="relief">none</property>
                 <child>
                   <object class="GtkImage" id="add-slide-image">
                     <property name="visible">True</property>
