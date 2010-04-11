@@ -33,5 +33,7 @@ gchar *glide_gtk_util_get_clipboard_text ();
 void glide_gdk_color_from_clutter_color (ClutterColor *cc, GdkColor *c);
 void glide_clutter_color_from_gdk_color (GdkColor *c, ClutterColor *cc);
 
+GtkWidget * glide_gtk_util_show_error_dialog (const gchar *text, const gchar *secondary);
+
 
 #endif

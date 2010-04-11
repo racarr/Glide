@@ -529,11 +529,23 @@ glide_window_image_open_response_callback (GtkDialog *dialog,
 
   if (response == GTK_RESPONSE_ACCEPT)
     {
+      GError *e = NULL;
       ClutterActor *im;
       // Todo: URI
       gchar *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
       
-      im =  glide_image_new_from_file (filename, NULL);
+      im =  glide_image_new_from_file (filename, &e);
+      if (e)
+	{
+	  g_warning ("Failed to load image (%s): %s", filename, e->message);
+	  g_error_free (e);
+	  
+	  glide_gtk_util_show_error_dialog ("Failed to load image", "Failed to load the requested image");
+	  g_free (filename);
+	  
+	  gtk_widget_destroy (GTK_WIDGET (dialog));
+	  return;
+	}
       glide_stage_manager_add_actor (window->priv->manager, GLIDE_ACTOR (im));
       
       g_free (filename);

@@ -90,3 +90,27 @@ glide_clutter_color_from_gdk_color (GdkColor *c, ClutterColor *cc)
   cc->blue = (c->blue/65535.0)*255.0;
   cc->green = (c->green/65535.0)*255.0;
 }
+
+static void
+glide_error_response_callback (GtkDialog *dialog,
+			       int response,
+			       gpointer user_data)
+{
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+GtkWidget *
+glide_gtk_util_show_error_dialog (const gchar *text,
+				  const gchar *secondary)
+{
+  GtkWidget *d = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL,
+					 GTK_MESSAGE_ERROR,
+					 GTK_BUTTONS_OK,
+					 text, NULL);
+  gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (d), secondary, NULL);
+  
+  gtk_widget_show (d);
+  g_signal_connect (d, "response", G_CALLBACK (glide_error_response_callback), NULL);
+  
+  return d;
+}
