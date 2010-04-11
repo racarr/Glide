@@ -1206,6 +1206,8 @@ glide_window_init (GlideWindow *window)
   GLIDE_NOTE (WINDOW, "Intializing Glide window (%p)", window);
   
   gtk_widget_show_all (GTK_WIDGET (window));
+  
+  g_signal_connect (window, "hide", G_CALLBACK (gtk_main_quit), NULL);
 }
 
 GlideWindow *
