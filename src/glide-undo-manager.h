@@ -63,11 +63,24 @@ struct _GlideUndoManagerClass
   GObjectClass parent_class;
 };
 
+typedef struct _GlideUndoInfo GlideUndoInfo;
+typedef gboolean (*GlideUndoActionCallback) (GlideUndoManager *undo_manager, GlideUndoInfo *info);
+typedef void (*GlideUndoInfoFreeCallback) (GlideUndoInfo *info);
+
+struct _GlideUndoInfo {
+  GlideUndoActionCallback callback;
+  GlideUndoInfoFreeCallback free_callback;
+  gpointer user_data;
+};
+
 /*
  * Public methods
  */
 GType 		 glide_undo_manager_get_type 			(void) G_GNUC_CONST;
 GlideUndoManager *glide_undo_manager_new ();
+
+void glide_undo_manager_append_info (GlideUndoManager *manager, GlideUndoInfo *info);
+gboolean glide_undo_manager_undo (GlideUndoManager *manager);
 
 G_END_DECLS
 
