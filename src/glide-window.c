@@ -468,6 +468,72 @@ glide_window_animations_box_changed_cb (GtkWidget *cbox,
   g_free (animation);
 }
 
+static void
+glide_window_paste_contents_text_received (GtkClipboard *clipboard,
+					   GtkSelectionData *data,
+					   gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  guchar *text = gtk_selection_data_get_text (data);
+  GlideActor *selection;
+
+  selection = glide_stage_manager_get_selection (w->priv->manager);
+  
+  if (!selection)
+    {
+      ClutterActor *ntext = glide_text_new ();
+      ClutterColor cc;
+      GdkColor c;
+      
+      gtk_color_button_get_color (GTK_COLOR_BUTTON (gtk_builder_get_object (w->priv->builder, "text-color-button")),
+				  &c);
+      glide_clutter_color_from_gdk_color (&c, &cc);
+      
+      glide_text_set_color (GLIDE_TEXT (ntext), &cc);
+      
+      glide_text_set_font_name (GLIDE_TEXT (ntext), 
+				gtk_font_button_get_font_name (GTK_FONT_BUTTON (gtk_builder_get_object (w->priv->builder, "text-font-button"))));  
+      glide_text_set_text (GLIDE_TEXT (ntext), (gchar *)text);
+      
+      glide_stage_manager_add_actor (w->priv->manager, GLIDE_ACTOR (ntext));
+    }
+  else if (selection && GLIDE_IS_TEXT (selection))
+    {
+      glide_text_insert_text (GLIDE_TEXT (selection), (gchar *)text,
+			      glide_text_get_cursor_position (GLIDE_TEXT (selection)));
+    }
+  
+
+  g_free (text);
+}
+
+static void
+glide_window_paste_targets_received (GtkClipboard *clipboard,
+				     GdkAtom *atoms,
+				     gint n_atoms,
+				     gpointer data)
+{
+  GlideWindow *w = (GlideWindow *)data;
+  gboolean has_text = FALSE;
+
+  if (gtk_targets_include_text (atoms, n_atoms))
+    has_text = TRUE;
+  if (has_text)
+    {
+      gtk_clipboard_request_contents (clipboard, gdk_atom_intern ("TEXT", TRUE), glide_window_paste_contents_text_received, w);
+    }
+}
+
+void
+glide_window_paste_action_activate (GtkAction *a,
+				    gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  GtkClipboard *clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
+  
+  gtk_clipboard_request_targets (clipboard, glide_window_paste_targets_received, w);
+}
+
 void 
 glide_window_background_action_activate (GtkAction *a,
 					 gpointer user_data)

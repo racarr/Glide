@@ -537,6 +537,7 @@
     <property name="short_label">Paste</property>
     <property name="tooltip">Pastes the contents of the clipboard in to the document.</property>
     <property name="stock_id">gtk-paste</property>
+    <signal name="activate" handler="glide_window_paste_action_activate"/>
   </object>
   <object class="GtkAction" id="delete-action">
     <property name="label">Delete</property>
