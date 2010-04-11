@@ -538,11 +538,11 @@ glide_window_image_open_response_callback (GtkDialog *dialog,
       if (e)
 	{
 	  g_warning ("Failed to load image (%s): %s", filename, e->message);
-	  g_error_free (e);
 	  
-	  glide_gtk_util_show_error_dialog ("Failed to load image", "Failed to load the requested image");
+	  glide_gtk_util_show_error_dialog ("Failed to load image", e->message);
 	  g_free (filename);
-	  
+
+	  g_error_free (e);
 	  gtk_widget_destroy (GTK_WIDGET (dialog));
 	  return;
 	}
