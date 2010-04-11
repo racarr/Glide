@@ -70,6 +70,7 @@
                         <property name="related_action">quit-action</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <accelerator key="q" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                   </object>
@@ -522,6 +523,7 @@
     <property name="short_label">Quit</property>
     <property name="tooltip">Quits Glide.</property>
     <property name="stock_id">gtk-close</property>
+    <signal name="activate" handler="glide_window_quit_action_activate"/>
   </object>
   <object class="GtkAction" id="cut-action">
     <property name="label">Cut</property>

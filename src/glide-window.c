@@ -533,6 +533,14 @@ glide_window_paste_targets_received (GtkClipboard *clipboard,
     }
 }
 
+
+void
+glide_window_quit_action_activate (GtkAction *a,
+				   gpointer user_data)
+{
+  gtk_main_quit ();
+}
+
 void
 glide_window_paste_action_activate (GtkAction *a,
 				    gpointer user_data)
@@ -852,8 +860,12 @@ glide_window_setup_accelerators (GlideWindow *w)
   glide_window_add_accelerator (w, group, accels, "save-action", "<Control>s");
   glide_window_add_accelerator (w, group, accels, "open-action", "<Control>o");
   glide_window_add_accelerator (w, group, accels, "save-as-action", "<Control>w");
+  glide_window_add_accelerator (w, group, accels, "quit", "<Control>q");
 
   glide_window_add_accelerator (w, group, accels, "copy-action", "<Control>c");
+  glide_window_add_accelerator (w, group, accels, "paste-action", "<Control>v");
+  glide_window_add_accelerator (w, group, accels, "cut-action", "<Control>x");
+  glide_window_add_accelerator (w, group, accels, "delete-action", "Delete");
 
   glide_window_add_accelerator (w, group, accels, "next-slide-action", "<Control><Shift>Right");
   glide_window_add_accelerator (w, group, accels, "prev-slide-action", "<Control><Shift>Left");
