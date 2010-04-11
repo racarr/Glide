@@ -704,7 +704,6 @@ glide_stage_manager_add_actor (GlideStageManager *manager,
 						manager->priv->current_slide);
   
   clutter_actor_set_position (CLUTTER_ACTOR (actor), 200, 200);
-  g_message("Hello");
   glide_slide_add_actor_content (current_slide, CLUTTER_ACTOR (actor));
   
   clutter_actor_show (CLUTTER_ACTOR (actor));
@@ -751,7 +750,7 @@ glide_stage_manager_load_slides (GlideStageManager *manager, JsonArray *slides)
     {
       JsonNode *n = s->data;
       JsonObject *slide = json_node_get_object (n);
-      GlideSlide *gs = glide_document_add_slide (manager->priv->document);
+      GlideSlide *gs = glide_document_append_slide (manager->priv->document);
       
       glide_slide_construct_from_json (gs, slide, manager);
     }

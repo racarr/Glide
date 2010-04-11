@@ -362,7 +362,7 @@ glide_window_new_document_real (GlideWindow *w)
 
   glide_window_set_document (w, d);
 
-  glide_document_add_slide (d);
+  glide_document_append_slide (d);
 }
 
 static void
@@ -824,7 +824,8 @@ glide_window_add_slide_action_activate (GtkAction *a,
   oslide = glide_document_get_nth_slide (window->priv->document,
 					 glide_stage_manager_get_current_slide (window->priv->manager));
   
-  slide = glide_document_add_slide (window->priv->document);
+  slide = glide_document_insert_slide (window->priv->document, 
+				       glide_stage_manager_get_current_slide (window->priv->manager));
   glide_slide_set_background (slide, glide_slide_get_background (oslide));
   
   glide_slide_get_color (oslide, &oc);

@@ -198,10 +198,21 @@ glide_document_get_nth_slide (GlideDocument *document,
 }
 
 GlideSlide *
-glide_document_add_slide (GlideDocument *document)
+glide_document_append_slide (GlideDocument *document)
 {
   GlideSlide *s = glide_slide_new (document);
   document->priv->slides = g_list_append (document->priv->slides, s);
+  
+  g_signal_emit (document, document_signals[SLIDE_ADDED], 0, s);
+  
+  return s;
+}
+
+GlideSlide *
+glide_document_insert_slide (GlideDocument *document, gint after)
+{
+  GlideSlide *s = glide_slide_new (document);
+  document->priv->slides = g_list_insert (document->priv->slides, s, after+1);
   
   g_signal_emit (document, document_signals[SLIDE_ADDED], 0, s);
   

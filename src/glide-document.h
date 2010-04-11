@@ -81,7 +81,8 @@ void glide_document_set_path (GlideDocument *document, const gchar *path);
 guint glide_document_get_n_slides (GlideDocument *document);
 GlideSlide *glide_document_get_nth_slide (GlideDocument *document, guint n);
 
-GlideSlide *glide_document_add_slide (GlideDocument *document);
+GlideSlide *glide_document_append_slide (GlideDocument *document);
+GlideSlide *glide_document_insert_slide (GlideDocument *document, gint after);
 
 JsonNode *glide_document_serialize (GlideDocument *document);
 
