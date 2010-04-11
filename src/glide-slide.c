@@ -290,17 +290,22 @@ glide_slide_paint (ClutterActor *actor)
 {
   GlideSlidePrivate *priv = GLIDE_SLIDE (actor)->priv;
   guint8 paint_opacity = clutter_actor_get_paint_opacity (actor);
+  gfloat width, height;
   
   if (paint_opacity == 0)
     {
       return;
     }
+
+  clutter_actor_get_size (clutter_actor_get_parent (actor), &width, &height);
+  cogl_set_source_color4ub (priv->color.red,
+			    priv->color.green,
+			    priv->color.blue,
+			    paint_opacity * priv->color.alpha/255);
+  cogl_rectangle(0, 0, width, height);
   
   if (priv->background_material) 
     {
-      gfloat width, height;
-      
-      clutter_actor_get_size (clutter_actor_get_parent (actor), &width, &height);
       
       cogl_material_set_color4ub (priv->background_material,
 				  paint_opacity, paint_opacity, paint_opacity, paint_opacity);
