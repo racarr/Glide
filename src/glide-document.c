@@ -41,6 +41,7 @@ enum {
 
 enum {
   SLIDE_ADDED,
+  SLIDE_REMOVED,
   LAST_SIGNAL
 };
 
@@ -144,6 +145,16 @@ g_object_class_install_property (object_class, PROP_PATH,
 		  gi_cclosure_marshal_generic,
 		  G_TYPE_NONE, 1,
 		  G_TYPE_OBJECT);
+
+  document_signals[SLIDE_REMOVED] = 
+    g_signal_new ("slide-removed",
+		  G_TYPE_FROM_CLASS (object_class),
+		  G_SIGNAL_RUN_LAST,
+		  0,
+		  NULL, NULL,
+		  gi_cclosure_marshal_generic,
+		  G_TYPE_NONE, 1,
+		  G_TYPE_OBJECT);
 							
   
   g_type_class_add_private (object_class, sizeof(GlideDocumentPrivate));
@@ -217,6 +228,15 @@ glide_document_insert_slide (GlideDocument *document, gint after)
   g_signal_emit (document, document_signals[SLIDE_ADDED], 0, s);
   
   return s;
+}
+
+void
+glide_document_remove_slide (GlideDocument *document, gint slide)
+{
+  GlideSlide *s = g_list_nth_data (document->priv->slides, slide);
+  document->priv->slides = g_list_remove (document->priv->slides, s);
+
+  g_signal_emit (document, document_signals[SLIDE_REMOVED], 0, s);
 }
 
 static void

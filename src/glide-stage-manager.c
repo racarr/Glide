@@ -156,7 +156,7 @@ glide_stage_manager_add_manipulator (GlideStageManager *manager)
 void
 glide_stage_manager_set_slide (GlideStageManager *manager, guint slide)
 {
-  if (manager->priv->current_slide >= 0)
+  if (manager->priv->current_slide >= 0 && !(manager->priv->current_slide >= glide_document_get_n_slides(manager->priv->document)))
     clutter_actor_hide (CLUTTER_ACTOR (glide_document_get_nth_slide (manager->priv->document, manager->priv->current_slide)));
   manager->priv->current_slide = slide;
   clutter_actor_show_all (CLUTTER_ACTOR (glide_document_get_nth_slide (manager->priv->document, slide)));  
@@ -166,7 +166,22 @@ glide_stage_manager_set_slide (GlideStageManager *manager, guint slide)
   g_object_notify (G_OBJECT (manager), "current-slide");
 }
 
-void
+static void
+glide_stage_manager_document_slide_removed_cb (GlideDocument *document, 
+					       GlideSlide *slide, 
+					       gpointer data)
+{
+  GlideStageManager *manager = (GlideStageManager *)data;
+  ClutterContainer *parent = CLUTTER_CONTAINER (clutter_actor_get_parent (CLUTTER_ACTOR (slide)));
+  clutter_container_remove_actor (parent, CLUTTER_ACTOR (slide));
+  
+  if (manager->priv->current_slide < glide_document_get_n_slides(manager->priv->document))
+    glide_stage_manager_set_slide (manager, manager->priv->current_slide);
+  else
+    glide_stage_manager_set_slide (manager, manager->priv->current_slide-1);
+}
+
+static void
 glide_stage_manager_document_slide_added_cb (GlideDocument *document, 
 					     GlideSlide *slide, 
 					     gpointer data)
@@ -186,6 +201,7 @@ glide_stage_manager_set_document (GlideStageManager *manager,
 {
   manager->priv->document = g_object_ref (document);
   g_signal_connect (document, "slide-added", G_CALLBACK (glide_stage_manager_document_slide_added_cb), manager);
+  g_signal_connect (document, "slide-removed", G_CALLBACK (glide_stage_manager_document_slide_removed_cb), manager);
 }
 
 void

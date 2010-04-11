@@ -84,6 +84,8 @@ GlideSlide *glide_document_get_nth_slide (GlideDocument *document, guint n);
 GlideSlide *glide_document_append_slide (GlideDocument *document);
 GlideSlide *glide_document_insert_slide (GlideDocument *document, gint after);
 
+void glide_document_remove_slide (GlideDocument *document, gint slide);
+
 JsonNode *glide_document_serialize (GlideDocument *document);
 
 G_END_DECLS

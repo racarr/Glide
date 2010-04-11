@@ -112,6 +112,7 @@ glide_window_enable_document_actions (GlideWindow *w)
   glide_window_enable_action (w, "next-slide-action");
   glide_window_enable_action (w, "prev-slide-action");
   glide_window_enable_action (w, "add-slide-action");
+  glide_window_enable_action (w, "remove-slide-action");
   glide_window_enable_action (w, "present-action");
   glide_window_enable_action (w, "background-action");
   glide_window_enable_action (w, "save-action");
@@ -830,6 +831,16 @@ glide_window_add_slide_action_activate (GtkAction *a,
   
   glide_slide_get_color (oslide, &oc);
   glide_slide_set_color (slide, &oc);
+}
+
+void
+glide_window_remove_slide_action_activate (GtkAction *a,
+					   gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *) user_data;
+  
+  glide_document_remove_slide (w->priv->document,
+			       glide_stage_manager_get_current_slide (w->priv->manager));
 }
 
 void
