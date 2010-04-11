@@ -292,12 +292,38 @@ glide_window_presenting_changed_cb (GObject *object,
 }
 
 static void
+glide_window_document_n_slides_changed (GlideDocument *document,
+					GlideSlide *slide,
+					gpointer data)
+{
+  GlideWindow *w = (GlideWindow *)data;
+  gboolean sensitive;
+
+  if (glide_document_get_n_slides (document) > 1)
+    sensitive = TRUE;
+  else
+    sensitive = FALSE;
+  
+  gtk_action_set_sensitive (GTK_ACTION (GLIDE_WINDOW_UI_OBJECT (w, "remove-slide-action")), sensitive);
+}
+
+static void
 glide_window_set_document (GlideWindow *w, GlideDocument *d)
 {
   if (!w->priv->document)
     glide_window_enable_document_actions (w);
   w->priv->document = d;
   w->priv->manager = glide_stage_manager_new (w->priv->document, CLUTTER_STAGE (w->priv->stage));
+  
+  g_signal_connect (w->priv->document,
+		    "slide-added",
+		    G_CALLBACK (glide_window_document_n_slides_changed),
+		    w);
+
+  g_signal_connect (w->priv->document,
+		    "slide-removed",
+		    G_CALLBACK (glide_window_document_n_slides_changed),
+		    w);
   
   // TODO: disconnect
   g_signal_connect (w->priv->manager,
