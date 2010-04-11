@@ -308,6 +308,18 @@ glide_window_document_n_slides_changed (GlideDocument *document,
 }
 
 static void
+glide_window_document_path_changed_cb (GObject *object,
+				       GParamSpec *pspec,
+				       gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  gchar *title = g_strdup_printf ("Glide - (%s)", glide_document_get_path (w->priv->document));
+  
+  gtk_window_set_title (GTK_WINDOW (w), title);
+  g_free (title);
+}
+
+static void
 glide_window_set_document (GlideWindow *w, GlideDocument *d)
 {
   if (!w->priv->document)
@@ -318,6 +330,10 @@ glide_window_set_document (GlideWindow *w, GlideDocument *d)
   g_signal_connect (w->priv->document,
 		    "slide-added",
 		    G_CALLBACK (glide_window_document_n_slides_changed),
+		    w);
+  g_signal_connect (w->priv->document,
+		    "notify::path",
+		    G_CALLBACK (glide_window_document_path_changed_cb),
 		    w);
 
   g_signal_connect (w->priv->document,
