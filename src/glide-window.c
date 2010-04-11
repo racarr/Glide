@@ -307,16 +307,27 @@ glide_window_document_n_slides_changed (GlideDocument *document,
   gtk_action_set_sensitive (GTK_ACTION (GLIDE_WINDOW_UI_OBJECT (w, "remove-slide-action")), sensitive);
 }
 
+// TODO: New document, no path...window title?
 static void
 glide_window_document_path_changed_cb (GObject *object,
 				       GParamSpec *pspec,
 				       gpointer user_data)
 {
   GlideWindow *w = (GlideWindow *)user_data;
-  gchar *title = g_strdup_printf ("Glide - (%s)", glide_document_get_path (w->priv->document));
+  const gchar *path = glide_document_get_path (w->priv->document);
+  gchar *uri = g_strdup_printf("file://%s",path);
+  gchar *title = g_strdup_printf ("Glide - (%s)", path);
+  GtkRecentData rd = { 0, };
   
   gtk_window_set_title (GTK_WINDOW (w), title);
   g_free (title);
+  
+  rd.mime_type = "application-x/glide";
+  rd.app_name = "Glide";
+  rd.app_exec = "glide %f";
+
+  gtk_recent_manager_add_full (w->priv->recent_manager, uri, &rd);
+  g_free (uri);
 }
 
 static void
@@ -1149,6 +1160,34 @@ glide_window_clipboard_owner_changed (GtkClipboard *clipboard,
 }
 
 static void
+glide_window_recent_item_activated (GtkRecentChooser *chooser,
+				    gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  gchar *uri = gtk_recent_chooser_get_current_uri (chooser);
+  
+  glide_window_close_document (w);
+  /* TODO: Uris everywhere... Oh dirty hack*/
+  glide_window_open_document_real (w, uri+7);
+  
+}
+
+static void
+glide_window_insert_recent_menu_item (GlideWindow *w)
+{
+  GtkRecentFilter *filter = gtk_recent_filter_new ();
+  GtkWidget *men = gtk_recent_chooser_menu_new_for_manager (w->priv->recent_manager);
+  GtkMenuItem *recent_menu_item = GTK_MENU_ITEM (GLIDE_WINDOW_UI_OBJECT (w, "open-recent-menuitem"));
+  
+  gtk_recent_filter_add_application (filter, "Glide");
+  gtk_recent_chooser_set_filter (GTK_RECENT_CHOOSER (men), filter);
+  
+  g_signal_connect (men, "item-activated", G_CALLBACK (glide_window_recent_item_activated), w);
+  
+  gtk_menu_item_set_submenu (recent_menu_item, men);
+}
+
+static void
 glide_window_init (GlideWindow *window)
 {
   GtkClipboard *clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
@@ -1157,6 +1196,9 @@ glide_window_init (GlideWindow *window)
   
   glide_window_load_ui (window);
   glide_window_insert_stage (window);
+  glide_window_insert_recent_menu_item (window);
+  
+  window->priv->recent_manager = gtk_recent_manager_get_for_screen (gtk_window_get_screen (GTK_WINDOW (window)));
   
   g_signal_connect (clipboard, "owner-change", G_CALLBACK (glide_window_clipboard_owner_changed), window);
 

@@ -43,6 +43,8 @@ struct _GlideWindowPrivate
   
   JsonNode *copy_buffer;
   gboolean keep_buffer;
+  
+  GtkRecentManager *recent_manager;
 };
 
 G_END_DECLS

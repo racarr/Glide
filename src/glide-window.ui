@@ -39,6 +39,13 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkMenuItem" id="open-recent-menuitem">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Open Recent</property>
+                        <property name="use_underline">True</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkImageMenuItem" id="save-menuitem">
                         <property name="label">gtk-save</property>
                         <property name="visible">True</property>
