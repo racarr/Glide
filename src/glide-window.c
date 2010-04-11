@@ -396,8 +396,14 @@ glide_window_open_document_real (GlideWindow *window,
   json_parser_load_from_file (p, filename, &e);
   if (e)
     {
+      gchar *sec = g_strdup_printf ("Failed to load the document: %s", filename);
       g_warning("Error loading file: %s", e->message);
+
+      glide_gtk_util_show_error_dialog ("Failed to load document", sec);
+					
       g_error_free (e);
+      g_free (sec);
+      g_object_unref (G_OBJECT (p));
       
       return;
     }
