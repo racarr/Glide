@@ -370,6 +370,8 @@ glide_window_insert_stage (GlideWindow *w)
   GtkWidget *embed = glide_window_make_embed ();
   GdkColor black;
 
+  gtk_fixed_set_has_window (GTK_FIXED (fixed), TRUE); 
+
   gdk_color_parse ("black", &black);
   gtk_widget_modify_bg (fixed, GTK_STATE_NORMAL, &black);
   
@@ -554,13 +556,16 @@ glide_window_background_action_activate (GtkAction *a,
 static void
 glide_window_fullscreen_stage (GlideWindow *w)
 {
+  GtkWidget *fixed = GTK_WIDGET(gtk_builder_get_object (w->priv->builder, "embed-fixed"));
+
   gtk_window_fullscreen (GTK_WINDOW (w));
   
   gtk_widget_hide_all (GTK_WIDGET (w));
 
   gtk_widget_show (GTK_WIDGET (w));
-  gtk_widget_show_all (GTK_WIDGET (gtk_builder_get_object (w->priv->builder, "embed-fixed")));
-  gtk_widget_show (GTK_WIDGET (gtk_builder_get_object (w->priv->builder, "main-vbox")));
+  gtk_widget_show_all (fixed);
+  gtk_widget_show (gtk_widget_get_parent (fixed));
+  
 }
 
 void
@@ -849,6 +854,13 @@ glide_window_setup_accelerators (GlideWindow *w)
   glide_window_add_accelerator (w, group, accels, "save-as-action", "<Control>w");
 
   glide_window_add_accelerator (w, group, accels, "copy-action", "<Control>c");
+
+  glide_window_add_accelerator (w, group, accels, "next-slide-action", "<Control><Shift>Right");
+  glide_window_add_accelerator (w, group, accels, "prev-slide-action", "<Control><Shift>Left");
+  
+  glide_window_add_accelerator (w, group, accels, "add-slide-action", "<Control><Shift>n");
+
+  glide_window_add_accelerator (w, group, accels, "present-action", "F5");
   
   gtk_window_add_accel_group (GTK_WINDOW (w), accels);
 }
