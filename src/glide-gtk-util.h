@@ -27,6 +27,8 @@
 #include <clutter/clutter.h>
 
 GtkWidget *glide_gtk_util_show_image_dialog (GCallback callback, gpointer user_data);
+GtkWidget *glide_gtk_util_show_file_dialog (GCallback callback, gpointer user_data);
+
 GtkWidget *glide_gtk_util_show_save_dialog (GCallback callback, gpointer user_data);
 gchar *glide_gtk_util_get_clipboard_text ();
 

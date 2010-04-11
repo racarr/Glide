@@ -1103,21 +1103,10 @@ void
 glide_window_open_action_activate (GtkAction *a,
 				   gpointer user_data)
 {
-  GtkWidget *d;
   GlideWindow *w = (GlideWindow *)user_data;
   
   GLIDE_NOTE (WINDOW, "Loading file.");
-  d = gtk_file_chooser_dialog_new ("Load presentation",
-				   NULL,
-				   GTK_FILE_CHOOSER_ACTION_OPEN,
-				   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-				   GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-				   NULL);
-  g_signal_connect (d, "response",
-		    G_CALLBACK (glide_window_file_open_response_callback),
-		    w);
-  
-  gtk_widget_show (d);
+  glide_gtk_util_show_file_dialog (G_CALLBACK (glide_window_file_open_response_callback), w);
 }
 
 static void

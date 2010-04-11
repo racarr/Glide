@@ -74,6 +74,31 @@ glide_gtk_util_show_image_dialog (GCallback callback, gpointer user_data)
   return d;
 }
 
+GtkWidget *
+glide_gtk_util_show_file_dialog (GCallback callback, gpointer user_data)
+{
+  GtkWidget *d;
+  GtkFileFilter *f;
+  
+  d = gtk_file_chooser_dialog_new ("Open document",
+				   NULL,
+				   GTK_FILE_CHOOSER_ACTION_OPEN,
+				   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				   GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+				   NULL);
+  g_signal_connect (d, "response", callback, user_data);
+  
+  f = gtk_file_filter_new ();
+  gtk_file_filter_set_name (f, "Glide Documents");
+  gtk_file_filter_add_pattern (f, "*.glide");
+  
+  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (d), f);
+  
+  gtk_widget_show (d);
+  
+  return d;
+}
+
 void
 glide_gdk_color_from_clutter_color (ClutterColor *cc, GdkColor *c)
 {
