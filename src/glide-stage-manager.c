@@ -614,3 +614,15 @@ glide_stage_manager_set_slide_background (GlideStageManager *manager, const gcha
 {
   glide_slide_set_background (glide_document_get_nth_slide (manager->priv->document, manager->priv->current_slide), bg);
 }
+
+void
+glide_stage_manager_delete_selection (GlideStageManager *manager)
+{
+  GlideActor *selection = glide_stage_manager_get_selection (manager);
+  
+  if (!selection)
+    return;
+  
+  glide_stage_manager_set_selection (manager, NULL);
+  clutter_container_remove_actor (CLUTTER_CONTAINER (clutter_actor_get_parent (CLUTTER_ACTOR (selection))), CLUTTER_ACTOR (selection));
+}

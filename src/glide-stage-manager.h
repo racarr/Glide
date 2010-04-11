@@ -100,6 +100,8 @@ void glide_stage_manager_set_presenting (GlideStageManager *manager, gboolean pr
 
 void glide_stage_manager_set_slide_background (GlideStageManager *manager, const gchar *bg);
 
+void glide_stage_manager_delete_selection (GlideStageManager *manager);
+
 
 G_END_DECLS
 

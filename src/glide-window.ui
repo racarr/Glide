@@ -549,6 +549,7 @@
     <property name="short_label">Delete Selection</property>
     <property name="tooltip">Deletes the current selection.</property>
     <property name="stock_id">gtk-delete</property>
+    <signal name="activate" handler="glide_window_delete_action_activate"/>
   </object>
   <object class="GtkAction" id="about-action">
     <property name="label">About</property>
