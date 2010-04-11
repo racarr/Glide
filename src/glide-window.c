@@ -63,6 +63,22 @@ static void glide_window_insert_stage (GlideWindow *w);
 static void glide_window_close_document (GlideWindow *w);
 
 static void
+glide_window_set_copy_buffer (GlideWindow *w, GlideActor *copy)
+{
+  if (w->priv->copy_buffer)
+    json_node_free (w->priv->copy_buffer);
+  w->priv->copy_buffer = glide_actor_serialize (copy);
+}
+
+static GlideActor *
+glide_window_construct_copy_buffer (GlideWindow *w)
+{
+  JsonObject *obj = json_node_get_object (w->priv->copy_buffer);
+  
+  return glide_actor_construct_from_json (obj);
+}
+
+static void
 glide_window_set_text_palette_sensitive (GlideWindow *w, gboolean sensitive)
 {
   GtkWidget *tp = GTK_WIDGET (gtk_builder_get_object (w->priv->builder, "text-toolpalette"));
@@ -584,6 +600,17 @@ glide_window_paste_action_activate (GtkAction *a,
   GlideWindow *w = (GlideWindow *)user_data;
   GtkClipboard *clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
   
+  if (w->priv->copy_buffer)
+    {
+      GlideActor *n = glide_window_construct_copy_buffer (w);
+      
+      glide_stage_manager_add_actor (w->priv->manager, n);
+      clutter_actor_show (CLUTTER_ACTOR (n));
+      
+      return;
+    }
+    
+  
   gtk_clipboard_request_targets (clipboard, glide_window_paste_targets_received, w);
 }
 
@@ -612,6 +639,7 @@ glide_window_copy_action_activate (GtkAction *a,
       else
 	{
 	  gtk_clipboard_set_text (clipboard, glide_text_get_text (GLIDE_TEXT (selection)), -1);
+	  glide_window_set_copy_buffer (w, selection);
 	}
     }
   else if (GLIDE_IS_IMAGE (selection))
@@ -624,6 +652,8 @@ glide_window_copy_action_activate (GtkAction *a,
 
       gtk_clipboard_set_image (clipboard, pbuf);
       g_object_unref (G_OBJECT (pbuf));
+      
+      glide_window_set_copy_buffer (w, selection);
     }
 }
 
@@ -996,12 +1026,25 @@ glide_window_class_init (GlideWindowClass *klass)
 }
 
 static void
+glide_window_clipboard_owner_changed (GtkClipboard *clipboard,
+				      GdkEvent *event,
+				      gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *) user_data;
+  glide_window_set_copy_buffer (w, NULL);
+}
+
+static void
 glide_window_init (GlideWindow *window)
 {
+  GtkClipboard *clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
+
   window->priv = GLIDE_WINDOW_GET_PRIVATE (window);
   
   glide_window_load_ui (window);
   glide_window_insert_stage (window);
+  
+  g_signal_connect (clipboard, "owner-change", G_CALLBACK (glide_window_clipboard_owner_changed), window);
 
   GLIDE_NOTE (WINDOW, "Intializing Glide window (%p)", window);
   

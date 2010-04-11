@@ -40,6 +40,8 @@ struct _GlideWindowPrivate
   GlideDocument *document;
   
   gint lfw, lfh;
+  
+  JsonNode *copy_buffer;
 };
 
 G_END_DECLS

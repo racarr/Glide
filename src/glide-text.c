@@ -221,7 +221,8 @@ struct _GlideTextPrivate
   
   gfloat drag_center_x;
   gfloat drag_center_y;
-  
+
+  gboolean just_selected;
 };
 
 enum
@@ -1565,7 +1566,13 @@ glide_text_button_press (ClutterActor       *actor,
   clutter_actor_grab_key_focus (actor);
   m = glide_actor_get_stage_manager (GLIDE_ACTOR (actor));
   
-  glide_stage_manager_set_selection (m, GLIDE_ACTOR (actor));
+  if (glide_stage_manager_get_selection (m) == (GlideActor *)actor)
+    priv->just_selected = FALSE;
+  else
+    {
+      glide_stage_manager_set_selection (m, GLIDE_ACTOR (actor));
+      priv->just_selected = TRUE;
+    }
 
   priv->motion_since_press = FALSE;
   if (!priv->editable)
@@ -1693,11 +1700,15 @@ glide_text_button_release (ClutterActor       *actor,
   if (!priv->motion_since_press)
     {
       GLIDE_NOTE (TEXT, "Tap");
-      if (glide_actor_get_selected (GLIDE_ACTOR (actor)))
+      if (!self->priv->just_selected && glide_actor_get_selected (GLIDE_ACTOR (actor)))
 	glide_text_set_editable (self, TRUE);
+
+      self->priv->just_selected = FALSE;
       
       return TRUE;
     }
+  self->priv->just_selected = FALSE;
+
   if (priv->in_select_drag)
     {
       return TRUE;
