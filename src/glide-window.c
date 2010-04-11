@@ -150,9 +150,24 @@ glide_window_slide_changed_cb (GObject *object,
   GlideWindow *w = (GlideWindow *) user_data;
   GlideSlide *s = glide_document_get_nth_slide (w->priv->document,
 						glide_stage_manager_get_current_slide (w->priv->manager));
+  gint i;
   
   glide_window_update_slide_label (w);
   glide_window_animation_box_set_animation (w, glide_slide_get_animation (s));
+  
+  i = glide_stage_manager_get_current_slide (w->priv->manager);
+
+  gtk_action_set_sensitive (GTK_ACTION (GLIDE_WINDOW_UI_OBJECT (w, "next-slide-action")), TRUE);
+  gtk_action_set_sensitive (GTK_ACTION (GLIDE_WINDOW_UI_OBJECT (w, "prev-slide-action")), TRUE);
+  
+  if (i + 1 >= glide_document_get_n_slides (w->priv->document))
+    {
+      gtk_action_set_sensitive (GTK_ACTION (GLIDE_WINDOW_UI_OBJECT (w, "next-slide-action")), FALSE);
+    }
+  if (i == 0)
+    {
+      gtk_action_set_sensitive (GTK_ACTION (GLIDE_WINDOW_UI_OBJECT (w, "prev-slide-action")), FALSE);
+    }
 }
 
 void
