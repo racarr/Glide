@@ -38,6 +38,8 @@
 
 #include "glide-debug.h"
 
+#define GLIDE_WINDOW_UI_OBJECT(w, obj) (gtk_builder_get_object (w->priv->builder, obj))
+
 
 #define GLIDE_WINDOW_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object),	\
 								      GLIDE_TYPE_WINDOW, \
@@ -378,6 +380,28 @@ glide_window_slide_background_cb (GtkDialog *dialog,
   gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
+void
+glide_window_animations_box_changed_cb (GtkWidget *cbox,
+					gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  GtkTreeIter iter;
+  gchar *animation;
+  GlideSlide *s = glide_document_get_nth_slide (w->priv->document,
+						glide_stage_manager_get_current_slide (w->priv->manager));
+
+  if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX (cbox), &iter))
+    {
+      GtkTreeModel *model;
+      model = gtk_combo_box_get_model(GTK_COMBO_BOX (cbox));
+     
+      gtk_tree_model_get(model, &iter, 0, &animation, -1);
+    }
+  
+  glide_slide_set_animation (s, animation);
+  g_free (animation);
+}
+
 void 
 glide_window_background_action_activate (GtkAction *a,
 					 gpointer user_data)
@@ -627,6 +651,37 @@ glide_window_open_action_activate (GtkAction *a,
 }
 
 static void
+glide_window_setup_combobox (GlideWindow *w)
+{
+  GtkComboBox *c = GTK_COMBO_BOX (GLIDE_WINDOW_UI_OBJECT(w, "animation-combobox"));
+  GtkListStore *store = gtk_list_store_new (1, G_TYPE_STRING);
+  GtkCellRenderer *renderer;
+  GtkTreeIter iter;
+  
+  gtk_list_store_append (store, &iter);
+  gtk_list_store_set (store, &iter, 0, "None", -1);
+  gtk_list_store_append (store, &iter);
+  gtk_list_store_set (store, &iter, 0, "Fade", -1);
+  gtk_list_store_append (store, &iter);
+  gtk_list_store_set (store, &iter, 0, "Zoom", -1);
+  gtk_list_store_append (store, &iter);
+  gtk_list_store_set (store, &iter, 0, "Drop", -1);
+  gtk_list_store_append (store, &iter);
+  gtk_list_store_set (store, &iter, 0, "Pivot", -1);
+  gtk_list_store_append (store, &iter);
+  gtk_list_store_set (store, &iter, 0, "Slide", -1);
+  gtk_list_store_append (store, &iter);
+  gtk_list_store_set (store, &iter, 0, "Zoom Contents", -1);
+  
+  gtk_combo_box_set_model (c, GTK_TREE_MODEL (store));
+  g_object_unref (store);
+  
+  renderer = gtk_cell_renderer_text_new ();
+  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (c), renderer, TRUE);
+  gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT(c), renderer, "text", 0, NULL);
+}
+
+static void
 glide_window_load_ui (GlideWindow *w)
 {
   GtkBuilder *b = gtk_builder_new ();
@@ -638,6 +693,8 @@ glide_window_load_ui (GlideWindow *w)
   gtk_builder_add_from_file (b, "glide-window.ui", NULL);
   
   gtk_builder_connect_signals (b, w);
+  
+  glide_window_setup_combobox (w);
   
   main_box = GTK_WIDGET (gtk_builder_get_object (b, "main-vbox"));
   gtk_widget_reparent (main_box, GTK_WIDGET (w));
