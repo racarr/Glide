@@ -538,7 +538,9 @@ glide_slide_class_init (GlideSlideClass *klass)
 							     "Color",
 							     "The background color of the slide.",
 							     &default_slide_color,
-							     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+							     G_PARAM_CONSTRUCT |
+							     G_PARAM_READWRITE | 
+							     G_PARAM_STATIC_STRINGS));
 							     
   
   g_type_class_add_private (object_class, sizeof(GlideSlidePrivate));

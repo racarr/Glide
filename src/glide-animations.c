@@ -279,11 +279,6 @@ glide_animations_animate_doorway (ClutterActor *a, ClutterActor *b, guint durati
   g_object_set (reflection, "rotation-angle-z", (gdouble)180, NULL);
   g_object_set (reflection, "rotation-angle-y", (gdouble)180, NULL);
   
-  
-  
-  clutter_actor_set_size (a, 800, 600);
-  clutter_actor_set_size (b, 800, 600);
-  
   clutter_actor_get_size (stage, &width, &height);
   clutter_actor_set_size (left, width, height);
   clutter_actor_set_size (right, width, height);
