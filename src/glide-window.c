@@ -649,12 +649,16 @@ glide_window_add_slide_action_activate (GtkAction *a,
 {
   GlideWindow *window = (GlideWindow *)user_data;
   GlideSlide *slide, *oslide;
+  ClutterColor oc;
   
   oslide = glide_document_get_nth_slide (window->priv->document,
 					 glide_stage_manager_get_current_slide (window->priv->manager));
   
   slide = glide_document_add_slide (window->priv->document);
   glide_slide_set_background (slide, glide_slide_get_background (oslide));
+  
+  glide_slide_get_color (oslide, &oc);
+  glide_slide_set_color (slide, &oc);
 }
 
 void
