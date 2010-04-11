@@ -127,6 +127,8 @@ main (int argc, char *argv[])
   gtk_init (&argc, &argv);
   gtk_clutter_init (&argc, &argv);
   
+  g_set_application_name ("Glide");
+  
   if (glide_parse_args (&argc, &argv) == FALSE)
 	{
 	  g_critical ("Failed to parse arguments");
