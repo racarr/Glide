@@ -248,6 +248,7 @@ glide_window_open_document_real (GlideWindow *window,
   root_obj = json_node_get_object (root);
 
   glide_window_set_document (window, glide_document_new (glide_json_object_get_string (root_obj, "name")));
+  glide_document_set_path (window->priv->document, filename);
 
   
   slide_n = json_object_get_member (root_obj, "slides");
@@ -533,8 +534,10 @@ glide_window_save_document_real (GlideWindow *w,
   
   json_generator_set_root (gen, node);
   
-  // Error
+  // TODO: Error
   json_generator_to_file (gen, filename, NULL);
+  
+  glide_document_set_path (w->priv->document, filename);
 }
 
 static void
@@ -561,6 +564,24 @@ glide_window_save_as_action_activate (GtkAction *a,
   GlideWindow *w = (GlideWindow *)user_data;
   
   glide_gtk_util_show_save_dialog(G_CALLBACK (glide_window_save_as_response_callback), w);
+}
+
+void
+glide_window_save_action_activate (GtkAction *a,
+				   gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  const gchar *filename;
+  
+  filename = glide_document_get_path (w->priv->document);
+  if (filename)
+    {
+      glide_window_save_document_real (w, filename);
+    }
+  else
+    {
+      glide_gtk_util_show_save_dialog (G_CALLBACK (glide_window_save_as_response_callback), w);
+    }
 }
 
 

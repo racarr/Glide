@@ -25,6 +25,7 @@
                         <property name="use_action_appearance">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <accelerator key="n" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -34,6 +35,7 @@
                         <property name="related_action">open-action</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -43,6 +45,7 @@
                         <property name="related_action">save-action</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <accelerator key="s" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -52,6 +55,7 @@
                         <property name="related_action">save-as-action</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <accelerator key="w" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -502,6 +506,7 @@
     <property name="tooltip">Save the current file.</property>
     <property name="stock_id">gtk-save</property>
     <property name="sensitive">False</property>
+    <signal name="activate" handler="glide_window_save_action_activate"/>
   </object>
   <object class="GtkAction" id="save-as-action">
     <property name="label">Save As...</property>
