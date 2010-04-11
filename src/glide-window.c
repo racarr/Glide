@@ -825,6 +825,35 @@ glide_window_setup_combobox (GlideWindow *w)
 }
 
 static void
+glide_window_add_accelerator (GlideWindow *w,
+			      GtkActionGroup *group,
+			      GtkAccelGroup *accels,
+			      const gchar *action,
+			      const gchar *accel)
+{
+  GtkAction *a = GTK_ACTION (GLIDE_WINDOW_UI_OBJECT (w, action));
+  gtk_action_set_accel_group (a, accels);
+  gtk_action_group_add_action_with_accel (group, a, accel);
+  gtk_action_connect_accelerator (a);
+}
+
+static void
+glide_window_setup_accelerators (GlideWindow *w)
+{
+  GtkActionGroup *group = gtk_action_group_new("glide-window-actions");
+  GtkAccelGroup *accels = gtk_accel_group_new();
+  
+  glide_window_add_accelerator (w, group, accels, "new-action", "<Control>n");
+  glide_window_add_accelerator (w, group, accels, "save-action", "<Control>s");
+  glide_window_add_accelerator (w, group, accels, "open-action", "<Control>o");
+  glide_window_add_accelerator (w, group, accels, "save-as-action", "<Control>w");
+
+  glide_window_add_accelerator (w, group, accels, "copy-action", "<Control>c");
+  
+  gtk_window_add_accel_group (GTK_WINDOW (w), accels);
+}
+
+static void
 glide_window_load_ui (GlideWindow *w)
 {
   GtkBuilder *b = gtk_builder_new ();
@@ -838,6 +867,7 @@ glide_window_load_ui (GlideWindow *w)
   gtk_builder_connect_signals (b, w);
   
   glide_window_setup_combobox (w);
+  glide_window_setup_accelerators (w);
   
   main_box = GTK_WIDGET (gtk_builder_get_object (b, "main-vbox"));
   gtk_widget_reparent (main_box, GTK_WIDGET (w));
