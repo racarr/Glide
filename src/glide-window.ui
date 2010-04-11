@@ -171,7 +171,6 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -184,7 +183,6 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -197,7 +195,6 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -220,7 +217,6 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -234,7 +230,6 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -247,26 +242,30 @@
               </packing>
             </child>
             <child>
+              <object class="GtkToolItem" id="color-chooser-toolitem">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkColorButton" id="text-color-button">
+                    <property name="visible">True</property>
+                    <property name="sensitive">False</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="color">#000000000000</property>
+                    <signal name="color_set" handler="glide_window_color_set_cb"/>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkToolItem" id="text-toolpalette">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <child>
                   <object class="GtkHBox" id="text-palette-hbox">
                     <property name="visible">True</property>
-                    <child>
-                      <object class="GtkColorButton" id="text-color-button">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="color">#000000000000</property>
-                        <signal name="color_set" handler="glide_window_color_set_cb"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
                     <child>
                       <object class="GtkFontButton" id="text-font-button">
                         <property name="visible">True</property>
@@ -365,7 +364,6 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -378,7 +376,6 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="homogeneous">True</property>
               </packing>
             </child>
           </object>
@@ -472,6 +469,7 @@
             <child>
               <object class="GtkComboBox" id="animation-combobox">
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <signal name="changed" handler="glide_window_animations_box_changed_cb"/>
               </object>
               <packing>

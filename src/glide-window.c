@@ -76,6 +76,14 @@ glide_window_enable_action (GlideWindow *w, const gchar *action)
 }
 
 static void
+glide_window_enable_widget (GlideWindow *w, const gchar *widget)
+{
+  GtkWidget *wd =
+    GTK_WIDGET (gtk_builder_get_object (w->priv->builder, widget));
+  gtk_widget_set_sensitive (wd, TRUE);
+}
+
+static void
 glide_window_enable_document_actions (GlideWindow *w)
 {
   glide_window_enable_action (w, "new-image-action");
@@ -86,6 +94,8 @@ glide_window_enable_document_actions (GlideWindow *w)
   glide_window_enable_action (w, "present-action");
   glide_window_enable_action (w, "background-action");
   glide_window_enable_action (w, "save-action");
+  
+  glide_window_enable_widget (w, "animation-combobox");
 }
 
 static void
@@ -187,6 +197,15 @@ glide_window_stage_selection_changed_cb (GlideStageManager *manager,
   GlideWindow *w = (GlideWindow *)user_data;
   GlideActor *selection = 
     glide_stage_manager_get_selection (w->priv->manager);
+  
+  if (!selection || GLIDE_IS_TEXT (selection))
+    {
+      gtk_widget_set_sensitive (GTK_WIDGET (GLIDE_WINDOW_UI_OBJECT (w, "text-color-button")), TRUE);
+    }
+  else
+    {
+      gtk_widget_set_sensitive (GTK_WIDGET (GLIDE_WINDOW_UI_OBJECT (w, "text-color-button")), FALSE);
+    }
   
   if (selection && GLIDE_IS_TEXT (selection))
     {
