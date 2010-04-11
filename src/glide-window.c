@@ -21,6 +21,7 @@
  */
  
 #include <glib/gi18n.h>
+#include <gdk/gdkkeysyms.h>
 
 
 #include "glide-window.h"
@@ -362,6 +363,21 @@ glide_window_fixed_embed_size_allocate (GtkWidget *widget,
     }
 }
 
+static gboolean
+glide_window_fixed_key_press_event (GtkWidget *widget,
+				    GdkEventKey *key,
+				    gpointer user_data)
+{
+  switch (key->keyval){
+  case GDK_Up:
+  case GDK_Down:
+  case GDK_Left:
+  case GDK_Right:
+    return TRUE;
+  default:
+    return FALSE;
+  }
+}
 static void
 glide_window_insert_stage (GlideWindow *w)
 {
@@ -371,6 +387,12 @@ glide_window_insert_stage (GlideWindow *w)
   GdkColor black;
 
   gtk_fixed_set_has_window (GTK_FIXED (fixed), TRUE); 
+
+  // Nasty hack.
+  g_signal_connect (fixed, "key-press-event",
+		    G_CALLBACK (glide_window_fixed_key_press_event),
+		    NULL);
+
 
   gdk_color_parse ("black", &black);
   gtk_widget_modify_bg (fixed, GTK_STATE_NORMAL, &black);
@@ -399,6 +421,8 @@ glide_window_stage_enter_notify (GtkWidget *widget,
   gtk_widget_grab_focus (widget);
 }
 
+
+
 static GtkWidget *
 glide_window_make_embed ()
 {
@@ -408,6 +432,8 @@ glide_window_make_embed ()
   g_signal_connect (embed, "enter-notify-event",
 		    G_CALLBACK (glide_window_stage_enter_notify),
 		    NULL);
+  
+  gtk_widget_set_can_focus (embed, TRUE);
   
   return embed;
 }

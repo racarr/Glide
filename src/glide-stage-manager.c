@@ -268,9 +268,6 @@ glide_stage_manager_key_pressed (ClutterActor *actor,
   GlideStageManager *m = (GlideStageManager *)user_data;
   ClutterBindingPool *pool;
   
-  if (!m->priv->presenting)
-    return FALSE;
-  
   pool = clutter_binding_pool_find (g_type_name (GLIDE_TYPE_STAGE_MANAGER));
   
   return clutter_binding_pool_activate (pool, event->keyval, event->modifier_state,
@@ -351,21 +348,6 @@ glide_stage_manager_constructor (GType type,
 }
 
 static gboolean
-glide_stage_manager_binding_prev (GlideStageManager         *self,
-				  const gchar         *action,
-				  guint                keyval,
-				  ClutterModifierType  modifiers)
-{
-  if (self->priv->presenting)
-    {
-      glide_stage_manager_reverse_slide (self);
-      
-      return TRUE;
-    }
-  return FALSE;
-}
-
-static gboolean
 glide_stage_manager_binding_end_presentation (GlideStageManager         *self,
 					      const gchar         *action,
 					      guint                keyval,
@@ -392,6 +374,88 @@ glide_stage_manager_binding_next (GlideStageManager         *self,
       return TRUE;
     }
   return FALSE;
+}
+
+static gboolean
+glide_stage_manager_binding_move_up (GlideStageManager         *self,
+				     const gchar         *action,
+				     guint                keyval,
+				     ClutterModifierType  modifiers)
+{
+  ClutterActor *selection = CLUTTER_ACTOR (glide_stage_manager_get_selection (self));
+
+  if (self->priv->presenting)
+    return FALSE;
+  
+  if (!selection)
+    return FALSE;
+  
+  clutter_actor_set_y (selection, clutter_actor_get_y (selection) - 1);
+  
+  return TRUE;
+}
+
+static gboolean
+glide_stage_manager_binding_move_down (GlideStageManager         *self,
+				     const gchar         *action,
+				     guint                keyval,
+				     ClutterModifierType  modifiers)
+{
+  ClutterActor *selection = CLUTTER_ACTOR (glide_stage_manager_get_selection (self));
+
+  if (self->priv->presenting)
+    return FALSE;
+  
+  if (!selection)
+    return FALSE;
+  
+  clutter_actor_set_y (selection, clutter_actor_get_y (selection) + 1);
+  
+  return TRUE;
+}
+
+static gboolean
+glide_stage_manager_binding_move_left (GlideStageManager         *self,
+				       const gchar         *action,
+				       guint                keyval,
+				       ClutterModifierType  modifiers)
+{
+  ClutterActor *selection = CLUTTER_ACTOR (glide_stage_manager_get_selection (self));
+
+  if (self->priv->presenting)
+    {
+      glide_stage_manager_reverse_slide (self);
+      return TRUE;
+    }
+  
+  if (!selection)
+    return FALSE;
+  
+  clutter_actor_set_x (selection, clutter_actor_get_x (selection) - 1);
+  
+  return TRUE;
+}
+
+static gboolean
+glide_stage_manager_binding_move_right (GlideStageManager         *self,
+					const gchar         *action,
+					guint                keyval,
+					ClutterModifierType  modifiers)
+{
+  ClutterActor *selection = CLUTTER_ACTOR (glide_stage_manager_get_selection (self));
+
+  if (self->priv->presenting)
+    {
+      glide_stage_manager_advance_slide (self);
+	
+      return TRUE;
+    }
+  if (!selection)
+    return FALSE;
+  
+  clutter_actor_set_x (selection, clutter_actor_get_x (selection) + 1);
+  
+  return TRUE;
 }
 
 static void
@@ -465,14 +529,6 @@ glide_stage_manager_class_init (GlideStageManagerClass *klass)
   
   binding_pool = clutter_binding_pool_get_for_class (klass);
   
-  clutter_binding_pool_install_action (binding_pool, "previous",
-				       CLUTTER_Left, 0,
-				       G_CALLBACK(glide_stage_manager_binding_prev),
-				       NULL, NULL);
-  clutter_binding_pool_install_action (binding_pool, "next",
-				       CLUTTER_Right, 0,
-				       G_CALLBACK(glide_stage_manager_binding_next),
-				       NULL, NULL);
   clutter_binding_pool_install_action (binding_pool, "next",
 				       CLUTTER_space, 0,
 				       G_CALLBACK(glide_stage_manager_binding_next),
@@ -480,6 +536,22 @@ glide_stage_manager_class_init (GlideStageManagerClass *klass)
   clutter_binding_pool_install_action (binding_pool, "end",
 				       CLUTTER_Escape, 0,
 				       G_CALLBACK(glide_stage_manager_binding_end_presentation),
+				       NULL, NULL);
+  clutter_binding_pool_install_action (binding_pool, "move-up",
+				       CLUTTER_Up, 0,
+				       G_CALLBACK(glide_stage_manager_binding_move_up),
+				       NULL, NULL);
+  clutter_binding_pool_install_action (binding_pool, "move-down",
+				       CLUTTER_Down, 0,
+				       G_CALLBACK(glide_stage_manager_binding_move_down),
+				       NULL, NULL);
+  clutter_binding_pool_install_action (binding_pool, "move-left",
+				       CLUTTER_Left, 0,
+				       G_CALLBACK(glide_stage_manager_binding_move_left),
+				       NULL, NULL);
+  clutter_binding_pool_install_action (binding_pool, "move-right",
+				       CLUTTER_Right, 0,
+				       G_CALLBACK(glide_stage_manager_binding_move_right),
 				       NULL, NULL);
 
   g_type_class_add_private (object_class, sizeof(GlideStageManagerPrivate));
