@@ -463,7 +463,7 @@ glide_window_fixed_key_press_event (GtkWidget *widget,
 static void
 glide_window_insert_stage (GlideWindow *w)
 {
-  ClutterColor white = {0xff, 0xff, 0xff, 0xff};
+  ClutterColor cblack = {0x00, 0x00, 0x00, 0xff};
   GtkWidget *fixed = GTK_WIDGET (gtk_builder_get_object (w->priv->builder, "embed-fixed"));
   GtkWidget *embed = glide_window_make_embed ();
   GdkColor black;
@@ -486,7 +486,7 @@ glide_window_insert_stage (GlideWindow *w)
   
   clutter_actor_show (w->priv->stage);
   
-  clutter_stage_set_color (CLUTTER_STAGE (w->priv->stage), &white);
+  clutter_stage_set_color (CLUTTER_STAGE (w->priv->stage), &cblack);
   
   gtk_fixed_put (GTK_FIXED (fixed), embed, 0, 0);
   gtk_widget_set_size_request (fixed, 800, 600);
