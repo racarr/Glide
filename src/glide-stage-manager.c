@@ -238,6 +238,8 @@ glide_stage_manager_advance_slide (GlideStageManager *manager)
 	glide_animations_animate_slide (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1200);
       if (!strcmp(animation, "Zoom Contents"))
 	glide_animations_animate_zoom_contents (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 1200);
+      if (!strcmp(animation, "Doorway"))
+	glide_animations_animate_doorway (CLUTTER_ACTOR (a), CLUTTER_ACTOR (b), 2000);
       
       // XXX: Maybe not?
       g_object_notify (G_OBJECT (manager), "current-slide");

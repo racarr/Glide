@@ -1124,6 +1124,8 @@ glide_window_setup_combobox (GlideWindow *w)
   gtk_list_store_set (store, &iter, 0, "Slide", -1);
   gtk_list_store_append (store, &iter);
   gtk_list_store_set (store, &iter, 0, "Zoom Contents", -1);
+  gtk_list_store_append (store, &iter);
+  gtk_list_store_set (store, &iter, 0, "Doorway", -1);
   
   gtk_combo_box_set_model (c, GTK_TREE_MODEL (store));
   g_object_unref (store);
@@ -1262,15 +1264,6 @@ glide_window_insert_recent_menu_item (GlideWindow *w)
 }
 
 static void
-glide_window_hide (GlideWindow *window,
-		   gpointer user_data)
-{
-  GlideWindow *w = (GlideWindow *) user_data;
-  if (glide_window_show_quit_dialog (w))
-    gtk_main_quit ();
-}
-
-static void
 glide_window_init (GlideWindow *window)
 {
   GtkClipboard *clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
@@ -1289,7 +1282,7 @@ glide_window_init (GlideWindow *window)
   
   gtk_widget_show_all (GTK_WIDGET (window));
   
-  g_signal_connect (window, "hide", G_CALLBACK (glide_window_hide), window);
+  //  g_signal_connect (window, "hide", G_CALLBACK (glide_window_hide), window);
 }
 
 GlideWindow *
