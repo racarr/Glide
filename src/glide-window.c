@@ -415,8 +415,9 @@ glide_window_new_document_real (GlideWindow *w)
   GlideDocument *d = glide_document_new ("New Document...");
 
   glide_window_set_document (w, d);
-
   glide_document_append_slide (d);
+  
+  gtk_window_set_title (GTK_WINDOW (w), "Glide - (New Document)");
 }
 
 static void
