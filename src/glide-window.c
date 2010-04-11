@@ -62,6 +62,13 @@ static void glide_window_stage_enter_notify (GtkWidget *w, GdkEventCrossing *e, 
 static void glide_window_insert_stage (GlideWindow *w);
 static void glide_window_close_document (GlideWindow *w);
 
+static void glide_window_save_document_real (GlideWindow *w, const gchar *filename);
+
+static void glide_window_save_and_quit_response_callback (GtkDialog *dialog, int response, gpointer user_data);
+
+void
+glide_window_save_action_activate (GtkAction *a, gpointer user_data);
+
 static void
 glide_window_set_copy_buffer (GlideWindow *w, GlideActor *copy)
 {
@@ -643,11 +650,64 @@ glide_window_delete_action_activate (GtkAction *a,
   glide_stage_manager_delete_selection (w->priv->manager);
 }
 
+
+
+
+static gboolean
+glide_window_show_quit_dialog (GlideWindow *w)
+{
+  GtkWidget *dialog, *label;
+  gint response;
+
+  dialog = gtk_dialog_new_with_buttons (_("Glide"),
+                                        GTK_WINDOW (w), 
+                                        GTK_DIALOG_MODAL,
+                                        "Close without saving", GTK_RESPONSE_CLOSE,
+                                        "Save and close", GTK_RESPONSE_OK,
+					"Cancel", GTK_RESPONSE_CANCEL,
+                                        NULL);
+  gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
+  label = gtk_label_new (_("Are you sure you want to quit?"));
+  gtk_misc_set_padding (GTK_MISC (label), 20, 20);
+  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), label,
+                      TRUE, TRUE, 0);
+  gtk_widget_show (label);
+
+  gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_MOUSE);
+  gtk_window_set_wmclass (GTK_WINDOW (dialog), "quit", "Glide");
+
+  response = gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (dialog);
+  
+  if (response == GTK_RESPONSE_CLOSE)
+    return TRUE;
+  else if (response == GTK_RESPONSE_OK)
+    {
+      const gchar *filename;
+      
+      filename = glide_document_get_path (w->priv->document);
+      if (filename)
+	{
+	  glide_window_save_document_real (w, filename);
+	  return TRUE;
+	}
+      else
+	{
+	  glide_gtk_util_show_save_dialog (G_CALLBACK (glide_window_save_and_quit_response_callback), w);
+	  return FALSE;
+	}
+    }
+  return FALSE;
+}
+
+
 void
 glide_window_quit_action_activate (GtkAction *a,
 				   gpointer user_data)
 {
-  gtk_main_quit ();
+  GlideWindow *w = (GlideWindow *) user_data;
+  if (glide_window_show_quit_dialog (w))
+    gtk_main_quit ();
 }
 
 void
@@ -959,6 +1019,16 @@ glide_window_save_as_response_callback (GtkDialog *dialog,
   gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
+static void
+glide_window_save_and_quit_response_callback (GtkDialog *dialog,
+					  int response,
+					  gpointer user_data)
+{
+  glide_window_save_as_response_callback (dialog, response, user_data);
+  
+  gtk_main_quit ();
+}
+
 
 void
 glide_window_save_as_action_activate (GtkAction *a,
@@ -1189,6 +1259,15 @@ glide_window_insert_recent_menu_item (GlideWindow *w)
 }
 
 static void
+glide_window_hide (GlideWindow *window,
+		   gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *) user_data;
+  if (glide_window_show_quit_dialog (w))
+    gtk_main_quit ();
+}
+
+static void
 glide_window_init (GlideWindow *window)
 {
   GtkClipboard *clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
@@ -1207,7 +1286,7 @@ glide_window_init (GlideWindow *window)
   
   gtk_widget_show_all (GTK_WIDGET (window));
   
-  g_signal_connect (window, "hide", G_CALLBACK (gtk_main_quit), NULL);
+  g_signal_connect (window, "hide", G_CALLBACK (glide_window_hide), window);
 }
 
 GlideWindow *

@@ -524,14 +524,14 @@
   <object class="GtkAction" id="new-action">
     <property name="label">New</property>
     <property name="short_label">New File</property>
-    <property name="tooltip">Open a New Presentation</property>
+    <property name="tooltip">Create a new presentation.</property>
     <property name="stock_id">gtk-new</property>
     <signal name="activate" handler="glide_window_new_action_activate"/>
   </object>
   <object class="GtkAction" id="open-action">
     <property name="label">Open</property>
     <property name="short_label">Open File</property>
-    <property name="tooltip">Open an Existing Presentation</property>
+    <property name="tooltip">Open an existing presentation.</property>
     <property name="stock_id">gtk-open</property>
     <signal name="activate" handler="glide_window_open_action_activate"/>
   </object>
