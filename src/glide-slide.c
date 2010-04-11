@@ -663,7 +663,7 @@ glide_slide_set_animation (GlideSlide *slide, const gchar *animation)
     g_free (slide->priv->animation);
   
   slide->priv->animation = g_strdup (animation);
-  g_object_notify (G_OBJECT (slide), "background");
+  g_object_notify (G_OBJECT (slide), "animation");
 }
 
 const gchar *
