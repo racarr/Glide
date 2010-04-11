@@ -340,7 +340,7 @@ glide_animations_animate_doorway (ClutterActor *a, ClutterActor *b, guint durati
 				       "rotation-angle-y", (gdouble)-10,
 				       "opacity", 0x00,
   				       NULL);
-  clutter_actor_animate_with_timeline (group, CLUTTER_EASE_OUT_QUAD,
+  clutter_actor_animate_with_timeline (group, CLUTTER_EASE_OUT_SINE,
 				       timeline,
 				       "scale-x", (gdouble)1,
 				       "scale-y", (gdouble)1,
