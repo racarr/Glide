@@ -181,11 +181,18 @@ glide_window_color_set_cb (GtkWidget *b,
   
   selection = glide_stage_manager_get_selection (w->priv->manager);
 
-  if (!selection || !GLIDE_IS_TEXT (selection))
-    return;
-  
   gtk_color_button_get_color (GTK_COLOR_BUTTON (b), &c);
   glide_clutter_color_from_gdk_color (&c, &cc);
+
+  if (!selection)
+    {
+      GlideSlide *s = glide_document_get_nth_slide (w->priv->document,
+						    glide_stage_manager_get_current_slide (w->priv->manager));
+      glide_slide_set_color (s, &cc);
+    }
+    
+  if (!GLIDE_IS_TEXT (selection))
+    return;
   
   glide_text_set_color (GLIDE_TEXT (selection), &cc);  
 }
