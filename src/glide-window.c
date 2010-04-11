@@ -585,6 +585,36 @@ glide_window_paste_action_activate (GtkAction *a,
   gtk_clipboard_request_targets (clipboard, glide_window_paste_targets_received, w);
 }
 
+void
+glide_window_copy_action_activate (GtkAction *a,
+				   gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  GtkClipboard *clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
+  GlideActor *selection = glide_stage_manager_get_selection (w->priv->manager);
+  
+  if (!selection)
+    {
+      return;
+    }
+  
+  if (GLIDE_IS_TEXT (selection))
+    {
+      if (glide_text_get_editable (GLIDE_TEXT (selection)))
+	{
+	  gchar *t = glide_text_get_selection (GLIDE_TEXT (selection));
+
+	  gtk_clipboard_set_text (clipboard, t, -1);
+	  g_free (t);
+	}
+      else
+	{
+	  gtk_clipboard_set_text (clipboard, glide_text_get_text (GLIDE_TEXT (selection)), -1);
+	  return;
+	}
+    }
+}
+
 void 
 glide_window_background_action_activate (GtkAction *a,
 					 gpointer user_data)

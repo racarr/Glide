@@ -2478,57 +2478,6 @@ glide_text_decrease_font_size (GlideText         *self,
   return TRUE;
 }
 
-static void
-glide_text_font_selection_response_callback (GtkDialog *dialog,
-					     int response,
-					     gpointer data)
-{
-  GlideText *text =  (GlideText *)data;
-  gchar *font_name;
-  
-  if (response != GTK_RESPONSE_CANCEL)
-    {
-      font_name = 
-	gtk_font_selection_dialog_get_font_name (GTK_FONT_SELECTION_DIALOG (dialog));
-      glide_text_set_font_name (text, font_name);
-      g_free (font_name);
-    }
-    
-    gtk_widget_destroy (GTK_WIDGET (dialog));
-}
-
-static gboolean
-glide_text_paste (GlideText         *self,
-		  const gchar         *action,
-		  guint                keyval,
-		  ClutterModifierType  modifiers)
-{
-  gint pos = glide_text_get_cursor_position (self);
-  glide_text_insert_text (self, glide_gtk_util_get_clipboard_text (), pos);
-
-  return TRUE;
-}
-
-static gboolean
-glide_text_show_font_selection_dialog (GlideText         *self,
-				       const gchar         *action,
-				       guint                keyval,
-				       ClutterModifierType  modifiers)
-{
-  // TODO: Check if we already have one. mm, etc...
-  GtkWidget *dialog;
-  
-  dialog = gtk_font_selection_dialog_new ("Select font");
-  g_signal_connect (dialog, "response", 
-		    G_CALLBACK (glide_text_font_selection_response_callback),
-		    self);
-  
-  gtk_widget_show (dialog);
-  
-  return TRUE;
-}
-
-
 static inline void
 glide_text_add_move_binding (ClutterBindingPool  *pool,
                                const gchar         *action,
@@ -3279,16 +3228,6 @@ glide_text_class_init (GlideTextClass *klass)
   clutter_binding_pool_install_action (binding_pool, "decrease-font-size",
 				       CLUTTER_minus, CLUTTER_CONTROL_MASK,
 				       G_CALLBACK (glide_text_decrease_font_size),
-				       NULL, NULL);
-
-  clutter_binding_pool_install_action (binding_pool, "select-font",
-				       CLUTTER_f, CLUTTER_CONTROL_MASK,
-				       G_CALLBACK (glide_text_show_font_selection_dialog),
-				       NULL, NULL);
-  
-  clutter_binding_pool_install_action (binding_pool, "paste",
-				       CLUTTER_v, CLUTTER_CONTROL_MASK,
-				       G_CALLBACK (glide_text_paste),
 				       NULL, NULL);
 
 }

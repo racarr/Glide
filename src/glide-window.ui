@@ -536,6 +536,7 @@
     <property name="short_label">Copy Selection</property>
     <property name="tooltip">Copies the current selection to the clipboard.</property>
     <property name="stock_id">gtk-copy</property>
+    <signal name="activate" handler="glide_window_copy_action_activate"/>
   </object>
   <object class="GtkAction" id="paste-action">
     <property name="label">Paste</property>
