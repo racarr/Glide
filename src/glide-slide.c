@@ -420,7 +420,6 @@ glide_slide_dispose (GObject *object)
 
   if (priv->children)
     {
-      g_list_foreach (priv->children, (GFunc) clutter_actor_destroy, NULL);
       g_list_free (priv->children);
 
       priv->children = NULL;
