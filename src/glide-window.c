@@ -65,6 +65,8 @@ static void glide_window_close_document (GlideWindow *w);
 static void
 glide_window_set_copy_buffer (GlideWindow *w, GlideActor *copy)
 {
+  w->priv->keep_buffer = TRUE;
+
   if (w->priv->copy_buffer)
     json_node_free (w->priv->copy_buffer);
   w->priv->copy_buffer = glide_actor_serialize (copy);
@@ -657,6 +659,55 @@ glide_window_copy_action_activate (GtkAction *a,
     }
 }
 
+void
+glide_window_cut_action_activate (GtkAction *a,
+				  gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  GtkClipboard *clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
+  GlideActor *selection = glide_stage_manager_get_selection (w->priv->manager);
+  
+  if (!selection)
+    {
+      return;
+    }
+  
+  if (GLIDE_IS_TEXT (selection))
+    {
+      if (glide_text_get_editable (GLIDE_TEXT (selection)))
+	{
+	  gchar *t = glide_text_get_selection (GLIDE_TEXT (selection));
+
+	  gtk_clipboard_set_text (clipboard, t, -1);
+	  g_free (t);
+	  
+	  glide_text_delete_selection (GLIDE_TEXT (selection));
+	}
+      else
+	{
+	  gtk_clipboard_set_text (clipboard, glide_text_get_text (GLIDE_TEXT (selection)), -1);
+	  glide_window_set_copy_buffer (w, selection);
+	  
+	  glide_stage_manager_delete_selection (w->priv->manager);
+	}
+    }
+  else if (GLIDE_IS_IMAGE (selection))
+    {
+      GdkPixbuf *pbuf;
+      const gchar *filename = glide_image_get_filename (GLIDE_IMAGE (selection));
+      
+      // TODO: Error checking
+      pbuf = gdk_pixbuf_new_from_file (filename, NULL);
+
+      gtk_clipboard_set_image (clipboard, pbuf);
+      g_object_unref (G_OBJECT (pbuf));
+      
+      glide_window_set_copy_buffer (w, selection);
+      
+      glide_stage_manager_delete_selection (w->priv->manager);
+    }
+}
+
 void 
 glide_window_background_action_activate (GtkAction *a,
 					 gpointer user_data)
@@ -1031,7 +1082,16 @@ glide_window_clipboard_owner_changed (GtkClipboard *clipboard,
 				      gpointer user_data)
 {
   GlideWindow *w = (GlideWindow *) user_data;
-  glide_window_set_copy_buffer (w, NULL);
+
+  if (w->priv->keep_buffer)
+    {
+      w->priv->keep_buffer = FALSE;
+      return;
+    }
+  if (w->priv->copy_buffer)
+    json_node_free (w->priv->copy_buffer);
+  
+  w->priv->copy_buffer = NULL;
 }
 
 static void

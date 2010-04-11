@@ -530,6 +530,7 @@
     <property name="short_label">Cut Selection</property>
     <property name="tooltip">Cuts the current selection to the clipboard.</property>
     <property name="stock_id">gtk-cut</property>
+    <signal name="activate" handler="glide_window_cut_action_activate"/>
   </object>
   <object class="GtkAction" id="copy-action">
     <property name="label">Copy</property>

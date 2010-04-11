@@ -42,6 +42,7 @@ struct _GlideWindowPrivate
   gint lfw, lfh;
   
   JsonNode *copy_buffer;
+  gboolean keep_buffer;
 };
 
 G_END_DECLS

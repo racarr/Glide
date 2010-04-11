@@ -670,11 +670,6 @@ glide_manipulator_set_target_real (GlideManipulator *manip,
   
   clutter_actor_raise (CLUTTER_ACTOR (manip), target);
   
-  if (manip->priv->target)
-    {
-      clutter_actor_queue_redraw (manip->priv->target);
-    }
-
   manip->priv->target = target;
   
   clutter_actor_grab_key_focus (manip->priv->target);

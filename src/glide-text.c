@@ -1554,7 +1554,7 @@ glide_text_select_line (GlideText *self)
 
 static gboolean
 glide_text_button_press (ClutterActor       *actor,
-                           ClutterButtonEvent *event)
+			 ClutterButtonEvent *event)
 {
   GlideText *self = GLIDE_TEXT (actor);
   GlideTextPrivate *priv = self->priv;
