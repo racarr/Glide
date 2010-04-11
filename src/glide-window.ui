@@ -46,6 +46,11 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkSeparatorMenuItem" id="filemenu-separator">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkImageMenuItem" id="save-menuitem">
                         <property name="label">gtk-save</property>
                         <property name="visible">True</property>
