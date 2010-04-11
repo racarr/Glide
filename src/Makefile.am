@@ -15,6 +15,7 @@ AM_CPPFLAGS = \
 	$(GOBJECT_INTROSPECTION_CFLAGS)
 
 AM_CFLAGS =\
+	 -g \
 	 -Wall \
 	 -Werror 
 
@@ -48,7 +49,9 @@ glide_SOURCES = \
 	glide-gtk-util.h \
 	glide-gtk-util.c \
 	glide-animations.c \
-	glide-animations.h 
+	glide-animations.h \
+	glide-undo-manager.c \
+	glide-undo-manager.h
 
 glide_LDFLAGS = \
 	-Wl,--export-dynamic
