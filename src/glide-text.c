@@ -1714,7 +1714,20 @@ glide_text_key_press (ClutterActor    *actor,
   GlideTextPrivate *priv = self->priv;
   ClutterBindingPool *pool;
   gboolean res;
-
+  
+  if (!priv->editable)
+    {
+      switch (event->keyval)
+	{
+	case CLUTTER_Up:
+	case CLUTTER_Down:
+	case CLUTTER_Left:
+	case CLUTTER_Right:
+	  return FALSE;
+	default:
+	  break;
+	}
+    }
 
   /* we need to use the GlideText type name to find our own
    * key bindings; subclasses will override or chain up this
@@ -1732,13 +1745,10 @@ glide_text_key_press (ClutterActor    *actor,
     res = clutter_binding_pool_activate (pool, event->keyval,
                                          event->modifier_state,
                                          G_OBJECT (actor));
-
-  if (!priv->editable)
+  
+  if (res)
     {
-      if (glide_actor_get_selected (GLIDE_ACTOR (self)))
-	glide_text_set_editable (self, TRUE);
-      else
-	return FALSE;
+      glide_text_set_editable (self, TRUE);
     }
 
   /* if the key binding has handled the event we bail out
