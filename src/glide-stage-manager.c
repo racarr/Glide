@@ -419,8 +419,13 @@ glide_stage_manager_binding_move_up (GlideStageManager         *self,
   
   if (!selection)
     return FALSE;
-  
+
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+					 GLIDE_ACTOR (selection),
+					 "Move actor");
   clutter_actor_set_y (selection, clutter_actor_get_y (selection) - 1);
+  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+				       GLIDE_ACTOR (selection));
   
   return TRUE;
 }
@@ -438,8 +443,13 @@ glide_stage_manager_binding_move_down (GlideStageManager         *self,
   
   if (!selection)
     return FALSE;
-  
+
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+					 GLIDE_ACTOR (selection),
+					 "Move actor");  
   clutter_actor_set_y (selection, clutter_actor_get_y (selection) + 1);
+glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+				       GLIDE_ACTOR (selection));
   
   return TRUE;
 }
@@ -460,8 +470,13 @@ glide_stage_manager_binding_move_left (GlideStageManager         *self,
   
   if (!selection)
     return FALSE;
-  
+
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+					 GLIDE_ACTOR (selection),
+					 "Move actor");  
   clutter_actor_set_x (selection, clutter_actor_get_x (selection) - 1);
+  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+				     GLIDE_ACTOR (selection));
   
   return TRUE;
 }
@@ -482,8 +497,13 @@ glide_stage_manager_binding_move_right (GlideStageManager         *self,
     }
   if (!selection)
     return FALSE;
-  
+
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+					 GLIDE_ACTOR (selection),
+					 "Move actor");  
   clutter_actor_set_x (selection, clutter_actor_get_x (selection) + 1);
+  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+				     GLIDE_ACTOR (selection));
   
   return TRUE;
 }
@@ -501,8 +521,14 @@ glide_stage_manager_binding_move_up_snap (GlideStageManager         *self,
   
   if (!selection)
     return FALSE;
-  
+
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+					 GLIDE_ACTOR (selection),
+					 "Move actor");  
   clutter_actor_set_y (selection, (clutter_actor_get_y(selection) - 10)-(gint)(clutter_actor_get_y(selection) - 10)%10);
+
+  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+				       GLIDE_ACTOR (selection));
   
   return TRUE;
 }
@@ -521,7 +547,12 @@ glide_stage_manager_binding_move_down_snap (GlideStageManager         *self,
   if (!selection)
     return FALSE;
 
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+					 GLIDE_ACTOR (selection),
+					 "Move actor");
   clutter_actor_set_y (selection, (clutter_actor_get_y(selection) + 10)-(gint)(clutter_actor_get_y(selection) + 10)%10);  
+  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+				       GLIDE_ACTOR (selection));
   
   return TRUE;
 }
@@ -541,8 +572,13 @@ glide_stage_manager_binding_move_left_snap (GlideStageManager         *self,
   
   if (!selection)
     return FALSE;
-  
+
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+					 GLIDE_ACTOR (selection),
+					 "Move actor");  
   clutter_actor_set_x (selection, (clutter_actor_get_x(selection) - 10)-(gint)(clutter_actor_get_x(selection) - 10)%10);  
+  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+				       GLIDE_ACTOR (selection));
 
   
   return TRUE;
@@ -563,7 +599,12 @@ glide_stage_manager_binding_move_right_snap (GlideStageManager         *self,
   if (!selection)
     return FALSE;
 
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+					 GLIDE_ACTOR (selection),
+					 "Move actor");
   clutter_actor_set_x (selection, (clutter_actor_get_x(selection) + 10)-(gint)(clutter_actor_get_x(selection) + 10)%10);  
+  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+				       GLIDE_ACTOR (selection));
   
   return TRUE;
 }

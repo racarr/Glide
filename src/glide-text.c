@@ -1699,7 +1699,7 @@ glide_text_button_release (ClutterActor       *actor,
     {
       if (!priv->motion_since_press)
 	glide_undo_manager_cancel_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (actor)));
-
+      else
 	glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (actor)),
 					       GLIDE_ACTOR (actor));
 
