@@ -29,7 +29,11 @@ G_BEGIN_DECLS
 
 struct _GlideUndoManagerPrivate
 {
-  gpointer padding;
+  ClutterActor *recorded_actor;
+  // TODO: Check. do we leak the nodes?
+  JsonObject *recorded_state;
+
+  GList *infos;
 };
 
 G_END_DECLS

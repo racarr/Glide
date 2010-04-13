@@ -473,7 +473,7 @@ glide_window_insert_stage (GlideWindow *w)
   GtkWidget *fixed = GTK_WIDGET (gtk_builder_get_object (w->priv->builder, "embed-fixed"));
   GtkWidget *embed = glide_window_make_embed ();
   GdkColor black;
-
+  
   gtk_fixed_set_has_window (GTK_FIXED (fixed), TRUE); 
 
   // Nasty hack.

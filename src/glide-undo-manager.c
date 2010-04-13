@@ -66,6 +66,42 @@ glide_undo_actor_action_callback (GlideUndoManager *undo_manager,
   return TRUE;
 }
 
+void
+glide_undo_manager_start_actor_action (GlideUndoManager *manager,
+				       GlideActor *a)
+{
+  JsonNode *anode;
+  manager->priv->recorded_actor = (ClutterActor *)a;
+  
+  anode = glide_actor_serialize (a);
+  manager->priv->recorded_state = json_node_get_object (anode);
+}
+
+void
+glide_undo_manager_end_actor_action (GlideUndoManager *manager,
+				     GlideActor *a)
+{
+  GlideUndoInfo *info;
+  GlideUndoActorData *data;
+  
+  if (manager->priv->recorded_actor != (ClutterActor *)a)
+    {
+      g_warning ("Error, mismatched undo manager start/end actor actions.");
+      return;
+    }
+  info = g_malloc (sizeof (GlideUndoInfo));
+  data = g_malloc (sizeof (GlideUndoActorData));
+  
+  info->callback = glide_undo_actor_action_callback;
+  info->free_callback = glide_undo_actor_info_free_callback;
+  info->user_data = data;
+  
+  data->actor = (ClutterActor *)g_object_ref (G_OBJECT (a));
+  data->old_state = manager->priv->recorded_state;
+  
+  glide_undo_manager_append_info (manager, info);
+}
+
 static void
 glide_undo_manager_init (GlideUndoManager *manager)
 {
@@ -85,4 +121,10 @@ glide_undo_manager_new ()
 {
   return g_object_new (GLIDE_TYPE_UNDO_MANAGER,
 		       NULL);
+}
+
+void
+glide_undo_manager_append_info (GlideUndoManager *manager, GlideUndoInfo *info)
+{
+  manager->priv->infos = g_list_append (manager->priv->infos, info);
 }
