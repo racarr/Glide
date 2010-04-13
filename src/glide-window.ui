@@ -107,6 +107,15 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkImageMenuItem" id="redo-menuitem">
+                        <property name="visible">True</property>
+                        <property name="related_action">redo-action</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                        <accelerator key="z" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkSeparatorMenuItem" id="edit-separator">
                         <property name="visible">True</property>
                       </object>
@@ -704,5 +713,12 @@
     <property name="tooltip">Undo the last action</property>
     <property name="stock_id">gtk-undo</property>
     <signal name="activate" handler="glide_window_undo_action_activate"/>
+  </object>
+  <object class="GtkAction" id="redo-action">
+    <property name="label">Redo</property>
+    <property name="short_label">Redo</property>
+    <property name="tooltip">Redo the last undo.</property>
+    <property name="stock_id">gtk-redo</property>
+    <signal name="activate" handler="glide_window_redo_action_activate"/>
   </object>
 </interface>
