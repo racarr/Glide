@@ -41,6 +41,49 @@ enum {
 
 static guint undo_manager_signals[LAST_SIGNAL] = { 0, };
 
+typedef struct _GlideUndoDeleteActorData {
+  ClutterActor *parent;
+  ClutterActor *actor;
+} GlideUndoDeleteActorData;
+
+static void
+glide_undo_delete_actor_info_free_callback (GlideUndoInfo *info)
+{
+  GlideUndoDeleteActorData *data = 
+    (GlideUndoDeleteActorData *)info->user_data;
+  g_object_unref (G_OBJECT (data->parent));
+  g_object_unref (G_OBJECT (data->actor));
+  
+  g_free (data);
+}
+
+static gboolean
+glide_undo_delete_actor_undo_callback (GlideUndoManager *undo_manager,
+				       GlideUndoInfo *info)
+{
+  GlideUndoDeleteActorData *data = 
+    (GlideUndoDeleteActorData *)info->user_data;
+  
+  clutter_container_add_actor (CLUTTER_CONTAINER (data->parent),
+			       data->actor);
+  clutter_actor_show (data->actor);
+  
+  return TRUE;
+}
+
+static gboolean
+glide_undo_delete_actor_redo_callback (GlideUndoManager *undo_manager,
+				       GlideUndoInfo *info)
+{
+  GlideUndoDeleteActorData *data =
+    (GlideUndoDeleteActorData *)info->user_data;
+  
+  clutter_container_remove_actor (CLUTTER_CONTAINER (data->parent),
+				  data->actor);
+  
+  return TRUE;
+}
+
 typedef struct _GlideUndoActorData {
   ClutterActor *actor;
 
@@ -134,6 +177,36 @@ glide_undo_manager_end_actor_action (GlideUndoManager *manager,
   data->actor = (ClutterActor *)g_object_ref (G_OBJECT (a));
   data->old_state = manager->priv->recorded_state;
   data->new_state = json_node_get_object (new_node);
+  
+  glide_undo_manager_append_info (manager, info);
+}
+
+void
+glide_undo_manager_append_delete (GlideUndoManager *manager,
+				  GlideActor *a)
+{
+  GlideUndoInfo *info;
+  GlideUndoDeleteActorData *data;
+  ClutterActor *parent;
+  
+  parent = clutter_actor_get_parent (CLUTTER_ACTOR (a));
+  if (!parent)
+    {
+      g_warning ("glide_undo_manager_append_delete: no parent.");
+      return;
+    }
+  
+  info = g_malloc (sizeof (GlideUndoInfo));
+  data = g_malloc (sizeof (GlideUndoDeleteActorData));
+  
+  info->free_callback = glide_undo_delete_actor_info_free_callback;
+  info->undo_callback = glide_undo_delete_actor_undo_callback;
+  info->redo_callback = glide_undo_delete_actor_redo_callback;
+  info->label = g_strdup("Delete object");
+  info->user_data = data;
+  
+  data->actor = (ClutterActor *)a;
+  data->parent = parent;
   
   glide_undo_manager_append_info (manager, info);
 }
