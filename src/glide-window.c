@@ -344,6 +344,8 @@ glide_window_set_document (GlideWindow *w, GlideDocument *d)
   w->priv->document = d;
   w->priv->manager = glide_stage_manager_new (w->priv->document, CLUTTER_STAGE (w->priv->stage));
   
+  glide_stage_manager_set_undo_manager (w->priv->manager, w->priv->undo_manager);
+  
   g_signal_connect (w->priv->document,
 		    "slide-added",
 		    G_CALLBACK (glide_window_document_n_slides_changed),
