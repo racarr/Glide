@@ -54,7 +54,7 @@ glide_undo_actor_action_callback (GlideUndoManager *undo_manager,
 {
   GlideUndoActorData *data = (GlideUndoActorData *)info->user_data;
   
-  glide_actor_deserialize (data->actor, data->old_state);
+  glide_actor_deserialize (GLIDE_ACTOR (data->actor), data->old_state);
 							      
   return TRUE;
 }
@@ -120,4 +120,12 @@ void
 glide_undo_manager_append_info (GlideUndoManager *manager, GlideUndoInfo *info)
 {
   manager->priv->infos = g_list_append (manager->priv->infos, info);
+}
+
+gboolean
+glide_undo_manager_undo (GlideUndoManager *manager)
+{
+  GlideUndoInfo *info = (GlideUndoInfo *)g_list_last(manager->priv->infos)->data;
+  
+  return info->callback (manager, info);
 }

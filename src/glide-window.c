@@ -25,7 +25,6 @@
 #include <gdk/gdkkeysyms.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-
 #include "glide-window.h"
 #include "glide-window-private.h"
 
@@ -668,8 +667,14 @@ glide_window_delete_action_activate (GtkAction *a,
   glide_stage_manager_delete_selection (w->priv->manager);
 }
 
-
-
+void
+glide_window_undo_action_activate (GtkAction *a,
+				   gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  
+  glide_undo_manager_undo (w->priv->undo_manager);
+}
 
 static gboolean
 glide_window_show_quit_dialog (GlideWindow *w)
@@ -962,8 +967,9 @@ glide_window_add_slide_action_activate (GtkAction *a,
   
   slide = glide_document_insert_slide (window->priv->document, 
 				       glide_stage_manager_get_current_slide (window->priv->manager));
-  glide_slide_set_background (slide, glide_slide_get_background (oslide));
   
+  glide_slide_set_background (slide, glide_slide_get_background (oslide));
+   
   glide_slide_get_color (oslide, &oc);
   glide_slide_set_color (slide, &oc);
 }
@@ -1282,6 +1288,7 @@ glide_window_init (GlideWindow *window)
   glide_window_insert_recent_menu_item (window);
   
   window->priv->recent_manager = gtk_recent_manager_get_for_screen (gtk_window_get_screen (GTK_WINDOW (window)));
+  window->priv->undo_manager = glide_undo_manager_new ();
   
   g_signal_connect (clipboard, "owner-change", G_CALLBACK (glide_window_clipboard_owner_changed), window);
 

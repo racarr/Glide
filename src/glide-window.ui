@@ -98,6 +98,14 @@
                   <object class="GtkMenu" id="edit-menu">
                     <property name="visible">True</property>
                     <child>
+                      <object class="GtkImageMenuItem" id="undo-menuitem">
+                        <property name="visible">True</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="related_action">undo-action</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkImageMenuItem" id="cut-menuitem">
                         <property name="label">gtk-cut</property>
                         <property name="visible">True</property>
@@ -112,6 +120,7 @@
                         <property name="visible">True</property>
                         <property name="use_action_appearance">True</property>
                         <property name="related_action">copy-action</property>
+                        <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <accelerator key="c" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
@@ -187,6 +196,7 @@
               </object>
               <packing>
                 <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -199,6 +209,7 @@
               </object>
               <packing>
                 <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -211,6 +222,7 @@
               </object>
               <packing>
                 <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -233,6 +245,7 @@
               </object>
               <packing>
                 <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -246,6 +259,7 @@
               </object>
               <packing>
                 <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -380,6 +394,7 @@
               </object>
               <packing>
                 <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -392,6 +407,7 @@
               </object>
               <packing>
                 <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
           </object>
@@ -675,5 +691,12 @@
     <property name="stock_id">gtk-orientation-reverse-landscape</property>
     <property name="sensitive">False</property>
     <signal name="activate" handler="glide_window_remove_slide_action_activate"/>
+  </object>
+  <object class="GtkAction" id="undo-action">
+    <property name="label">Undo</property>
+    <property name="short_label">Undo</property>
+    <property name="tooltip">Undo the last action</property>
+    <property name="stock_id">gtk-undo</property>
+    <signal name="activate" handler="glide_window_undo_action_activate"/>
   </object>
 </interface>

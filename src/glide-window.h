@@ -28,6 +28,8 @@
 #include <clutter/clutter.h>
 #include <clutter-gtk/clutter-gtk.h>
 
+#include "glide-undo-manager.h"
+
 G_BEGIN_DECLS
 
 /*

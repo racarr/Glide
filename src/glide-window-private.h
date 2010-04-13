@@ -45,6 +45,7 @@ struct _GlideWindowPrivate
   gboolean keep_buffer;
   
   GtkRecentManager *recent_manager;
+  GlideUndoManager *undo_manager;
 };
 
 G_END_DECLS

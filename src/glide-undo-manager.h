@@ -82,6 +82,9 @@ GlideUndoManager *glide_undo_manager_new ();
 void glide_undo_manager_append_info (GlideUndoManager *manager, GlideUndoInfo *info);
 gboolean glide_undo_manager_undo (GlideUndoManager *manager);
 
+void glide_undo_manager_start_actor_action (GlideUndoManager *manager, GlideActor *a);
+void glide_undo_manager_end_actor_action (GlideUndoManager *manager, GlideActor *a);
+
 G_END_DECLS
 
 #endif

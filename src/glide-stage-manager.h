@@ -31,6 +31,8 @@
 #include "glide-manipulator.h"
 #include "glide-document.h"
 
+#include "glide-undo-manager.h"
+
 G_BEGIN_DECLS
 
 /*
@@ -101,6 +103,10 @@ void glide_stage_manager_set_presenting (GlideStageManager *manager, gboolean pr
 void glide_stage_manager_set_slide_background (GlideStageManager *manager, const gchar *bg);
 
 void glide_stage_manager_delete_selection (GlideStageManager *manager);
+
+void glide_stage_manager_set_undo_manager (GlideStageManager *manager, GlideUndoManager *undo_manager);
+GlideUndoManager *glide_stage_manager_get_undo_manager (GlideStageManager *manager);
+
 
 
 G_END_DECLS

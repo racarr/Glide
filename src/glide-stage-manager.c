@@ -44,7 +44,8 @@ enum {
   PROP_SELECTION,
   PROP_DOCUMENT,
   PROP_CURRENT_SLIDE,
-  PROP_PRESENTING
+  PROP_PRESENTING,
+  PROP_UNDO_MANAGER
 };
 
 enum {
@@ -90,6 +91,9 @@ glide_stage_manager_get_property (GObject *object,
       break;
     case PROP_DOCUMENT:
       g_value_set_object (value, manager->priv->document);
+      break;
+    case PROP_UNDO_MANAGER:
+      g_value_set_object (value, manager->priv->undo_manager);
       break;
     case PROP_CURRENT_SLIDE:
       g_value_set_uint (value, manager->priv->current_slide);
@@ -328,6 +332,10 @@ glide_stage_manager_set_property (GObject *object,
     case PROP_PRESENTING:
       glide_stage_manager_set_presenting (manager,
 					  g_value_get_boolean (value));
+      break;
+    case PROP_UNDO_MANAGER:
+      glide_stage_manager_set_undo_manager (manager,
+					    GLIDE_UNDO_MANAGER (g_value_get_object (value)));
       break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -617,6 +625,16 @@ glide_stage_manager_class_init (GlideStageManagerClass *klass)
 							FALSE,
 							G_PARAM_READABLE | G_PARAM_STATIC_STRINGS));
 
+  g_object_class_install_property (object_class,
+				   PROP_UNDO_MANAGER,
+				   g_param_spec_object ("undo-manager",
+							"Undo Manager",
+							"The GlideUndoManager for the state",
+							GLIDE_TYPE_ACTOR,
+							G_PARAM_READWRITE |
+							G_PARAM_CONSTRUCT_ONLY |
+							G_PARAM_STATIC_STRINGS));
+
   
   // Argument is old selection
   stage_manager_signals[SELECTION_CHANGED] = 
@@ -814,4 +832,12 @@ glide_stage_manager_delete_selection (GlideStageManager *manager)
   
   glide_stage_manager_set_selection (manager, NULL);
   clutter_container_remove_actor (CLUTTER_CONTAINER (clutter_actor_get_parent (CLUTTER_ACTOR (selection))), CLUTTER_ACTOR (selection));
+}
+
+void
+glide_stage_manager_set_undo_manager (GlideStageManager *manager, GlideUndoManager *undo_manager)
+{
+  manager->priv->undo_manager = undo_manager;
+
+  g_object_notify (G_OBJECT (manager), "undo-manager");
 }

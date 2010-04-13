@@ -42,6 +42,8 @@ struct _GlideStageManagerPrivate
 
   gulong button_notify_id;
   gulong key_notify_id;
+  
+  GlideUndoManager *undo_manager;
 };
 
 G_END_DECLS
