@@ -209,3 +209,29 @@ glide_undo_manager_undo (GlideUndoManager *manager)
   return info->undo_callback (manager, info);
 }
 
+gboolean 
+glide_undo_manager_get_can_undo (GlideUndoManager *manager)
+{
+  return (manager->priv->position->data != NULL);
+}
+
+gboolean 
+glide_undo_manager_get_can_redo (GlideUndoManager *manager)
+{
+  return (manager->priv->position->next != NULL);
+}
+
+const gchar *
+glide_undo_manager_get_undo_label (GlideUndoManager *manager)
+{
+  GlideUndoInfo *info = (GlideUndoInfo *)manager->priv->position->data;
+  return info->label;
+}
+
+const gchar *
+glide_undo_manager_get_redo_label (GlideUndoManager *manager)
+{
+  GlideUndoInfo *info = (GlideUndoInfo *)manager->priv->position->next->data;
+  return info->label;
+}
+
