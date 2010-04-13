@@ -68,7 +68,9 @@ typedef gboolean (*GlideUndoActionCallback) (GlideUndoManager *undo_manager, Gli
 typedef void (*GlideUndoInfoFreeCallback) (GlideUndoInfo *info);
 
 struct _GlideUndoInfo {
-  GlideUndoActionCallback callback;
+  GlideUndoActionCallback undo_callback;
+  GlideUndoActionCallback redo_callback;
+
   GlideUndoInfoFreeCallback free_callback;
   gpointer user_data;
 };

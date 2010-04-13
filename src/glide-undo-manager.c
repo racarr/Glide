@@ -34,7 +34,9 @@ G_DEFINE_TYPE(GlideUndoManager, glide_undo_manager, G_TYPE_OBJECT)
 
 typedef struct _GlideUndoActorData {
   ClutterActor *actor;
+
   JsonObject *old_state;
+  JsonObject *new_state;
 } GlideUndoActorData;
 
 static void
@@ -44,17 +46,29 @@ glide_undo_actor_info_free_callback (GlideUndoInfo *info)
   
   g_object_unref (G_OBJECT (data->actor));
   g_object_unref (G_OBJECT (data->old_state));
+  g_object_unref (G_OBJECT (data->new_state));
   
   g_free (data);
 }
 
 static gboolean
-glide_undo_actor_action_callback (GlideUndoManager *undo_manager,
-				  GlideUndoInfo *info)
+glide_undo_actor_action_undo_callback (GlideUndoManager *undo_manager,
+				       GlideUndoInfo *info)
 {
   GlideUndoActorData *data = (GlideUndoActorData *)info->user_data;
   
   glide_actor_deserialize (GLIDE_ACTOR (data->actor), data->old_state);
+							      
+  return TRUE;
+}
+
+static gboolean
+glide_undo_actor_action_redo_callback (GlideUndoManager *undo_manager,
+				       GlideUndoInfo *info)
+{
+  GlideUndoActorData *data = (GlideUndoActorData *)info->user_data;
+  
+  glide_actor_deserialize (GLIDE_ACTOR (data->actor), data->new_state);
 							      
   return TRUE;
 }
@@ -83,21 +97,27 @@ glide_undo_manager_end_actor_action (GlideUndoManager *manager,
 {
   GlideUndoInfo *info;
   GlideUndoActorData *data;
+  JsonNode *new_node;
   
   if (manager->priv->recorded_actor != (ClutterActor *)a)
     {
       g_warning ("Error, mismatched undo manager start/end actor actions.");
       return;
     }
+  
+  new_node = glide_actor_serialize (a);
+
   info = g_malloc (sizeof (GlideUndoInfo));
   data = g_malloc (sizeof (GlideUndoActorData));
   
-  info->callback = glide_undo_actor_action_callback;
+  info->undo_callback = glide_undo_actor_action_undo_callback;
+  info->redo_callback = glide_undo_actor_action_redo_callback;
   info->free_callback = glide_undo_actor_info_free_callback;
   info->user_data = data;
   
   data->actor = (ClutterActor *)g_object_ref (G_OBJECT (a));
   data->old_state = manager->priv->recorded_state;
+  data->new_state = json_node_get_object (new_node);
   
   glide_undo_manager_append_info (manager, info);
 }
@@ -142,6 +162,6 @@ glide_undo_manager_undo (GlideUndoManager *manager)
   
   manager->priv->position = manager->priv->position->prev;
   
-  return info->callback (manager, info);
+  return info->undo_callback (manager, info);
 }
 
