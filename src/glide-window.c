@@ -678,6 +678,15 @@ glide_window_undo_action_activate (GtkAction *a,
   glide_undo_manager_undo (w->priv->undo_manager);
 }
 
+void
+glide_window_redo_action_activate (GtkAction *a,
+				   gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  
+  glide_undo_manager_redo (w->priv->undo_manager);
+}
+
 static gboolean
 glide_window_show_quit_dialog (GlideWindow *w)
 {
@@ -1181,6 +1190,7 @@ glide_window_setup_accelerators (GlideWindow *w)
   glide_window_add_accelerator (w, group, accels, "delete-action", "Delete");
 
   glide_window_add_accelerator (w, group, accels, "undo-action", "<Control>z");
+  glide_window_add_accelerator (w, group, accels, "redo-action", "<Control><Shift>z");
 
   glide_window_add_accelerator (w, group, accels, "next-slide-action", "<Control><Shift>Right");
   glide_window_add_accelerator (w, group, accels, "prev-slide-action", "<Control><Shift>Left");

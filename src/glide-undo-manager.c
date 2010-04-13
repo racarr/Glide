@@ -151,6 +151,21 @@ glide_undo_manager_append_info (GlideUndoManager *manager, GlideUndoInfo *info)
 }
 
 gboolean
+glide_undo_manager_redo (GlideUndoManager *manager)
+{
+  GlideUndoInfo *info;
+  
+  if (!manager->priv->position)
+    return FALSE;
+  else
+    info = (GlideUndoInfo *)manager->priv->position->data;
+  
+  manager->priv->position = manager->priv->position->next;
+  
+  return info->redo_callback (manager, info);
+}
+
+gboolean
 glide_undo_manager_undo (GlideUndoManager *manager)
 {
   GlideUndoInfo *info;
