@@ -65,6 +65,8 @@ struct _GlideManipulatorPrivate
   
   CoglHandle widget_material;
   CoglHandle widget_active_material;
+  
+  gboolean motion_since_press;
 };
 
 G_END_DECLS

@@ -416,6 +416,8 @@ glide_manipulator_button_press (ClutterActor *actor,
       manip->priv->transforming = TRUE;
       manip->priv->resize_widget = widg;
       
+      manip->priv->motion_since_press = FALSE;
+      
 
       manip->priv->rot_angle = 
 	clutter_actor_get_rotation (CLUTTER_ACTOR (actor), 						           CLUTTER_Z_AXIS,
@@ -423,10 +425,14 @@ glide_manipulator_button_press (ClutterActor *actor,
 
 
       clutter_grab_pointer (actor);
+      
+      glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (manip->priv->target)),
+					     GLIDE_ACTOR (manip->priv->target),
+					     "Resize object");
 
       return TRUE;
     }
-    
+   
 
   return FALSE;
 }
@@ -460,6 +466,13 @@ glide_manipulator_button_release (ClutterActor *actor,
   if (manip->priv->transforming)
     {
       clutter_ungrab_pointer ();
+
+      if (manip->priv->motion_since_press)
+	glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (manip->priv->target)),
+					     GLIDE_ACTOR (manip->priv->target));
+      else
+	glide_undo_manager_cancel_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (manip->priv->target)));
+
       manip->priv->transforming = FALSE;
       manip->priv->resize_widget = WIDGET_NONE;
       
@@ -608,6 +621,8 @@ glide_manipulator_motion (ClutterActor *actor,
   
   if (manip->priv->transforming)
     {
+      manip->priv->motion_since_press = TRUE;
+
       if (manip->priv->mode == WIDGET_MODE_RESIZE)
 	glide_manipulator_process_resize (manip, &geom, mev);
       else
