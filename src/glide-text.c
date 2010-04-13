@@ -1589,7 +1589,7 @@ glide_text_button_press (ClutterActor       *actor,
       
       glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (actor)),
 					     GLIDE_ACTOR (actor),
-					     "Move actor");
+					     "Move object");
       return TRUE;
     }
 
