@@ -103,6 +103,12 @@
                         <property name="use_action_appearance">True</property>
                         <property name="related_action">undo-action</property>
                         <property name="use_stock">True</property>
+                        <accelerator key="z" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="edit-separator">
+                        <property name="visible">True</property>
                       </object>
                     </child>
                     <child>
