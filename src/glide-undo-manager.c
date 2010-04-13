@@ -205,8 +205,8 @@ glide_undo_manager_append_delete (GlideUndoManager *manager,
   info->label = g_strdup("Delete object");
   info->user_data = data;
   
-  data->actor = (ClutterActor *)a;
-  data->parent = parent;
+  data->actor = (ClutterActor *)g_object_ref (a);
+  data->parent = g_object_ref (parent);
   
   glide_undo_manager_append_info (manager, info);
 }

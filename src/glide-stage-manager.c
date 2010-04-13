@@ -873,6 +873,8 @@ glide_stage_manager_delete_selection (GlideStageManager *manager)
   if (!selection)
     return;
   
+  glide_undo_manager_append_delete (manager->priv->undo_manager, selection);
+  
   glide_stage_manager_set_selection (manager, NULL);
   clutter_container_remove_actor (CLUTTER_CONTAINER (clutter_actor_get_parent (CLUTTER_ACTOR (selection))), CLUTTER_ACTOR (selection));
 }
