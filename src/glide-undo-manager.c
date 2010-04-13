@@ -126,6 +126,8 @@ static void
 glide_undo_manager_init (GlideUndoManager *manager)
 {
   manager->priv = GLIDE_UNDO_MANAGER_GET_PRIVATE (manager);
+  
+  manager->priv->infos = g_list_append (manager->priv->infos, NULL);
 }
 
 static void
@@ -155,10 +157,10 @@ glide_undo_manager_redo (GlideUndoManager *manager)
 {
   GlideUndoInfo *info;
   
-  if (!manager->priv->position)
+  if (!manager->priv->position->next || !manager->priv->position->next->data)
     return FALSE;
   else
-    info = (GlideUndoInfo *)manager->priv->position->data;
+    info = (GlideUndoInfo *)manager->priv->position->next->data;
   
   manager->priv->position = manager->priv->position->next;
   
