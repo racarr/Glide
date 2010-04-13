@@ -75,13 +75,16 @@ glide_undo_actor_action_redo_callback (GlideUndoManager *undo_manager,
 
 void
 glide_undo_manager_start_actor_action (GlideUndoManager *manager,
-				       GlideActor *a)
+				       GlideActor *a,
+				       const gchar *label)
 {
   JsonNode *anode;
   manager->priv->recorded_actor = (ClutterActor *)a;
   
   anode = glide_actor_serialize (a);
   manager->priv->recorded_state = json_node_get_object (anode);
+  
+  manager->priv->recorded_label = g_strdup (label);
 }
 
 void
@@ -89,6 +92,8 @@ glide_undo_manager_cancel_actor_action (GlideUndoManager *manager)
 {
   manager->priv->recorded_actor = NULL;
   manager->priv->recorded_state = NULL;
+  
+  g_free (manager->priv->recorded_label);
 }
 
 void
@@ -113,7 +118,9 @@ glide_undo_manager_end_actor_action (GlideUndoManager *manager,
   info->undo_callback = glide_undo_actor_action_undo_callback;
   info->redo_callback = glide_undo_actor_action_redo_callback;
   info->free_callback = glide_undo_actor_info_free_callback;
+  info->label = manager->priv->recorded_label;
   info->user_data = data;
+
   
   data->actor = (ClutterActor *)g_object_ref (G_OBJECT (a));
   data->old_state = manager->priv->recorded_state;

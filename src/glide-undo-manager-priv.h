@@ -30,8 +30,10 @@ G_BEGIN_DECLS
 struct _GlideUndoManagerPrivate
 {
   ClutterActor *recorded_actor;
-  // TODO: Check. do we leak the nodes?
+  // TODO: Check. do we leak the nodes?...maybe this should be in
+  // GlideActor too..
   JsonObject *recorded_state;
+  gchar *recorded_label;
 
   GList *infos;
   GList *position;

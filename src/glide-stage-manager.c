@@ -821,9 +821,7 @@ glide_stage_manager_set_slide_background (GlideStageManager *manager, const gcha
 {
   GlideSlide *s = glide_document_get_nth_slide (manager->priv->document, manager->priv->current_slide);
 
-  glide_undo_manager_start_actor_action (manager->priv->undo_manager, GLIDE_ACTOR (s));
   glide_slide_set_background (s, bg);
-  glide_undo_manager_end_actor_action (manager->priv->undo_manager, GLIDE_ACTOR (s));
 }
 
 void
