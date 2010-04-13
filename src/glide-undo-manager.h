@@ -93,6 +93,12 @@ void glide_undo_manager_end_actor_action (GlideUndoManager *manager, GlideActor 
 
 void glide_undo_manager_cancel_actor_action (GlideUndoManager *manager);
 
+gboolean glide_undo_manager_get_can_undo (GlideUndoManager *manager);
+gboolean glide_undo_manager_get_can_redo (GlideUndoManager *manager);
+
+const gchar *glide_undo_manager_get_undo_label (GlideUndoManager *manager);
+const gchar *glide_undo_manager_get_redo_label (GlideUndoManager *manager);
+
 G_END_DECLS
 
 #endif

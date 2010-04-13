@@ -174,7 +174,7 @@ glide_undo_manager_append_info (GlideUndoManager *manager, GlideUndoInfo *info)
   manager->priv->infos = g_list_append (manager->priv->infos, info);
   manager->priv->position = g_list_last (manager->priv->infos);
   
-  g_signal_emit (manager, undo_manager_signals[POSITION_CHANGED]);
+  g_signal_emit (manager, undo_manager_signals[POSITION_CHANGED], 0);
 }
 // TODO: Handle failed redo/undos.
 gboolean
@@ -182,13 +182,13 @@ glide_undo_manager_redo (GlideUndoManager *manager)
 {
   GlideUndoInfo *info;
   
-  if (!manager->priv->position->next || !manager->priv->position->next->data)
+  if (!manager->priv->position->next)
     return FALSE;
   else
     info = (GlideUndoInfo *)manager->priv->position->next->data;
   
   manager->priv->position = manager->priv->position->next;
-  g_signal_emit (manager, undo_manager_signals[POSITION_CHANGED]);  
+  g_signal_emit (manager, undo_manager_signals[POSITION_CHANGED], 0);  
 
   return info->redo_callback (manager, info);
 }
@@ -198,13 +198,13 @@ glide_undo_manager_undo (GlideUndoManager *manager)
 {
   GlideUndoInfo *info;
 
-  if (!manager->priv->position)
+  if (!manager->priv->position->data)
     return FALSE;
   else
     info = (GlideUndoInfo *)manager->priv->position->data;
   
   manager->priv->position = manager->priv->position->prev;
-  g_signal_emit (manager, undo_manager_signals[POSITION_CHANGED]);  
+  g_signal_emit (manager, undo_manager_signals[POSITION_CHANGED], 0);  
   
   return info->undo_callback (manager, info);
 }
