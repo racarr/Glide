@@ -89,6 +89,10 @@ JsonNode *glide_actor_serialize (GlideActor *actor);
 GlideActor *glide_actor_construct_from_json (JsonObject *obj);
 void glide_actor_deserialize (GlideActor *actor, JsonObject *obj);
 
+GlideUndoManager *glide_actor_get_undo_manager (GlideActor *actor);
+
+
+
 G_END_DECLS
 
 #endif  /* __GLIDE_ACTOR_H__  */

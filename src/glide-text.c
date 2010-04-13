@@ -1658,9 +1658,9 @@ glide_text_motion (ClutterActor       *actor,
 				  mev->y - priv->drag_center_y);
       return TRUE;
     }
+
   if (!priv->in_select_drag)
     return FALSE;
-
 
   res = clutter_actor_transform_stage_point (actor,
                                              mev->x, mev->y,

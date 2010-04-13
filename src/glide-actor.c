@@ -259,3 +259,9 @@ glide_actor_construct_from_json (JsonObject *actor_obj)
 
   return ret;
 }
+
+GlideUndoManager *
+glide_actor_get_undo_manager (GlideActor *actor)
+{
+  return glide_stage_manager_get_undo_manager (actor->priv->manager);
+}
