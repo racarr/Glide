@@ -32,6 +32,13 @@ G_DEFINE_TYPE(GlideUndoManager, glide_undo_manager, G_TYPE_OBJECT)
 
 #define GLIDE_UNDO_MANAGER_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GLIDE_TYPE_UNDO_MANAGER, GlideUndoManagerPrivate))
 
+enum {
+  POSITION_CHANGED,
+  LAST_SIGNAL
+};
+
+static guint undo_manager_signals[LAST_SIGNAL] = { 0, };
+
 typedef struct _GlideUndoActorData {
   ClutterActor *actor;
 
@@ -141,6 +148,16 @@ static void
 glide_undo_manager_class_init (GlideUndoManagerClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  
+  undo_manager_signals[POSITION_CHANGED] = 
+    g_signal_new ("position-changed",
+		  G_TYPE_FROM_CLASS (object_class),
+		  G_SIGNAL_RUN_LAST,
+		  0,
+		  NULL, NULL,
+		  g_cclosure_marshal_VOID__OBJECT,
+		  G_TYPE_NONE, 0, NULL);
+
   
   g_type_class_add_private (object_class, sizeof(GlideUndoManagerPrivate));
 }
