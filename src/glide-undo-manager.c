@@ -71,6 +71,13 @@ glide_undo_manager_start_actor_action (GlideUndoManager *manager,
 }
 
 void
+glide_undo_manager_cancel_actor_action (GlideUndoManager *manager)
+{
+  manager->priv->recorded_actor = NULL;
+  manager->priv->recorded_state = NULL;
+}
+
+void
 glide_undo_manager_end_actor_action (GlideUndoManager *manager,
 				     GlideActor *a)
 {

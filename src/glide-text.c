@@ -1586,6 +1586,9 @@ glide_text_button_press (ClutterActor       *actor,
       priv->drag_center_y = event->y - ay;      
       
       clutter_grab_pointer (actor);      
+      
+      glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (actor)),
+					     GLIDE_ACTOR (actor));
       return TRUE;
     }
 
@@ -1693,6 +1696,12 @@ glide_text_button_release (ClutterActor       *actor,
     }
   if (priv->dragging)
     {
+      if (!priv->motion_since_press)
+	glide_undo_manager_cancel_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (actor)));
+      else
+	glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (actor)),
+					       GLIDE_ACTOR (actor));
+
       clutter_ungrab_pointer ();
       priv->dragging = FALSE;
     }

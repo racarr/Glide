@@ -85,6 +85,8 @@ gboolean glide_undo_manager_undo (GlideUndoManager *manager);
 void glide_undo_manager_start_actor_action (GlideUndoManager *manager, GlideActor *a);
 void glide_undo_manager_end_actor_action (GlideUndoManager *manager, GlideActor *a);
 
+void glide_undo_manager_cancel_actor_action (GlideUndoManager *manager);
+
 G_END_DECLS
 
 #endif
