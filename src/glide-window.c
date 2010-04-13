@@ -236,7 +236,12 @@ glide_window_font_set_cb (GtkWidget *b, gpointer user_data)
   if (!selection || !GLIDE_IS_TEXT(selection))
     return;
   
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+					 GLIDE_ACTOR (selection),
+					 "Set font");
   glide_text_set_font_name (GLIDE_TEXT (selection), gtk_font_button_get_font_name (GTK_FONT_BUTTON (b)));
+  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selection)),
+				       GLIDE_ACTOR (selection));
 }
 
 
@@ -961,7 +966,13 @@ glide_window_align_selected_text (GlideWindow *w, PangoAlignment alignment)
       g_warning ("Align invoked on non-text selection, might mean a bug?");
       return;
     }
+
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selected)),
+					 GLIDE_ACTOR (selected),
+					 "Set text alignment");
   glide_text_set_line_alignment (GLIDE_TEXT (selected), alignment);
+  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (selected)),
+				       GLIDE_ACTOR (selected));
 }
 
 void
