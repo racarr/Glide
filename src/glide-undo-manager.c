@@ -53,16 +53,9 @@ glide_undo_actor_action_callback (GlideUndoManager *undo_manager,
 				  GlideUndoInfo *info)
 {
   GlideUndoActorData *data = (GlideUndoActorData *)info->user_data;
-  ClutterActor *parent = clutter_actor_get_parent (data->actor);
-  GlideActor *actor = glide_actor_construct_from_json (data->old_state);
-  GlideStageManager *manager = glide_actor_get_stage_manager (GLIDE_ACTOR (data->actor));
+  
+  glide_actor_deserialize (data->actor, data->old_state);
 							      
-  clutter_container_remove_actor (CLUTTER_CONTAINER (parent), data->actor);
-  clutter_container_add_actor (CLUTTER_CONTAINER (parent), CLUTTER_ACTOR (actor));
-  
-  glide_actor_set_stage_manager (GLIDE_ACTOR (actor), manager);
-  clutter_actor_show (CLUTTER_ACTOR (actor));
-  
   return TRUE;
 }
 
