@@ -126,8 +126,13 @@ glide_image_button_press (ClutterActor *actor,
   image->priv->drag_center_x = event->x - ax;
   image->priv->drag_center_y = event->y - ay;
   image->priv->dragging = TRUE;
+  image->priv->motion_since_press = FALSE;
   
   clutter_grab_pointer (actor);
+
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (actor)),
+					 GLIDE_ACTOR (actor),
+					 "Move object");
   
   return TRUE;
 }
@@ -139,6 +144,12 @@ glide_image_button_release (ClutterActor *actor,
   GlideImage *image = GLIDE_IMAGE (actor);
   if (image->priv->dragging)
     {
+      if (!image->priv->motion_since_press)
+	glide_undo_manager_cancel_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (actor)));
+      else
+	glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (actor)),
+					     GLIDE_ACTOR (actor));
+      
       clutter_ungrab_pointer ();
       image->priv->dragging = FALSE;
       
@@ -156,6 +167,7 @@ glide_image_motion (ClutterActor *actor,
   
   if (image->priv->dragging)
     {
+      image->priv->motion_since_press = TRUE;
       clutter_actor_set_position (actor,
 				  mev->x - image->priv->drag_center_x,
 				  mev->y - image->priv->drag_center_y);

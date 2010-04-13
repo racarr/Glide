@@ -40,6 +40,8 @@ struct _GlideImagePrivate
   gfloat drag_center_y;
   
   gchar *filename;
+
+  gboolean motion_since_press;
 };
 
 G_END_DECLS
