@@ -1180,6 +1180,8 @@ glide_window_setup_accelerators (GlideWindow *w)
   glide_window_add_accelerator (w, group, accels, "cut-action", "<Control>x");
   glide_window_add_accelerator (w, group, accels, "delete-action", "Delete");
 
+  glide_window_add_accelerator (w, group, accels, "undo-action", "<Control>z");
+
   glide_window_add_accelerator (w, group, accels, "next-slide-action", "<Control><Shift>Right");
   glide_window_add_accelerator (w, group, accels, "prev-slide-action", "<Control><Shift>Left");
   

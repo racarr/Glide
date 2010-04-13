@@ -34,6 +34,7 @@ struct _GlideUndoManagerPrivate
   JsonObject *recorded_state;
 
   GList *infos;
+  GList *position;
 };
 
 G_END_DECLS

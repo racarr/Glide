@@ -37,7 +37,7 @@ typedef struct _GlideUndoActorData {
   JsonObject *old_state;
 } GlideUndoActorData;
 
-/*static*/ void
+static void
 glide_undo_actor_info_free_callback (GlideUndoInfo *info)
 {
   GlideUndoActorData *data = (GlideUndoActorData *)info->user_data;
@@ -48,7 +48,7 @@ glide_undo_actor_info_free_callback (GlideUndoInfo *info)
   g_free (data);
 }
 
-/*static*/ gboolean
+static gboolean
 glide_undo_actor_action_callback (GlideUndoManager *undo_manager,
 				  GlideUndoInfo *info)
 {
@@ -127,12 +127,21 @@ void
 glide_undo_manager_append_info (GlideUndoManager *manager, GlideUndoInfo *info)
 {
   manager->priv->infos = g_list_append (manager->priv->infos, info);
+  manager->priv->position = g_list_last (manager->priv->infos);
 }
 
 gboolean
 glide_undo_manager_undo (GlideUndoManager *manager)
 {
-  GlideUndoInfo *info = (GlideUndoInfo *)g_list_last(manager->priv->infos)->data;
+  GlideUndoInfo *info;
+
+  if (!manager->priv->position)
+    return FALSE;
+  else
+    info = (GlideUndoInfo *)manager->priv->position->data;
+  
+  manager->priv->position = manager->priv->position->prev;
   
   return info->callback (manager, info);
 }
+
