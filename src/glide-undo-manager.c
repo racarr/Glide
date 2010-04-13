@@ -28,6 +28,8 @@
 
 #include "glide-debug.h"
 
+#include <girepository.h>
+
 G_DEFINE_TYPE(GlideUndoManager, glide_undo_manager, G_TYPE_OBJECT)
 
 #define GLIDE_UNDO_MANAGER_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GLIDE_TYPE_UNDO_MANAGER, GlideUndoManagerPrivate))
@@ -155,7 +157,7 @@ glide_undo_manager_class_init (GlideUndoManagerClass *klass)
 		  G_SIGNAL_RUN_LAST,
 		  0,
 		  NULL, NULL,
-		  g_cclosure_marshal_VOID__OBJECT,
+		  gi_cclosure_marshal_generic,
 		  G_TYPE_NONE, 0, NULL);
   
   g_type_class_add_private (object_class, sizeof(GlideUndoManagerPrivate));

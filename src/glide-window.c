@@ -337,13 +337,61 @@ glide_window_document_path_changed_cb (GObject *object,
 }
 
 static void
+glide_window_update_undo_ui (GlideWindow *w)
+{
+  GtkAction *undo_action, *redo_action;
+  GtkMenuItem *undo_item, *redo_item;
+  
+  undo_action = GTK_ACTION (GLIDE_WINDOW_UI_OBJECT (w, "undo-action"));
+  redo_action = GTK_ACTION (GLIDE_WINDOW_UI_OBJECT (w, "redo-action"));
+
+  undo_item = GTK_MENU_ITEM (GLIDE_WINDOW_UI_OBJECT (w, "undo-menuitem"));
+  redo_item = GTK_MENU_ITEM (GLIDE_WINDOW_UI_OBJECT (w, "redo-menuitem"));
+  
+  if (glide_undo_manager_get_can_undo (w->priv->undo_manager))
+    {
+      gchar *label = g_strdup_printf("Undo: %s", glide_undo_manager_get_undo_label (w->priv->undo_manager));
+      gtk_action_set_sensitive (undo_action, TRUE);
+      gtk_menu_item_set_label (undo_item, label);
+      g_free (label);
+    }
+  else
+    {
+      gtk_action_set_sensitive (undo_action, FALSE);
+      gtk_menu_item_set_label (undo_item, "Undo");
+    }
+
+  if (glide_undo_manager_get_can_redo (w->priv->undo_manager))
+    {
+      gchar *label = g_strdup_printf("Redo: %s", glide_undo_manager_get_redo_label (w->priv->undo_manager));
+      gtk_action_set_sensitive (redo_action, TRUE);
+      gtk_menu_item_set_label (redo_item, label);
+      g_free (label);
+    }
+  else
+    {
+      gtk_action_set_sensitive (redo_action, FALSE);
+      gtk_menu_item_set_label (redo_item, "Redo");
+    }
+}
+
+static void
+glide_window_undo_manager_position_changed_cb (GlideUndoManager *manager,
+					       gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  glide_window_update_undo_ui (w);
+}
+
+static void
 glide_window_set_document (GlideWindow *w, GlideDocument *d)
 {
   if (!w->priv->document)
     glide_window_enable_document_actions (w);
   w->priv->document = d;
   w->priv->manager = glide_stage_manager_new (w->priv->document, CLUTTER_STAGE (w->priv->stage));
-  
+
+  w->priv->undo_manager = glide_undo_manager_new ();
   glide_stage_manager_set_undo_manager (w->priv->manager, w->priv->undo_manager);
   
   g_signal_connect (w->priv->document,
@@ -372,6 +420,10 @@ glide_window_set_document (GlideWindow *w, GlideDocument *d)
   g_signal_connect (w->priv->manager, "notify::presenting",
 		    G_CALLBACK (glide_window_presenting_changed_cb),
 		    w);
+  
+  g_signal_connect (w->priv->undo_manager, "position-changed",
+		    G_CALLBACK (glide_window_undo_manager_position_changed_cb),
+		    w);
 }
 
 static void
@@ -381,6 +433,9 @@ glide_window_close_document (GlideWindow *w)
     g_object_unref (w->priv->document);
   if (w->priv->manager)
     g_object_unref (w->priv->manager);
+  if (w->priv->undo_manager)
+    g_object_unref (w->priv->undo_manager); 
+
   clutter_group_remove_all (CLUTTER_GROUP (w->priv->stage));
 }
 
@@ -1302,7 +1357,6 @@ glide_window_init (GlideWindow *window)
   glide_window_insert_recent_menu_item (window);
   
   window->priv->recent_manager = gtk_recent_manager_get_for_screen (gtk_window_get_screen (GTK_WINDOW (window)));
-  window->priv->undo_manager = glide_undo_manager_new ();
   
   g_signal_connect (clipboard, "owner-change", G_CALLBACK (glide_window_clipboard_owner_changed), window);
 
