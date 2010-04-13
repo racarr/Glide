@@ -157,7 +157,6 @@ glide_undo_manager_class_init (GlideUndoManagerClass *klass)
 		  NULL, NULL,
 		  g_cclosure_marshal_VOID__OBJECT,
 		  G_TYPE_NONE, 0, NULL);
-
   
   g_type_class_add_private (object_class, sizeof(GlideUndoManagerPrivate));
 }
@@ -174,8 +173,10 @@ glide_undo_manager_append_info (GlideUndoManager *manager, GlideUndoInfo *info)
 {
   manager->priv->infos = g_list_append (manager->priv->infos, info);
   manager->priv->position = g_list_last (manager->priv->infos);
+  
+  g_signal_emit (manager, undo_manager_signals[POSITION_CHANGED]);
 }
-
+// TODO: Handle failed redo/undos.
 gboolean
 glide_undo_manager_redo (GlideUndoManager *manager)
 {
@@ -187,7 +188,8 @@ glide_undo_manager_redo (GlideUndoManager *manager)
     info = (GlideUndoInfo *)manager->priv->position->next->data;
   
   manager->priv->position = manager->priv->position->next;
-  
+  g_signal_emit (manager, undo_manager_signals[POSITION_CHANGED]);  
+
   return info->redo_callback (manager, info);
 }
 
@@ -202,6 +204,7 @@ glide_undo_manager_undo (GlideUndoManager *manager)
     info = (GlideUndoInfo *)manager->priv->position->data;
   
   manager->priv->position = manager->priv->position->prev;
+  g_signal_emit (manager, undo_manager_signals[POSITION_CHANGED]);  
   
   return info->undo_callback (manager, info);
 }
