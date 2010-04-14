@@ -92,6 +92,7 @@ void glide_undo_manager_start_actor_action (GlideUndoManager *manager, GlideActo
 void glide_undo_manager_end_actor_action (GlideUndoManager *manager, GlideActor *a);
 
 void glide_undo_manager_append_delete (GlideUndoManager *manager, GlideActor *a);
+void glide_undo_manager_append_insert (GlideUndoManager *manager, GlideActor *a);
 
 void glide_undo_manager_cancel_actor_action (GlideUndoManager *manager);
 

@@ -614,6 +614,7 @@ glide_window_image_open_response_callback (GtkDialog *dialog,
 	  return;
 	}
       glide_stage_manager_add_actor (window->priv->manager, GLIDE_ACTOR (im));
+      glide_undo_manager_append_insert (window->priv->undo_manager, GLIDE_ACTOR (im));
       
       g_free (filename);
       
@@ -1029,6 +1030,8 @@ glide_window_new_text_action_activate (GtkAction *a,
 			    gtk_font_button_get_font_name (GTK_FONT_BUTTON (gtk_builder_get_object (w->priv->builder, "text-font-button"))));  
   
   glide_stage_manager_add_actor (w->priv->manager, GLIDE_ACTOR (text));
+  glide_undo_manager_append_insert (w->priv->undo_manager, GLIDE_ACTOR (text));
+
 }
 
 void

@@ -88,6 +88,12 @@ glide_undo_delete_actor_redo_callback (GlideUndoManager *undo_manager,
 {
   GlideUndoDeleteActorData *data =
     (GlideUndoDeleteActorData *)info->user_data;
+  GlideStageManager *manager;
+  
+  manager = glide_actor_get_stage_manager (GLIDE_ACTOR (data->actor));
+  if (glide_stage_manager_get_selection (manager) == (GlideActor *)data->actor)
+    glide_stage_manager_set_selection (manager, NULL);
+  
   
   clutter_container_remove_actor (CLUTTER_CONTAINER (data->parent),
 				  data->actor);
@@ -214,6 +220,36 @@ glide_undo_manager_append_delete (GlideUndoManager *manager,
   info->undo_callback = glide_undo_delete_actor_undo_callback;
   info->redo_callback = glide_undo_delete_actor_redo_callback;
   info->label = g_strdup("Delete object");
+  info->user_data = data;
+  
+  data->actor = (ClutterActor *)g_object_ref (a);
+  data->parent = g_object_ref (parent);
+  
+  glide_undo_manager_append_info (manager, info);
+}
+
+void
+glide_undo_manager_append_insert (GlideUndoManager *manager,
+				  GlideActor *a)
+{
+  GlideUndoInfo *info;
+  GlideUndoDeleteActorData *data;
+  ClutterActor *parent;
+  
+  parent = clutter_actor_get_parent (CLUTTER_ACTOR (a));
+  if (!parent)
+    {
+      g_warning ("glide_undo_manager_append_delete: no parent.");
+      return;
+    }
+  
+  info = g_malloc (sizeof (GlideUndoInfo));
+  data = g_malloc (sizeof (GlideUndoDeleteActorData));
+  
+  info->free_callback = glide_undo_delete_actor_info_free_callback;
+  info->redo_callback = glide_undo_delete_actor_undo_callback;
+  info->undo_callback = glide_undo_delete_actor_redo_callback;
+  info->label = g_strdup("Insert object");
   info->user_data = data;
   
   data->actor = (ClutterActor *)g_object_ref (a);
