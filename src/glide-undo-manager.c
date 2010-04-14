@@ -313,13 +313,13 @@ glide_undo_manager_undo (GlideUndoManager *manager)
 gboolean 
 glide_undo_manager_get_can_undo (GlideUndoManager *manager)
 {
-  return (manager->priv->position->data != NULL);
+  return (manager->priv->position && manager->priv->position->data != NULL);
 }
 
 gboolean 
 glide_undo_manager_get_can_redo (GlideUndoManager *manager)
 {
-  return (manager->priv->position->next != NULL);
+  return (manager->priv->position && manager->priv->position->next != NULL);
 }
 
 const gchar *

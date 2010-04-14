@@ -1808,8 +1808,13 @@ glide_text_key_press (ClutterActor    *actor,
           /* truncate the eventual selection so that the
            * Unicode character can replace it
            */
+	  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+						 GLIDE_ACTOR (self),
+						 "Modify text");
           glide_text_delete_selection (self);
           glide_text_insert_unichar (self, key_unichar);
+	  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+						 GLIDE_ACTOR (self));
 
           return TRUE;
         }
