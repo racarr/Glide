@@ -2339,14 +2339,24 @@ glide_text_real_del_next (GlideText         *self,
   gint pos;
   gint len;
 
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+					 GLIDE_ACTOR (self),
+					 "Delete text");
   if (glide_text_delete_selection (self))
-    return TRUE;
+    {
+      glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+					   GLIDE_ACTOR (self));
+      return TRUE;
+    }
 
   pos = priv->position;
   len = priv->n_chars;
 
   if (len && pos != -1 && pos < len)
     glide_text_delete_text (self, pos, pos + 1);
+
+  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+					 GLIDE_ACTOR (self));
 
   return TRUE;
 }
@@ -2363,6 +2373,10 @@ glide_text_real_del_word_next (GlideText         *self,
 
   pos = priv->position;
   len = priv->n_chars;
+
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+					 GLIDE_ACTOR (self),
+					 "Delete next word");
 
   if (len && pos != -1 && pos < len)
     {
@@ -2384,6 +2398,9 @@ glide_text_real_del_word_next (GlideText         *self,
         }
     }
 
+  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+				       GLIDE_ACTOR (self));
+			
   return TRUE;
 }
 
@@ -2397,8 +2414,16 @@ glide_text_real_del_prev (GlideText         *self,
   gint pos;
   gint len;
 
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+					 GLIDE_ACTOR (self),
+					 "Delete text");
+
   if (glide_text_delete_selection (self))
-    return TRUE;
+    {
+      glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+					   GLIDE_ACTOR (self));
+      return TRUE;
+    }
 
   pos = priv->position;
   len = priv->n_chars;
@@ -2419,6 +2444,9 @@ glide_text_real_del_prev (GlideText         *self,
         }
     }
 
+  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+				       GLIDE_ACTOR (self));
+
   return TRUE;
 }
 
@@ -2434,6 +2462,10 @@ glide_text_real_del_word_prev (GlideText         *self,
 
   pos = priv->position;
   len = priv->n_chars;
+
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+					 GLIDE_ACTOR (self),
+					 "Delete previous word");
 
   if (pos != 0 && len != 0)
     {
@@ -2466,6 +2498,9 @@ glide_text_real_del_word_prev (GlideText         *self,
         }
     }
 
+  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+				       GLIDE_ACTOR (self));
+
   return TRUE;
 }
 
@@ -2476,11 +2511,18 @@ glide_text_increase_font_size (GlideText         *self,
 			       ClutterModifierType  modifiers)
 {
   gint size = pango_font_description_get_size (self->priv->font_desc);
-  pango_font_description_set_size (self->priv->font_desc, size+1024);
 
-  
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+					 GLIDE_ACTOR (self),
+					 "Increase font size");
+
+  pango_font_description_set_size (self->priv->font_desc, size+1024);
+			  
   glide_text_dirty_cache (self);
   glide_text_update_actor_size (self);
+
+  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+				       GLIDE_ACTOR (self));
     
   return TRUE;
 }
@@ -2492,11 +2534,17 @@ glide_text_decrease_font_size (GlideText         *self,
 			       ClutterModifierType  modifiers)
 {
   gint size = pango_font_description_get_size (self->priv->font_desc);
+  glide_undo_manager_start_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+					 GLIDE_ACTOR (self),
+					 "Decrease font size");
+
   pango_font_description_set_size (self->priv->font_desc, size-1024);
 
-  
   glide_text_dirty_cache (self);
   glide_text_update_actor_size (self);
+
+  glide_undo_manager_end_actor_action (glide_actor_get_undo_manager (GLIDE_ACTOR (self)),
+				       GLIDE_ACTOR (self));
     
   return TRUE;
 }
