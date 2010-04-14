@@ -86,7 +86,12 @@ AC_SUBST(GLIDE_DEBUG_CFLAGS)
 
 AC_CONFIG_FILES([
 Makefile
+data/glide.desktop.in
 data/Makefile
+data/icons/Makefile
+data/icons/hicolor/Makefile
+data/icons/hicolor/scalable/Makefile
+data/icons/hicolor/scalable/apps/Makefile
 data/ui/Makefile
 src/Makefile
 po/Makefile.in
