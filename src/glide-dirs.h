@@ -28,4 +28,7 @@ glide_dirs_get_glide_data_dir (void);
 gchar *
 glide_dirs_get_glide_image_dir (void);
 
+gchar *
+glide_dirs_get_glide_ui_dir (void);
+
 #endif

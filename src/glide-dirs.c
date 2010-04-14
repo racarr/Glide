@@ -35,3 +35,13 @@ glide_dirs_get_glide_image_dir ()
   g_free (datadir);
   return imagedir;
 }
+
+gchar *
+glide_dirs_get_glide_ui_dir ()
+{
+  gchar *datadir = glide_dirs_get_glide_data_dir();
+  gchar *uidir = g_build_filename(datadir, "ui", NULL);
+  
+  g_free (datadir);
+  return uidir;
+}
