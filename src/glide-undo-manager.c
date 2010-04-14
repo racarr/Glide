@@ -114,8 +114,8 @@ glide_undo_actor_info_free_callback (GlideUndoInfo *info)
   GlideUndoActorData *data = (GlideUndoActorData *)info->user_data;
   
   g_object_unref (G_OBJECT (data->actor));
-  g_object_unref (G_OBJECT (data->old_state));
-  g_object_unref (G_OBJECT (data->new_state));
+  json_object_unref (data->old_state);
+  json_object_unref (data->new_state);
   
   g_free (data);
 }
