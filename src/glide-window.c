@@ -40,6 +40,8 @@
 
 #include "glide-debug.h"
 
+#include "glide-dirs.h"
+
 #define GLIDE_WINDOW_UI_OBJECT(w, obj) (gtk_builder_get_object (w->priv->builder, obj))
 
 
@@ -1276,11 +1278,16 @@ glide_window_load_ui (GlideWindow *w)
 {
   GtkBuilder *b = gtk_builder_new ();
   GtkWidget *main_box;
+  gchar *ui_dir = glide_dirs_get_glide_ui_dir ();
+  gchar *ui_path = g_strconcat (ui_dir, "/glide-window.ui", NULL);
   
   w->priv->builder = b;
   
   // Todo: Error checking
-  gtk_builder_add_from_file (b, "glide-window.ui", NULL);
+  gtk_builder_add_from_file (b, ui_path, NULL);
+
+  g_free (ui_dir);
+  g_free (ui_path);
   
   gtk_builder_connect_signals (b, w);
   

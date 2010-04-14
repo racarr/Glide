@@ -1,3 +1,5 @@
+SUBDIRS = ui
+
 imagedir = $(datadir)/glide/images
 image_DATA = manipulator-widget.png \
 	manipulator-widget-active.png
