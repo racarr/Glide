@@ -41,6 +41,17 @@ enum {
 
 static guint undo_manager_signals[LAST_SIGNAL] = { 0, };
 
+static GList *
+glide_undo_manager_free_undo_info (GList *list)
+{
+  GlideUndoInfo *info = (GlideUndoInfo *)list->data;
+  info->free_callback (info);
+  g_free (info->label);
+  g_free (info);
+  
+  return list->next;
+}
+
 typedef struct _GlideUndoDeleteActorData {
   ClutterActor *parent;
   ClutterActor *actor;
@@ -246,11 +257,26 @@ glide_undo_manager_new ()
 void
 glide_undo_manager_append_info (GlideUndoManager *manager, GlideUndoInfo *info)
 {
+  GList *t = g_list_next (manager->priv->position);
+  while (t)
+    t = glide_undo_manager_free_undo_info (t);
+  if (manager->priv->position)
+    {
+      g_list_free (g_list_next (manager->priv->position));
+      manager->priv->position->next = NULL;
+    }
+  else
+    {
+      g_list_free (manager->priv->infos);
+      manager->priv->infos = NULL;
+    }
+
   manager->priv->infos = g_list_append (manager->priv->infos, info);
   manager->priv->position = g_list_last (manager->priv->infos);
   
   g_signal_emit (manager, undo_manager_signals[POSITION_CHANGED], 0);
 }
+
 // TODO: Handle failed redo/undos.
 gboolean
 glide_undo_manager_redo (GlideUndoManager *manager)
