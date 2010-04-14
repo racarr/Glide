@@ -134,9 +134,11 @@ main (int argc, char *argv[])
 	  g_critical ("Failed to parse arguments");
 	  return 1;
 	}
-
+  
   GLIDE_NOTE (MISC, "Starting Glide");
   window = glide_window_new ();
+  if (argc >= 2)
+    glide_window_open_document (GLIDE_WINDOW (window), argv[1]);
 
   gtk_main ();
   return 0;

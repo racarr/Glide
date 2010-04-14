@@ -446,9 +446,9 @@ glide_window_close_document (GlideWindow *w)
   clutter_group_remove_all (CLUTTER_GROUP (w->priv->stage));
 }
 
-static void
-glide_window_open_document_real (GlideWindow *window,
-				 const gchar *filename)
+void
+glide_window_open_document (GlideWindow *window,
+			    const gchar *filename)
 {
   JsonParser *p = json_parser_new ();
   GError *e = NULL;
@@ -1180,7 +1180,7 @@ glide_window_file_open_response_callback (GtkDialog *dialog,
       g_message("Loading file: %s \n", filename);
       
       glide_window_close_document (w);
-      glide_window_open_document_real (w, filename);
+      glide_window_open_document (w, filename);
       g_free (filename);
     }
   
@@ -1347,7 +1347,7 @@ glide_window_recent_item_activated (GtkRecentChooser *chooser,
   
   glide_window_close_document (w);
   /* TODO: Uris everywhere... Oh dirty hack*/
-  glide_window_open_document_real (w, uri+7);
+  glide_window_open_document (w, uri+7);
   
 }
 

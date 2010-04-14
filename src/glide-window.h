@@ -74,6 +74,8 @@ struct _GlideWindowClass
 GType 		 glide_window_get_type 			(void) G_GNUC_CONST;
 GlideWindow     *glide_window_new                       (void);
 
+void glide_window_open_document (GlideWindow *w, const gchar *filename);
+
 G_END_DECLS
 
 #endif  /* __GLIDE_WINDOW_H__  */
