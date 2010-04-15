@@ -94,6 +94,9 @@ void glide_document_set_height (GlideDocument *document, gint height);
 gint glide_document_get_width (GlideDocument *document);
 void glide_document_set_width (GlideDocument *document, gint width);
 
+void glide_document_get_size (GlideDocument *document, gint *width, gint *height);
+void glide_document_set_size (GlideDocument *document, gint width, gint height);
+
 G_END_DECLS
 
 #endif  /* __GLIDE_DOCUMENT_H__  */

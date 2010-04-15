@@ -339,8 +339,23 @@ glide_document_get_width (GlideDocument *document)
   return document->priv->width;
 }
 
-void glide_document_set_width (GlideDocument *document, gint width)
+void 
+glide_document_set_width (GlideDocument *document, gint width)
 {
   document->priv->width = width;
   g_object_notify (G_OBJECT (document), "width");
+}
+
+void
+glide_document_set_size (GlideDocument *document, gint width, gint height)
+{
+  glide_document_set_width (document, width);
+  glide_document_set_height (document, height);
+}
+
+void
+glide_document_get_size (GlideDocument *document, gint *width, gint *height)
+{
+  *width = document->priv->width;
+  *height = document->priv->height;
 }

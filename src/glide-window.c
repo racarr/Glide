@@ -502,13 +502,22 @@ glide_window_fixed_embed_size_allocate (GtkWidget *widget,
 					gpointer user_data)
 {
   GlideWindow *w = (GlideWindow *)user_data;
+  gint width, height;
   
+  if (w->priv->document)
+    glide_document_get_size (w->priv->document, &width, &height);
+  else
+    {
+      width = DEFAULT_PRESENTATION_WIDTH;
+      height = DEFAULT_PRESENTATION_HEIGHT;
+    }
+
   if (allocation->width != w->priv->lfw ||
       allocation->height != w->priv->lfh)
     {
       gtk_fixed_move (GTK_FIXED (widget), w->priv->embed,
-		      (allocation->width-DEFAULT_PRESENTATION_WIDTH)/2.0,
-		      (allocation->height-DEFAULT_PRESENTATION_HEIGHT)/2.0);
+		      (allocation->width-width)/2.0,
+		      (allocation->height-height)/2.0);
       w->priv->lfw = allocation->width;
       w->priv->lfh = allocation->height;
     }
