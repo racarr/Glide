@@ -89,13 +89,9 @@ void glide_document_remove_slide (GlideDocument *document, gint slide);
 JsonNode *glide_document_serialize (GlideDocument *document);
 
 gint glide_document_get_height (GlideDocument *document);
-void glide_document_set_height (GlideDocument *document, gint height);
-
 gint glide_document_get_width (GlideDocument *document);
-void glide_document_set_width (GlideDocument *document, gint width);
 
 void glide_document_get_size (GlideDocument *document, gint *width, gint *height);
-void glide_document_set_size (GlideDocument *document, gint width, gint height);
 
 G_END_DECLS
 
