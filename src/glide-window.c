@@ -752,6 +752,22 @@ glide_window_paste_targets_received (GtkClipboard *clipboard,
 }
 
 void
+glide_window_hide_about_dialog (GtkWidget *w,
+				gpointer user_data)
+{
+  gtk_widget_hide (w);
+}
+
+void
+glide_window_about_action_activate (GtkAction *a,
+				    gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  
+  gtk_widget_show (GTK_WIDGET (GLIDE_WINDOW_UI_OBJECT (w, "about-dialog")));
+}
+
+void
 glide_window_delete_action_activate (GtkAction *a,
 				     gpointer user_data)
 {
