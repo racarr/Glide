@@ -731,7 +731,7 @@ glide_slide_resize (GlideSlide *slide, gfloat width, gfloat height)
       clutter_actor_set_size (actor, aw, ah);
       if (GLIDE_IS_TEXT (actor))
 	{
-	  glide_text_set_font_size (GLIDE_TEXT (actor), floor(ry*glide_text_get_font_size(GLIDE_TEXT (actor))));
+	  glide_text_set_font_size (GLIDE_TEXT (actor), round(ry*glide_text_get_font_size(GLIDE_TEXT (actor))));
 	  clutter_actor_get_size (actor, &aw, &ah);
 	  while ((fabs(ah-oh*ry) > (96/72.0)*glide_text_get_font_size (GLIDE_TEXT (actor))) && (aw < width))
 	    {
