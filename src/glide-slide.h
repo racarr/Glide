@@ -71,6 +71,8 @@ ClutterActor *glide_slide_get_contents (GlideSlide *slide);
 void glide_slide_set_color (GlideSlide *slide, const ClutterColor *color);
 void glide_slide_get_color (GlideSlide *slide, ClutterColor *color);
 
+void glide_slide_resize (GlideSlide *slide, gfloat width, gfloat height);
+
 
 G_END_DECLS
 

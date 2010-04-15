@@ -298,6 +298,7 @@ glide_slide_paint (ClutterActor *actor)
     }
 
   clutter_actor_get_size (actor, &width, &height);
+
   cogl_set_source_color4ub (priv->color.red,
 			    priv->color.green,
 			    priv->color.blue,
@@ -387,8 +388,8 @@ glide_slide_allocate (ClutterActor           *actor,
     return;
 
   clutter_layout_manager_allocate (priv->layout,
-                                   CLUTTER_CONTAINER (actor),
-                                   allocation, flags);
+				   CLUTTER_CONTAINER (actor),
+				   allocation, flags);
 }
 
 
@@ -693,4 +694,11 @@ void
 glide_slide_get_color (GlideSlide *slide, ClutterColor *color)
 {
   *color = slide->priv->color;
+}
+
+void
+glide_slide_resize (GlideSlide *slide, gfloat width, gfloat height)
+{
+  clutter_actor_set_size (CLUTTER_ACTOR (slide->priv->contents_group), width, height);
+  clutter_actor_set_size (CLUTTER_ACTOR (slide), width, height);
 }

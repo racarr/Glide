@@ -348,13 +348,12 @@ glide_document_resize (GlideDocument *document, gint width, gint height)
   document->priv->width = width;
   document->priv->height = height;
 
+  g_signal_emit (document, document_signals[RESIZED], 0);  
+
   for (s=document->priv->slides; s; s=s->next)
     {
             GlideSlide *slide = (GlideSlide *)s->data;
 
-	    clutter_actor_set_position (CLUTTER_ACTOR (slide), 0, 0);
-            clutter_actor_set_size (CLUTTER_ACTOR (slide), width, height);
+	    glide_slide_resize (slide, width, height);
     }
-
-  g_signal_emit (document, document_signals[RESIZED], 0);  
 }

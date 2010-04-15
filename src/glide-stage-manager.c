@@ -268,6 +268,8 @@ glide_stage_manager_button_pressed (ClutterActor *actor,
 				    ClutterEvent *event,
 				    GlideStageManager *manager)
 {
+  GLIDE_NOTE (STAGE_MANAGER, "Button press event at: "
+	      "(%f, %f)", event->button.x, event->button.y);
   if (event->button.button == 1)
     {
       if (manager->priv->presenting)
