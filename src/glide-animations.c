@@ -310,7 +310,7 @@ glide_animations_animate_doorway (ClutterActor *a, ClutterActor *b, guint durati
   clutter_container_add_actor (CLUTTER_CONTAINER (stage), group);
   
 
-  clutter_actor_set_size (group, 800, 600);
+  clutter_actor_set_size (group, width, height);
   clutter_actor_set_scale_full (group, 0.5, 0.5, width/2.0, height/2.0);
   
   clutter_actor_show (group);
