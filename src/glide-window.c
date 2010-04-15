@@ -49,8 +49,8 @@
 								      GLIDE_TYPE_WINDOW, \
 								      GlideWindowPrivate))
 
-#define PRESENTATION_WIDTH 800
-#define PRESENTATION_HEIGHT 600
+#define DEFAULT_PRESENTATION_WIDTH 800
+#define DEFAULT_PRESENTATION_HEIGHT 600
 
 G_DEFINE_TYPE(GlideWindow, glide_window, GTK_TYPE_WINDOW)
 
@@ -507,8 +507,8 @@ glide_window_fixed_embed_size_allocate (GtkWidget *widget,
       allocation->height != w->priv->lfh)
     {
       gtk_fixed_move (GTK_FIXED (widget), w->priv->embed,
-		      (allocation->width-PRESENTATION_WIDTH)/2.0,
-		      (allocation->height-PRESENTATION_HEIGHT)/2.0);
+		      (allocation->width-DEFAULT_PRESENTATION_WIDTH)/2.0,
+		      (allocation->height-DEFAULT_PRESENTATION_HEIGHT)/2.0);
       w->priv->lfw = allocation->width;
       w->priv->lfh = allocation->height;
     }
@@ -551,15 +551,15 @@ glide_window_insert_stage (GlideWindow *w)
   w->priv->embed = embed;
   
   w->priv->stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (embed));
-  clutter_actor_set_size (w->priv->stage, 800, 600);
+  clutter_actor_set_size (w->priv->stage, DEFAULT_PRESENTATION_WIDTH, DEFAULT_PRESENTATION_HEIGHT);
   
   clutter_actor_show (w->priv->stage);
   
   clutter_stage_set_color (CLUTTER_STAGE (w->priv->stage), &cblack);
   
   gtk_fixed_put (GTK_FIXED (fixed), embed, 0, 0);
-  gtk_widget_set_size_request (fixed, 800, 600);
-  gtk_widget_set_size_request (embed, 800, 600);
+  gtk_widget_set_size_request (fixed, DEFAULT_PRESENTATION_WIDTH, DEFAULT_PRESENTATION_HEIGHT);
+  gtk_widget_set_size_request (embed, DEFAULT_PRESENTATION_WIDTH, DEFAULT_PRESENTATION_HEIGHT);
   
   g_signal_connect_after (fixed, "size-allocate", G_CALLBACK (glide_window_fixed_embed_size_allocate), w);
 }

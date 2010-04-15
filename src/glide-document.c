@@ -259,6 +259,8 @@ glide_document_insert_slide (GlideDocument *document, gint after)
   GlideSlide *s = glide_slide_new (document);
   document->priv->slides = g_list_insert (document->priv->slides, s, after+1);
   
+  clutter_actor_set_size (CLUTTER_ACTOR (s), document->priv->width, document->priv->height);
+  
   g_signal_emit (document, document_signals[SLIDE_ADDED], 0, s);
   
   return s;
