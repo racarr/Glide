@@ -71,6 +71,20 @@ void
 glide_window_save_action_activate (GtkAction *a, gpointer user_data);
 
 static void
+glide_window_document_resized_cb (GObject *object,
+				  GParamSpec *pspec,
+				  gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  GlideDocument *d = (GlideDocument *)object;
+  gint width, height;
+  
+  glide_document_get_size (d,  &width, &height);
+  clutter_actor_set_size (w->priv->stage, width, height);
+  gtk_widget_set_size_request (w->priv->embed, width, height);
+}
+
+static void
 glide_window_set_copy_buffer (GlideWindow *w, GlideActor *copy)
 {
   w->priv->keep_buffer = TRUE;
@@ -408,6 +422,10 @@ glide_window_set_document (GlideWindow *w, GlideDocument *d)
   g_signal_connect (w->priv->document,
 		    "notify::path",
 		    G_CALLBACK (glide_window_document_path_changed_cb),
+		    w);
+  g_signal_connect (w->priv->document,
+		    "resized",
+		    G_CALLBACK (glide_window_document_resized_cb),
 		    w);
 
   g_signal_connect (w->priv->document,

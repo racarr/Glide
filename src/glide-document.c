@@ -47,6 +47,7 @@ enum {
 enum {
   SLIDE_ADDED,
   SLIDE_REMOVED,
+  RESIZED,
   LAST_SIGNAL
 };
 
@@ -182,6 +183,15 @@ glide_document_class_init (GlideDocumentClass *klass)
 		  gi_cclosure_marshal_generic,
 		  G_TYPE_NONE, 1,
 		  G_TYPE_OBJECT);
+  
+  document_signals[RESIZED] = 
+    g_signal_new ("resized",
+		  G_TYPE_FROM_CLASS (object_class),
+		  G_SIGNAL_RUN_LAST,
+		  0,
+		  NULL, NULL,
+		  gi_cclosure_marshal_generic,
+		  G_TYPE_NONE, 0, NULL);
 							
   
   g_type_class_add_private (object_class, sizeof(GlideDocumentPrivate));
