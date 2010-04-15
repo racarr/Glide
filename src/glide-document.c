@@ -36,8 +36,13 @@ G_DEFINE_TYPE(GlideDocument, glide_document, G_TYPE_OBJECT)
 enum {
   PROP_0,
   PROP_NAME,
-  PROP_PATH
+  PROP_PATH,
+  PROP_WIDTH,
+  PROP_HEIGHT
 };
+
+#define DEFAULT_PRESENTATION_WIDTH 800
+#define DEFAULT_PRESENTATION_HEIGHT 600
 
 enum {
   SLIDE_ADDED,
@@ -77,6 +82,12 @@ glide_document_get_property (GObject *object,
     case PROP_PATH:
       g_value_set_string (value, document->priv->path);
       break;
+    case PROP_WIDTH:
+      g_value_set_int (value, document->priv->width);
+      break;
+    case PROP_HEIGHT:
+      g_value_set_int (value, document->priv->height);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -104,6 +115,12 @@ glide_document_set_property (GObject *object,
 	g_free (document->priv->path);
       document->priv->path = g_value_dup_string (value);
       break;
+    case PROP_HEIGHT:
+      glide_document_set_height (document, g_value_get_int (value));
+      break;
+    case PROP_WIDTH:
+      glide_document_set_width (document, g_value_get_int (value));
+      break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -127,11 +144,28 @@ glide_document_class_init (GlideDocumentClass *klass)
 							G_PARAM_READWRITE |
 							G_PARAM_STATIC_STRINGS |
 							G_PARAM_CONSTRUCT_ONLY));
-g_object_class_install_property (object_class, PROP_PATH,
+  g_object_class_install_property (object_class, PROP_PATH,
 				   g_param_spec_string ("path",
 							"Path",
 							"Path of the document",
 							NULL,
+							G_PARAM_READWRITE |
+							G_PARAM_STATIC_STRINGS |
+							G_PARAM_CONSTRUCT_ONLY));
+
+  g_object_class_install_property (object_class, PROP_WIDTH,
+				   g_param_spec_int ("width",
+							"Width",
+							"Width of the document",
+							-1, G_MAXINT, DEFAULT_PRESENTATION_WIDTH,
+							G_PARAM_READWRITE |
+							G_PARAM_STATIC_STRINGS |
+							G_PARAM_CONSTRUCT_ONLY));
+  g_object_class_install_property (object_class, PROP_HEIGHT,
+				   g_param_spec_int ("height",
+							"Height",
+							"Height of the document",
+							-1, G_MAXINT, DEFAULT_PRESENTATION_HEIGHT,
 							G_PARAM_READWRITE |
 							G_PARAM_STATIC_STRINGS |
 							G_PARAM_CONSTRUCT_ONLY));
@@ -282,4 +316,29 @@ glide_document_serialize(GlideDocument *document)
   glide_document_json_obj_set_slides (document, obj);
   
   return node;
+}
+
+gint 
+glide_document_get_height (GlideDocument *document)
+{
+  return document->priv->height;
+}
+
+void 
+glide_document_set_height (GlideDocument *document, gint height)
+{
+  document->priv->height = height;
+  g_object_notify (G_OBJECT (document), "height");
+}
+
+gint 
+glide_document_get_width (GlideDocument *document)
+{
+  return document->priv->width;
+}
+
+void glide_document_set_width (GlideDocument *document, gint width)
+{
+  document->priv->width = width;
+  g_object_notify (G_OBJECT (document), "width");
 }
