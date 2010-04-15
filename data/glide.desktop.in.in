@@ -1,0 +1,12 @@
+[Desktop Entry]
+_Name=Glide
+_GenericName=Glide Presentations
+_X-GNOME-FullName=Glide Presentation Editor
+_Comment=Create and display presentations.
+Exec=glide %F
+Terminal=false
+StartupNotify=true
+Type=Application
+Icon=glide
+Categories=GNOME;Office;
+MimeType=application/x-glide;
