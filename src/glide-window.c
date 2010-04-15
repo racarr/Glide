@@ -755,6 +755,7 @@ void
 glide_window_hide_about_dialog (GtkWidget *w,
 				gpointer user_data)
 {
+  // Is it safe to connect this to hide?
   gtk_widget_hide (w);
 }
 
@@ -1346,6 +1347,15 @@ glide_window_load_ui (GlideWindow *w)
   gtk_widget_reparent (main_box, GTK_WIDGET (w));
 }
 
+gboolean
+glide_window_delete_event_cb (GtkWidget *w,
+			      gpointer user_data)
+{
+  if (glide_window_show_quit_dialog (GLIDE_WINDOW (w)))
+    gtk_main_quit ();
+  return TRUE;
+}
+
 static void
 glide_window_finalize (GObject *object)
 {
@@ -1428,6 +1438,9 @@ glide_window_init (GlideWindow *window)
   window->priv->recent_manager = gtk_recent_manager_get_for_screen (gtk_window_get_screen (GTK_WINDOW (window)));
   
   g_signal_connect (clipboard, "owner-change", G_CALLBACK (glide_window_clipboard_owner_changed), window);
+  g_signal_connect (window, "delete-event",
+		    G_CALLBACK (glide_window_delete_event_cb),
+		    NULL);
 
   GLIDE_NOTE (WINDOW, "Intializing Glide window (%p)", window);
   
