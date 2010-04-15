@@ -40,6 +40,7 @@ struct _GlideWindowPrivate
   GlideDocument *document;
   
   gint lfw, lfh;
+  gint old_document_width, old_document_height;
   
   JsonNode *copy_buffer;
   gboolean keep_buffer;

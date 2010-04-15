@@ -111,6 +111,12 @@ glide_document_set_property (GObject *object,
       GLIDE_NOTE (DOCUMENT, "Constructing new GlideDocument (%p): %s",
 		  object, document->priv->name);
       break;
+    case PROP_WIDTH:
+      document->priv->width = g_value_get_int (value);
+      break;
+    case PROP_HEIGHT:
+      document->priv->height = g_value_get_int (value);
+      break;
     case PROP_PATH:
       if (document->priv->path)
 	g_free (document->priv->path);
@@ -153,16 +159,18 @@ glide_document_class_init (GlideDocumentClass *klass)
 						     "Width",
 						     "Width of the document",
 						     -1, G_MAXINT, DEFAULT_PRESENTATION_WIDTH,
-						     G_PARAM_READABLE |
-						     G_PARAM_STATIC_STRINGS));
+						     G_PARAM_READWRITE |
+						     G_PARAM_STATIC_STRINGS |
+						     G_PARAM_CONSTRUCT));
 
   g_object_class_install_property (object_class, PROP_HEIGHT,
 				   g_param_spec_int ("height",
 						     "Height",
 						     "Height of the document",
 						     -1, G_MAXINT, DEFAULT_PRESENTATION_HEIGHT,
-						     G_PARAM_READABLE |
-						     G_PARAM_STATIC_STRINGS));
+						     G_PARAM_READWRITE |
+						     G_PARAM_STATIC_STRINGS |
+						     G_PARAM_CONSTRUCT));
 
   document_signals[SLIDE_ADDED] = 
     g_signal_new ("slide-added",

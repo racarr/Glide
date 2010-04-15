@@ -301,6 +301,9 @@ glide_window_unfullscreen_stage (GlideWindow *w)
 {
   gtk_window_unfullscreen (GTK_WINDOW (w));
   gtk_widget_show_all (GTK_WIDGET (w));
+  
+  glide_document_resize (w->priv->document, w->priv->old_document_width,
+			 w->priv->old_document_height);
 }
 
 static void
@@ -972,6 +975,7 @@ glide_window_fullscreen_stage (GlideWindow *w)
   gtk_widget_show_all (fixed);
   gtk_widget_show (gtk_widget_get_parent (fixed));
   
+  glide_document_get_size (w->priv->document, &w->priv->old_document_width, &w->priv->old_document_height);
   glide_document_resize (w->priv->document, gdk_screen_get_height (screen) * 1.3333,
 			 gdk_screen_get_height (screen));
 }
