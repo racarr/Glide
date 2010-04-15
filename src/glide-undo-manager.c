@@ -45,6 +45,9 @@ static GList *
 glide_undo_manager_free_undo_info (GList *list)
 {
   GlideUndoInfo *info = (GlideUndoInfo *)list->data;
+  if (!info)
+    return list->next;
+
   info->free_callback (info);
   g_free (info->label);
   g_free (info);

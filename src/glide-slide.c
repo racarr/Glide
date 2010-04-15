@@ -727,7 +727,7 @@ glide_slide_resize (GlideSlide *slide, gfloat width, gfloat height)
       x *= rx; y *= ry;
       aw *= rx; ah *= ry;
       
-      clutter_actor_set_position (actor, floor(x), floor(y));
+      clutter_actor_set_position (actor, round(x), round(y));
       clutter_actor_set_size (actor, aw, ah);
       if (GLIDE_IS_TEXT (actor))
 	{
