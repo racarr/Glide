@@ -1183,8 +1183,8 @@ glide_window_save_as_response_callback (GtkDialog *dialog,
 
 static void
 glide_window_save_and_quit_response_callback (GtkDialog *dialog,
-					  int response,
-					  gpointer user_data)
+					      int response,
+					      gpointer user_data)
 {
   glide_window_save_as_response_callback (dialog, response, user_data);
   

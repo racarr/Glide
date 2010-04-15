@@ -35,6 +35,7 @@ struct _GlideDocumentPrivate
   gchar *path;
   
   gint width, height;
+  gboolean dirty;
 };
 
 G_END_DECLS

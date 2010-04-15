@@ -95,6 +95,9 @@ void glide_document_get_size (GlideDocument *document, gint *width, gint *height
 
 void glide_document_resize (GlideDocument *document, gint width, gint height);
 
+gboolean glide_document_get_dirty (GlideDocument *d);
+void glide_document_set_dirty (GlideDocument *d, gboolean dirty);
+
 G_END_DECLS
 
 #endif  /* __GLIDE_DOCUMENT_H__  */

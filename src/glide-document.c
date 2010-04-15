@@ -38,7 +38,8 @@ enum {
   PROP_NAME,
   PROP_PATH,
   PROP_WIDTH,
-  PROP_HEIGHT
+  PROP_HEIGHT,
+  PROP_DIRTY
 };
 
 #define DEFAULT_PRESENTATION_WIDTH 800
@@ -89,6 +90,9 @@ glide_document_get_property (GObject *object,
     case PROP_HEIGHT:
       g_value_set_int (value, document->priv->height);
       break;
+    case PROP_DIRTY:
+      g_value_set_boolean (value, document->priv->dirty);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -121,6 +125,9 @@ glide_document_set_property (GObject *object,
       if (document->priv->path)
 	g_free (document->priv->path);
       document->priv->path = g_value_dup_string (value);
+      break;
+    case PROP_DIRTY:
+      glide_document_set_dirty (document, g_value_get_boolean (value));
       break;
     default: 
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -171,6 +178,13 @@ glide_document_class_init (GlideDocumentClass *klass)
 						     G_PARAM_READWRITE |
 						     G_PARAM_STATIC_STRINGS |
 						     G_PARAM_CONSTRUCT));
+  
+  g_object_class_install_property (object_class, PROP_DIRTY,
+				   g_param_spec_boolean ("dirty",
+							 "Dirty",
+							 "Whether the document has dirty changes",
+							 FALSE,
+							 G_PARAM_READABLE | G_PARAM_STATIC_STRINGS));
 
   document_signals[SLIDE_ADDED] = 
     g_signal_new ("slide-added",
@@ -364,4 +378,18 @@ glide_document_resize (GlideDocument *document, gint width, gint height)
 
 	    glide_slide_resize (slide, width, height);
     }
+}
+
+
+gboolean
+glide_document_get_dirty (GlideDocument *d)
+{
+  return d->priv->dirty;
+}
+
+void
+glide_document_set_dirty (GlideDocument *d, gboolean dirty)
+{
+  d->priv->dirty = dirty;
+  g_object_notify (G_OBJECT (d), "dirty");
 }
