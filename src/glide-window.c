@@ -339,6 +339,24 @@ glide_window_document_n_slides_changed (GlideDocument *document,
 }
 
 // TODO: New document, no path...window title?
+
+static void
+glide_window_update_title (GlideWindow *w)
+{
+  const gchar *path = glide_document_get_path (w->priv->document);
+  gchar *title;
+  
+  if (!path)
+    path = "New Document";
+  
+  if (glide_document_get_dirty (w->priv->document))
+    title = g_strdup_printf ("Glide - (%s)*", path);
+  else
+    title = g_strdup_printf ("Glide - (%s)", path);
+  
+  gtk_window_set_title (GTK_WINDOW (w), title);
+  g_free (title);
+}
 static void
 glide_window_document_path_changed_cb (GObject *object,
 				       GParamSpec *pspec,
@@ -347,11 +365,9 @@ glide_window_document_path_changed_cb (GObject *object,
   GlideWindow *w = (GlideWindow *)user_data;
   const gchar *path = glide_document_get_path (w->priv->document);
   gchar *uri = g_strdup_printf("file://%s",path);
-  gchar *title = g_strdup_printf ("Glide - (%s)", path);
   GtkRecentData rd = { 0, };
   
-  gtk_window_set_title (GTK_WINDOW (w), title);
-  g_free (title);
+  glide_window_update_title (w);
   
   rd.mime_type = "application-x/glide";
   rd.app_name = "Glide";
@@ -406,6 +422,12 @@ glide_window_undo_manager_position_changed_cb (GlideUndoManager *manager,
 {
   GlideWindow *w = (GlideWindow *)user_data;
   glide_window_update_undo_ui (w);
+  
+  if (!glide_document_get_dirty (w->priv->document))
+    {
+      glide_document_set_dirty (w->priv->document, TRUE);
+      glide_window_update_title (w);
+    }
 }
 
 static void
@@ -1161,8 +1183,12 @@ glide_window_save_document_real (GlideWindow *w,
   
   // TODO: Error
   json_generator_to_file (gen, filename, NULL);
-  
+
+  glide_document_set_dirty (w->priv->document, FALSE);
   glide_document_set_path (w->priv->document, filename);
+  
+  // Maybe gets called twice?
+  glide_window_update_title (w);
 }
 
 static void
