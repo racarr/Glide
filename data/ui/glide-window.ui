@@ -22,8 +22,8 @@
                     <child>
                       <object class="GtkImageMenuItem" id="new-menuitem">
                         <property name="visible">True</property>
-                        <property name="use_action_appearance">True</property>
                         <property name="related_action">new-action</property>
+                        <property name="use_action_appearance">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <accelerator key="n" signal="activate" modifiers="GDK_CONTROL_MASK"/>
@@ -54,8 +54,9 @@
                     <child>
                       <object class="GtkImageMenuItem" id="export-pdf-menuitem">
                         <property name="visible">True</property>
-                        <property name="use_action_appearance">True</property>
                         <property name="related_action">pdf-export-action</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
                     </child>
@@ -114,8 +115,8 @@
                     <child>
                       <object class="GtkImageMenuItem" id="undo-menuitem">
                         <property name="visible">True</property>
-                        <property name="use_action_appearance">True</property>
                         <property name="related_action">undo-action</property>
+                        <property name="use_action_appearance">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <accelerator key="z" signal="activate" modifiers="GDK_CONTROL_MASK"/>
@@ -124,8 +125,8 @@
                     <child>
                       <object class="GtkImageMenuItem" id="redo-menuitem">
                         <property name="visible">True</property>
-                        <property name="use_action_appearance">True</property>
                         <property name="related_action">redo-action</property>
+                        <property name="use_action_appearance">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <accelerator key="z" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
@@ -149,8 +150,8 @@
                     <child>
                       <object class="GtkImageMenuItem" id="copy-menuitem">
                         <property name="visible">True</property>
-                        <property name="use_action_appearance">True</property>
                         <property name="related_action">copy-action</property>
+                        <property name="use_action_appearance">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <accelerator key="c" signal="activate" modifiers="GDK_CONTROL_MASK"/>
@@ -220,8 +221,8 @@
             <child>
               <object class="GtkToolButton" id="new-toolbutton">
                 <property name="visible">True</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">new-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">New File</property>
                 <property name="use_underline">True</property>
               </object>
@@ -233,8 +234,8 @@
             <child>
               <object class="GtkToolButton" id="open-toolbutton">
                 <property name="visible">True</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">open-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">Open File</property>
                 <property name="use_underline">True</property>
               </object>
@@ -246,8 +247,8 @@
             <child>
               <object class="GtkToolButton" id="save-toolbutton">
                 <property name="visible">True</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">save-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">Save File</property>
                 <property name="use_underline">True</property>
               </object>
@@ -268,8 +269,8 @@
             <child>
               <object class="GtkToolButton" id="undo-toolbutton">
                 <property name="visible">True</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">undo-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">Undo</property>
                 <property name="use_underline">True</property>
               </object>
@@ -281,8 +282,8 @@
             <child>
               <object class="GtkToolButton" id="Redo">
                 <property name="visible">True</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">redo-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">Redo</property>
                 <property name="use_underline">True</property>
               </object>
@@ -304,8 +305,8 @@
               <object class="GtkToolButton" id="text-toolbutton">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">new-text-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">Text</property>
                 <property name="use_underline">True</property>
               </object>
@@ -318,8 +319,8 @@
               <object class="GtkToolButton" id="image-toolbutton">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">new-image-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">Image</property>
                 <property name="use_underline">True</property>
               </object>
@@ -453,8 +454,8 @@
             <child>
               <object class="GtkToolButton" id="background-toolbutton">
                 <property name="visible">True</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">background-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">Set Background</property>
                 <property name="use_underline">True</property>
               </object>
@@ -466,8 +467,8 @@
             <child>
               <object class="GtkToolButton" id="present-toolbutton">
                 <property name="visible">True</property>
-                <property name="use_action_appearance">True</property>
                 <property name="related_action">present-action</property>
+                <property name="use_action_appearance">True</property>
                 <property name="label" translatable="yes">Present</property>
                 <property name="use_underline">True</property>
               </object>
@@ -813,6 +814,7 @@
     <property name="label">Export to PDF</property>
     <property name="short_label">Export to PDF</property>
     <property name="tooltip">Export the current document to PDF.</property>
+    <property name="sensitive">False</property>
     <signal name="activate" handler="glide_window_export_pdf_action_activate"/>
   </object>
 </interface>

@@ -139,9 +139,11 @@ glide_window_enable_document_actions (GlideWindow *w)
   glide_window_enable_action (w, "present-action");
   glide_window_enable_action (w, "background-action");
   glide_window_enable_action (w, "save-action");
+  glide_window_enable_action (w, "pdf-export-action");
   
   glide_window_enable_widget (w, "animation-combobox");
   glide_window_enable_widget (w, "text-color-button");
+
 }
 
 static void
