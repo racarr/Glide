@@ -297,7 +297,7 @@ glide_slide_paint (ClutterActor *actor)
       return;
     }
 
-  clutter_actor_get_size (clutter_actor_get_parent (actor), &width, &height);
+  clutter_actor_get_size (actor, &width, &height);
   cogl_set_source_color4ub (priv->color.red,
 			    priv->color.green,
 			    priv->color.blue,

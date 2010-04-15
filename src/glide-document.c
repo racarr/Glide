@@ -262,8 +262,6 @@ glide_document_insert_slide (GlideDocument *document, gint after)
   GlideSlide *s = glide_slide_new (document);
   document->priv->slides = g_list_insert (document->priv->slides, s, after+1);
   
-  clutter_actor_set_size (CLUTTER_ACTOR (s), document->priv->width, document->priv->height);
-  
   g_signal_emit (document, document_signals[SLIDE_ADDED], 0, s);
   
   return s;
@@ -352,10 +350,11 @@ glide_document_resize (GlideDocument *document, gint width, gint height)
 
   for (s=document->priv->slides; s; s=s->next)
     {
-      GlideSlide *slide = (GlideSlide *)s->data;
-      
-      clutter_actor_set_size (CLUTTER_ACTOR (slide), width, height);
+            GlideSlide *slide = (GlideSlide *)s->data;
+
+	    clutter_actor_set_position (CLUTTER_ACTOR (slide), 0, 0);
+            clutter_actor_set_size (CLUTTER_ACTOR (slide), width, height);
     }
-  
+
   g_signal_emit (document, document_signals[RESIZED], 0);  
 }

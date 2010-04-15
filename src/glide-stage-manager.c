@@ -191,9 +191,13 @@ glide_stage_manager_document_slide_added_cb (GlideDocument *document,
 					     gpointer data)
 {
   GlideStageManager *manager = (GlideStageManager *)data;
+  gfloat width, height;
   
   clutter_container_add_actor (CLUTTER_CONTAINER (manager->priv->stage), CLUTTER_ACTOR (slide));
   glide_actor_set_stage_manager (GLIDE_ACTOR (slide), manager);
+  
+  clutter_actor_get_size (manager->priv->stage, &width, &height);
+  clutter_actor_set_size (CLUTTER_ACTOR (slide), width, height);
   
   glide_stage_manager_set_slide (manager, manager->priv->current_slide+1);
   glide_stage_manager_set_selection (manager, NULL);
