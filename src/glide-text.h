@@ -224,8 +224,8 @@ void                  glide_text_set_preedit_string   (GlideText          *self,
 						       guint                 cursor_pos);
 
 
-void glide_text_set_absolute_font_size (GlideText *self, gdouble font_size);
-gdouble glide_text_get_absolute_font_size (GlideText *self);
+void glide_text_set_font_size (GlideText *self, gdouble font_size);
+gdouble glide_text_get_font_size (GlideText *self);
 
 void glide_text_update_actor_size (GlideText *self);
 

@@ -5279,18 +5279,15 @@ glide_text_set_preedit_string (GlideText   *self,
 }
 
 gdouble
-glide_text_get_absolute_font_size (GlideText *self)
+glide_text_get_font_size (GlideText *self)
 {
-  if (pango_font_description_get_size_is_absolute (self->priv->font_desc))
-    return pango_font_description_get_size (self->priv->font_desc) / 1024.0; 
-  else
-    return (pango_font_description_get_size (self->priv->font_desc) / 1024.0)*(96.0/72.0);
+  return pango_font_description_get_size (self->priv->font_desc) / 1024.0; 
 }
 
 void
-glide_text_set_absolute_font_size (GlideText *self, gdouble font_size)
+glide_text_set_font_size (GlideText *self, gdouble font_size)
 {
-  pango_font_description_set_absolute_size (self->priv->font_desc, font_size * PANGO_SCALE);
+  pango_font_description_set_size (self->priv->font_desc, font_size * PANGO_SCALE);
 
   glide_text_dirty_cache (self);
   glide_text_update_actor_size (self);

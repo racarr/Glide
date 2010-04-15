@@ -846,8 +846,7 @@ glide_stage_manager_set_presenting (GlideStageManager *manager, gboolean present
     {
       manager->priv->presenting = presenting;
       if (presenting)
-	{}
-      //	glide_stage_manager_set_selection (manager, NULL);
+      	glide_stage_manager_set_selection (manager, NULL);
       else
 	glide_stage_manager_add_manipulator (manager);
       g_object_notify (G_OBJECT (manager), "presenting");
