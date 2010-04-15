@@ -25,6 +25,9 @@
 #include <gdk/gdkkeysyms.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
+#include <cairo.h>
+#include <cairo-pdf.h>
+
 #include "glide-window.h"
 #include "glide-window-private.h"
 
@@ -768,6 +771,7 @@ glide_window_about_action_activate (GtkAction *a,
   gtk_widget_show (GTK_WIDGET (GLIDE_WINDOW_UI_OBJECT (w, "about-dialog")));
 }
 
+
 void
 glide_window_delete_action_activate (GtkAction *a,
 				     gpointer user_data)
@@ -1346,6 +1350,89 @@ glide_window_load_ui (GlideWindow *w)
   main_box = GTK_WIDGET (gtk_builder_get_object (b, "main-vbox"));
   gtk_widget_reparent (main_box, GTK_WIDGET (w));
 }
+
+static void
+glide_window_export_pdf_real (GlideWindow *w,
+			      const gchar *filename)
+{
+  cairo_surface_t *pdf_surface;
+  cairo_t *cr;
+  gint width, height;
+  gint o_slide;
+  int i = 0;
+  
+  glide_window_fullscreen_stage (w);  
+  while (g_main_context_pending (NULL))
+    g_main_context_iteration (NULL, TRUE);
+  
+  width = clutter_actor_get_width (w->priv->stage);
+  height = clutter_actor_get_height (w->priv->stage);
+
+  pdf_surface = cairo_pdf_surface_create (filename, width, height);
+  cr = cairo_create (pdf_surface);
+  
+  o_slide = glide_stage_manager_get_current_slide (w->priv->manager);
+  
+  for (i = 0; i < glide_document_get_n_slides (w->priv->document); i++)
+    {
+      guchar *pixels;
+      guchar *p;
+      GdkPixbuf *pb;
+
+      glide_stage_manager_set_current_slide (w->priv->manager, i);
+
+      pixels = clutter_stage_read_pixels (CLUTTER_STAGE (w->priv->stage), 0, 0, width, height);
+      for (p = pixels + width * height * 4; p > pixels; p -= 3)
+	*(--p) = 255; 
+
+
+      pb = gdk_pixbuf_new_from_data (pixels, GDK_COLORSPACE_RGB, TRUE,
+				     8, width, height, width * 4,
+				     (GdkPixbufDestroyNotify) g_free,
+				     NULL); 
+      
+      gdk_cairo_set_source_pixbuf (cr, pb, 0, 0);
+      cairo_rectangle (cr, 0, 0, width, height);
+      cairo_fill (cr);
+
+      cairo_surface_show_page (pdf_surface);      
+      
+      g_object_unref (G_OBJECT (pb));
+    }
+  cairo_surface_flush (pdf_surface);
+
+  cairo_destroy (cr);
+  cairo_surface_destroy (pdf_surface);
+  
+  glide_window_unfullscreen_stage (w);
+  glide_stage_manager_set_current_slide (w->priv->manager, o_slide);
+}
+
+static void
+glide_window_export_pdf_response_callback (GtkDialog *dialog,
+					  int response,
+					  gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *) user_data;
+  if (response == GTK_RESPONSE_ACCEPT)
+    {
+      gchar *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+      
+      glide_window_export_pdf_real (w, filename);
+    }
+  
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+void
+glide_window_export_pdf_action_activate (GtkAction *action,
+					 gpointer user_data)
+{
+  GlideWindow *w = (GlideWindow *)user_data;
+  
+  glide_gtk_util_show_save_dialog(G_CALLBACK (glide_window_export_pdf_response_callback), w);
+}
+
 
 gboolean
 glide_window_delete_event_cb (GtkWidget *w,

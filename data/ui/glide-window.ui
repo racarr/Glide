@@ -52,6 +52,19 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkImageMenuItem" id="export-pdf-menuitem">
+                        <property name="visible">True</property>
+                        <property name="use_action_appearance">True</property>
+                        <property name="related_action">pdf-export-action</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatorex">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkImageMenuItem" id="save-menuitem">
                         <property name="label">gtk-save</property>
                         <property name="visible">True</property>
@@ -795,5 +808,11 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkAction" id="pdf-export-action">
+    <property name="label">Export to PDF</property>
+    <property name="short_label">Export to PDF</property>
+    <property name="tooltip">Export the current document to PDF.</property>
+    <signal name="activate" handler="glide_window_export_pdf_action_activate"/>
   </object>
 </interface>
