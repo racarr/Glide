@@ -92,14 +92,9 @@ ClutterTimeline *
 glide_animations_animate_pivot (ClutterActor *a, ClutterActor *b, guint duration)
 {
   ClutterTimeline *timeline = clutter_timeline_new (duration);
-  ClutterActor *stage = clutter_actor_get_stage (a);
-  gfloat width, height;
-  
+
   clutter_actor_show_all (b);
 
-  
-  clutter_actor_get_size (stage, &width, &height);
-  
   clutter_actor_set_rotation (b, CLUTTER_X_AXIS, 80, 0, 0, 0);
   
   clutter_actor_animate_with_timeline (b, CLUTTER_EASE_OUT_BOUNCE, timeline, "rotation-angle-x", (gdouble)0, NULL);

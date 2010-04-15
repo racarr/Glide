@@ -19,9 +19,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, 
  * Boston, MA 02111-1307, USA.
  */
+#include <math.h>
 
 #include "glide-slide.h"
 #include "glide-slide-priv.h"
+
+#include "glide-text.h"
 
 #include "glide-json-util.h"
 
@@ -699,6 +702,43 @@ glide_slide_get_color (GlideSlide *slide, ClutterColor *color)
 void
 glide_slide_resize (GlideSlide *slide, gfloat width, gfloat height)
 {
+  GList *a;
+  gfloat old_width, old_height, rx, ry;
+  
+  clutter_actor_get_size (CLUTTER_ACTOR (slide), &old_width, &old_height);
+  
+  rx = width/old_width;
+  ry = height/old_height;
+
   clutter_actor_set_size (CLUTTER_ACTOR (slide->priv->contents_group), width, height);
   clutter_actor_set_size (CLUTTER_ACTOR (slide), width, height);
+  
+  for (a = clutter_container_get_children (CLUTTER_CONTAINER (slide->priv->contents_group));
+       a; a = a->next)
+    {
+      ClutterActor *actor = (ClutterActor *)a->data;
+      gfloat aw, ah, x, y, oh;
+      
+      clutter_actor_get_position (actor, &x, &y);
+      clutter_actor_get_size (actor, &aw, &ah);
+      
+      oh = ah;
+
+      x *= rx; y *= ry;
+      aw *= rx; ah *= ry;
+      
+      clutter_actor_set_position (actor, floor(x), floor(y));
+      clutter_actor_set_size (actor, aw, ah);
+      if (GLIDE_IS_TEXT (actor))
+	{
+	  glide_text_set_absolute_font_size (GLIDE_TEXT (actor), ry*glide_text_get_absolute_font_size(GLIDE_TEXT (actor)));
+	  clutter_actor_get_size (actor, &aw, &ah);
+	  while (fabs(ah-oh*ry) > 1)
+	    {
+	      clutter_actor_set_size (actor, ceil(aw+1), ceil(oh*ry));
+	      glide_text_update_actor_size (GLIDE_TEXT (actor));
+	      clutter_actor_get_size (actor, &aw, &ah);
+	    }
+	}
+    }
 }

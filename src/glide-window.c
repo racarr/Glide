@@ -303,7 +303,7 @@ glide_window_unfullscreen_stage (GlideWindow *w)
   gtk_widget_show_all (GTK_WIDGET (w));
   
   glide_document_resize (w->priv->document, w->priv->old_document_width,
-			 w->priv->old_document_height);
+  			 w->priv->old_document_height);
 }
 
 static void
@@ -560,7 +560,7 @@ glide_window_fixed_key_press_event (GtkWidget *widget,
 static void
 glide_window_insert_stage (GlideWindow *w)
 {
-  ClutterColor cblack = {0xff, 0x00, 0x00, 0xff};
+  ClutterColor cblack = {0x00, 0x00, 0x00, 0xff};
   GtkWidget *fixed = GTK_WIDGET (gtk_builder_get_object (w->priv->builder, "embed-fixed"));
   GtkWidget *embed = glide_window_make_embed ();
   GdkColor black;
@@ -977,7 +977,7 @@ glide_window_fullscreen_stage (GlideWindow *w)
   
   glide_document_get_size (w->priv->document, &w->priv->old_document_width, &w->priv->old_document_height);
   glide_document_resize (w->priv->document, gdk_screen_get_height (screen) * 1.3333,
-			 gdk_screen_get_height (screen));
+  			 gdk_screen_get_height (screen));
 }
 
 void
