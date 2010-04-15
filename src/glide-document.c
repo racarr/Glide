@@ -341,3 +341,21 @@ glide_document_get_size (GlideDocument *document, gint *width, gint *height)
   *width = document->priv->width;
   *height = document->priv->height;
 }
+
+void
+glide_document_resize (GlideDocument *document, gint width, gint height)
+{
+  GList *s;
+
+  document->priv->width = width;
+  document->priv->height = height;
+
+  for (s=document->priv->slides; s; s=s->next)
+    {
+      GlideSlide *slide = (GlideSlide *)s->data;
+      
+      clutter_actor_set_size (CLUTTER_ACTOR (slide), width, height);
+    }
+  
+  g_signal_emit (document, document_signals[RESIZED], 0);  
+}
