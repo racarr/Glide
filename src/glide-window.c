@@ -829,6 +829,8 @@ glide_window_show_quit_dialog (GlideWindow *w)
   
   if (!w->priv->document)
     return TRUE;
+  if (!glide_document_get_dirty (w->priv->document))
+    return TRUE;
 
   dialog = gtk_dialog_new_with_buttons (_("Glide"),
                                         GTK_WINDOW (w), 
