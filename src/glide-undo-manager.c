@@ -267,9 +267,21 @@ glide_undo_manager_init (GlideUndoManager *manager)
 }
 
 static void
+glide_undo_manager_finalize (GObject *object)
+{
+  GlideUndoManager *manager = GLIDE_UNDO_MANAGER (object);
+  GList *t = manager->priv->infos;
+  while (t)
+    t = glide_undo_manager_free_undo_info (t);
+  g_list_free (manager->priv->infos);
+}
+
+static void
 glide_undo_manager_class_init (GlideUndoManagerClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  
+  object_class->finalize = glide_undo_manager_finalize;
   
   undo_manager_signals[POSITION_CHANGED] = 
     g_signal_new ("position-changed",
