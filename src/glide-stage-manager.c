@@ -119,6 +119,13 @@ glide_stage_manager_set_selection_real (GlideStageManager *m,
   GLIDE_NOTE (STAGE_MANAGER, "Selection changed from: %s (%p) to %s (%p)",
 	      old ? GLIDE_ACTOR_DISPLAY_NAME (old) : "unknown", old,
 	      a ? GLIDE_ACTOR_DISPLAY_NAME (a) : "unknown", a);
+  
+  if (a)
+    {
+      GLIDE_NOTE (STAGE_MANAGER, "New selection geometry: (%f, %f), (%f, %f)",
+		  clutter_actor_get_x (CLUTTER_ACTOR (a)), clutter_actor_get_y (CLUTTER_ACTOR (a)),
+		  clutter_actor_get_width (CLUTTER_ACTOR (a)), clutter_actor_get_height (CLUTTER_ACTOR (a)));
+    }
 
   m->priv->selection = a;
 
